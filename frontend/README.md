@@ -1,37 +1,12 @@
-# 🧠 OLALALAA PLANIFYA
+# React + Vite
 
-**OLALALAA PLANIFYA** est une plateforme intelligente de planification de contenu pour les réseaux sociaux, pensée spécifiquement pour le marché marocain. Elle permet aux créateurs, community managers et agences de planifier, créer, collaborer et publier du contenu optimisé, avec l’aide de l’intelligence artificielle.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
----
+Currently, two official plugins are available:
 
-## 🚀 Fonctionnalités principales
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-- 📅 **Calendrier éditorial** avec intégration des fêtes marocaines
-- 🤖 **Assistant IA** : idées de posts, captions, hashtags
-- 🧩 **Planification visuelle** (glisser-déposer)
-- 👥 **Collaboration d’équipe** : assignation des tâches
-- 🗃️ **Archivage** du contenu
-- 📤 **Export CSV** & Meta API (optionnel)
+## Expanding the ESLint configuration
 
----
-
-## 🧱 Stack technique
-
-### Frontend (dossier `frontend/`)
-- React.js + Tailwind CSS
-- React Router DOM
-- Axios
-
-### Backend (dossier `backend/`)
-- Node.js + Express
-- MongoDB (via Mongoose)
-- OpenAI API
-- Firebase Auth (à venir)
-
-### IA (dossier `ai/`)
-- Génération de contenu via OpenAI (suggestions, hashtags)
-- Fichiers de prompt et logique séparée
-
----
-
-
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
