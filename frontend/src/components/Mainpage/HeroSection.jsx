@@ -33,9 +33,9 @@ function HeroSection() {
 
       
       <img
-        src="/Images/Hero.png"
+        src="/Images/hero.png"
         alt="Planifyaa illustration"
-        className="w-1/3 drop-shadow-lg"
+        className="w-130 drop-shadow-lg"
       />
     </div>
   );

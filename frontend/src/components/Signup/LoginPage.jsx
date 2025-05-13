@@ -5,32 +5,31 @@ const LoginForm = () => {
   return (
     <section className="bg-sky-200 min-h-screen flex items-center justify-center px-4 relative">
       
-      
       <div className="absolute top-10 flex justify-center w-full">
-       <Link to="/" className="flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
-        <img
-        src="/Images/Planifya-v2.png"
-        alt="Planifya Logo"
-        className=" h-10 m-37 object-contain"
-        />
-      </Link>
+        <Link to="/" className="flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
+          <img
+            src="/Images/Planifya-v2.png"
+            alt="Logo Planifya"
+            className="h-10 m-37 object-contain"
+          />
+        </Link>
       </div>
 
       <div className="w-full max-w-md mt-28 bg-white dark:bg-gray-800 dark:border dark:border-gray-700 rounded-lg shadow-lg p-6 sm:p-8">
         <h1 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-4">
-          Login to your account
+          Connectez-vous à votre compte
         </h1>
 
         <form className="space-y-4" action="#">
           <div>
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Your email
+              Adresse e-mail
             </label>
             <input
               type="email"
               name="email"
               id="email"
-              placeholder="name@gmail.com"
+              placeholder="nom@gmail.com"
               required
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
@@ -42,7 +41,7 @@ const LoginForm = () => {
 
           <div>
             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
-              Password
+              Mot de passe
             </label>
             <input
               type="password"
@@ -66,13 +65,13 @@ const LoginForm = () => {
                        dark:border-purple-400 dark:text-purple-400 dark:hover:text-white 
                        dark:hover:bg-purple-500 dark:focus:ring-purple-900"
           >
-            Login
+            Se connecter
           </button>
 
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            Don’t have an account yet?{' '}
+            Vous n’avez pas de compte ?{' '}
             <Link to="/signup" className="text-blue-600 hover:underline dark:text-blue-400">
-              Sign up
+              Inscrivez-vous
             </Link>
           </p>
         </form>
