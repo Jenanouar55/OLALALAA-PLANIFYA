@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const LoginForm = () => {
   return (
     <section className="bg-sky-200 min-h-screen flex items-center justify-center px-4 relative">
-      
+
       <div className="absolute top-10 flex justify-center w-full">
         <Link to="/" className="flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
           <img
@@ -57,16 +57,28 @@ const LoginForm = () => {
             />
           </div>
 
-          <button
-            type="submit"
-            className="block w-40 mx-auto text-purple-700 hover:text-white border border-purple-700 
-                       hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300 
-                       font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2 
-                       dark:border-purple-400 dark:text-purple-400 dark:hover:text-white 
-                       dark:hover:bg-purple-500 dark:focus:ring-purple-900"
-          >
-            Se connecter
-          </button>
+          <div className="flex">
+            <button
+              type="submit"
+              className=" w-40 mx-auto text-purple-700 hover:text-white border border-purple-700
+                         hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300
+                         font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2
+                         dark:border-purple-400 dark:text-purple-400 dark:hover:text-white
+                         dark:hover:bg-purple-500 dark:focus:ring-purple-900"
+            >
+              Se connecter
+            </button>
+            <Link
+              to={"/adminLogin"}
+              className=" w-40 mx-auto text-purple-700 hover:text-white border border-purple-700
+                         hover:bg-purple-800 focus:ring-4 focus:outline-none focus:ring-purple-300
+                         font-medium rounded-lg text-sm px-5 py-2.5 text-center mb-2
+                         dark:border-purple-400 dark:text-purple-400 dark:hover:text-white
+                         dark:hover:bg-purple-500 dark:focus:ring-purple-900"
+            >
+              Espace admin
+            </Link>
+          </div>
 
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
             Vous n’avez pas de compte ?{' '}
