@@ -8,6 +8,7 @@ import LandingPage from './Pages/LandingPage';
 
 // Dashboard page 
 import Dashboard from './Pages/Dashboard/Dashboard';
+import AdminLogin from './components/Signup/AdminLogin';
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
+        <Route path="/AdminLogin" element={<AdminLogin />} />
 
         {/* Dashboardroutes */}
         <Route path="/dashboard" element={<Dashboard />} />
