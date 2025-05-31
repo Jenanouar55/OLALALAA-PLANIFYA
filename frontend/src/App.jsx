@@ -10,12 +10,16 @@ import LandingPage from './Pages/LandingPage';
 import Dashboard from './Pages/Dashboard/Dashboard';
 import AdminLogin from './components/Signup/AdminLogin';
 
+// user dashboard
+import UserDashboard from './Pages/Dashboarduser/dashboarduser';
+import ChatBot from './Pages/Dashboarduser/Chatbot';
+
 function App() {
   return (
     <Router>
       <Routes>
         {/*routes */}
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/Home" element={<LandingPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/AdminLogin" element={<AdminLogin />} />
@@ -26,6 +30,8 @@ function App() {
         <Route path="/dashboard/history" element={<History />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/settings" element={<Settings />} /> */}
+        <Route path="/userDashboard" element={<UserDashboard />} />
+        <Route path="/chatbot" element={<ChatBot />} />
       </Routes>
     </Router>
   );

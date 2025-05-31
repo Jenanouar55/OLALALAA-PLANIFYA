@@ -31,7 +31,7 @@ const LoginForm = () => {
   return (
     <section className="bg-sky-200 min-h-screen flex items-center justify-center px-4 relative">
       <div className="absolute top-10 flex justify-center w-full">
-        <Link to="/" className="flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
+        <Link to="/Home" className="flex items-center text-2xl font-semibold text-gray-900 dark:text-white">
           <img
             src="/Images/Planifya-v2.png"
             alt="Logo Planifya"
