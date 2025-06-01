@@ -7,8 +7,8 @@ const adminRoutes = require('./routes/adminRoutes');
 
 
 const cors = require('cors');
-
 dotenv.config();
+const apiKey = process.env.CALENDARIFIC_API_KEY;
 connectDB();
 
 const app = express();
