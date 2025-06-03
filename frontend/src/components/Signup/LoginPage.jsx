@@ -30,7 +30,7 @@ const LoginForm = () => {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         toast.success('Connexion réussie !');
-        setTimeout(() => navigate('/dashboard'), 2000);
+        setTimeout(() => navigate('/userDashboard'), 2000);
       } else {
         toast.error(data.message || 'Erreur de connexion');
       }

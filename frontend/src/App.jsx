@@ -38,14 +38,24 @@ function App() {
 
         {/* Dashboardroutes */}
 
+        {/* <Route path="/dashboard" element={
+
+          <Dashboard />
+        } /> */}
         <Route path="/dashboard" element={
-          <ProtectedRoutes><Dashboard /></ProtectedRoutes>} />
+          <ProtectedRoutes>
+            <Dashboard />
+          </ProtectedRoutes>} />
 
         {/* <Route path="/dashboard/contact" element={<Contact />} />
         <Route path="/dashboard/history" element={<History />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/settings" element={<Settings />} /> */}
-        <Route path="/userDashboard" element={<UserDashboard />} />
+        <Route path="/userDashboard" element={
+          <ProtectedRoutes>
+            <UserDashboard />
+          </ProtectedRoutes>
+        } />
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/calendar" element={<CalendarView />} />
         <Route path="/history" element={<HistoryView />} />

@@ -23,10 +23,8 @@ const SignupForm = () => {
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.agreed) {
       toast.warning('Veuillez accepter les termes et conditions.');
       return;

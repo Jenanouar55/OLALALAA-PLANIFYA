@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pencil, Trash, Filter } from "lucide-react";
 import { getPlatformIcon, getMediaIcon } from "../Dashboarduser/Constants";
 
-export const CalendarView = ({ 
+export const CalendarView = ({
   posts,
   currentMonth,
   currentYear,
@@ -101,7 +101,7 @@ export const CalendarView = ({
                 >
                   <div className="flex items-center space-x-1">
                     <span>{post.title.length > 15 ? post.title.slice(0, 13) + "…" : post.title}</span>
-                  </div> 
+                  </div>
                   <span className="flex space-x-1">
                     <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(post.index); }} />
                     <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(post.index); }} />
@@ -116,7 +116,7 @@ export const CalendarView = ({
   );
 };
 
-export const HistoryView = ({ 
+export const HistoryView = ({
   posts,
   filters,
   setIsHistoryFilterOpen,
@@ -128,9 +128,9 @@ export const HistoryView = ({
       const postDate = new Date(post.date);
       const startDate = filters.startDate ? new Date(filters.startDate) : null;
       const endDate = filters.endDate ? new Date(filters.endDate) : null;
-      
+
       const dateMatch = (!startDate || postDate >= startDate) && (!endDate || postDate <= endDate);
-      
+
       // Updated platform filtering to handle multiple platforms
       let platformMatch = false;
       if (filters.platform === "all") {
@@ -142,7 +142,7 @@ export const HistoryView = ({
         // Legacy format with single platform
         platformMatch = post.platform === filters.platform;
       }
-      
+
       return dateMatch && platformMatch;
     });
   };
@@ -150,31 +150,31 @@ export const HistoryView = ({
   // Helper function to render platform badges
   const renderPlatformBadges = (post) => {
     // Handle both new (multiple platforms) and legacy (single platform) formats
-    const platforms = post.platforms && Array.isArray(post.platforms) 
-      ? post.platforms 
-      : post.platform 
-      ? [post.platform] 
-      : [];
+    const platforms = post.platforms && Array.isArray(post.platforms)
+      ? post.platforms
+      : post.platform
+        ? [post.platform]
+        : [];
 
     return (
       <div className="flex flex-wrap gap-1">
         {platforms.map((platform, index) => (
-          <div 
+          <div
             key={index}
             className="flex items-center space-x-1 px-2 py-1 rounded text-white text-xs"
-            style={{ 
-              backgroundColor: platform === "other" 
-                ? post.color 
+            style={{
+              backgroundColor: platform === "other"
+                ? post.color
                 : getPlatformColor(platform)
             }}
           >
             {getPlatformIcon(platform)}
             <span>
-              {platform === "other" 
+              {platform === "other"
                 ? post.customPlatform || "Custom"
-                : platform === "x" 
-                ? "X" 
-                : platform.charAt(0).toUpperCase() + platform.slice(1)
+                : platform === "x"
+                // ? "X" 
+                // : platform.charAt(0).toUpperCase() + platform.slice(1)
               }
             </span>
           </div>
@@ -229,18 +229,18 @@ export const HistoryView = ({
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button
-                      onClick={() => handleDeletePost(posts.findIndex(p => p === post))}
+                      onClick={() => handleDeletePost(post._id)}
                       className="text-red-400 hover:text-red-300"
                     >
                       <Trash className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="mb-3">
                   {renderPlatformBadges(post)}
                 </div>
-                
+
                 <p className="text-sm text-gray-300 mb-2">
                   {new Date(post.date).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -263,19 +263,19 @@ export const PostDetailsModal = ({ showPostDetails, setShowPostDetails }) => {
 
   // Helper function to render platform info in modal
   const renderPlatformInfo = (post) => {
-    const platforms = post.platforms && Array.isArray(post.platforms) 
-      ? post.platforms 
-      : post.platform 
-      ? [post.platform] 
-      : [];
+    const platforms = post.platforms && Array.isArray(post.platforms)
+      ? post.platforms
+      : post.platform
+        ? [post.platform]
+        : [];
 
     return platforms.map((platform, index) => (
       <span key={index}>
-        {platform === "other" 
+        {platform === "other"
           ? post.customPlatform || "Custom Platform"
-          : platform === "x" 
-          ? "X (Twitter)" 
-          : platform.charAt(0).toUpperCase() + platform.slice(1)
+          : platform === "x"
+            ? "X (Twitter)"
+            : platform.charAt(0).toUpperCase() + platform.slice(1)
         }
         {index < platforms.length - 1 ? ", " : ""}
       </span>
