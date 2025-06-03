@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   PlusIcon,
-  UserCircleIcon,
   Cog6ToothIcon,
   ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/solid';
@@ -22,9 +21,6 @@ const ChatBot = () => {
   // Sidebar menu and edit state
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [editingChatId, setEditingChatId] = useState(null);
-
-  // Profile dropdown open state
-  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
 
   const activeChat = conversations.find((c) => c.id === activeChatId);
 
@@ -99,25 +95,21 @@ const ChatBot = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [conversations]);
+  }, [conversations, activeChatId]);
 
-  // Close menu on outside click for sidebar menu and profile menu
+  // Close sidebar menus on outside click
   useEffect(() => {
     const closeMenus = () => {
       setMenuOpenId(null);
-      setProfileMenuOpen(false);
     };
     window.addEventListener('click', closeMenus);
     return () => window.removeEventListener('click', closeMenus);
   }, []);
 
   return (
-    <div className="flex h-screen bg-slate-900 text-slate-300 font-sans">
+    <div className="flex h-screen bg-slate-900 text-slate-300 font-sans overflow-hidden">
       {/* Sidebar */}
       <aside className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
-        <div className="p-2 font-semibold text-lg border-b border-slate-700 flex items-center justify-center">
-          <img src="/Images/Planifya-v2.png" alt="logo" className="h-8" />
-        </div>
         <button
           onClick={handleNewChat}
           className="flex items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-indigo-700 transition"
@@ -136,11 +128,7 @@ const ChatBot = () => {
               }`}
               onClick={() => setActiveChatId(conv.id)}
             >
-              {/* Chat title or input */}
-              <div
-                onClick={(e) => e.stopPropagation()}
-                className="flex-1"
-              >
+              <div onClick={(e) => e.stopPropagation()} className="flex-1">
                 {editingChatId === conv.id ? (
                   <input
                     autoFocus
@@ -206,57 +194,8 @@ const ChatBot = () => {
       <main className="flex-1 flex flex-col">
         {/* Header */}
         <header className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-800">
-          <h1 className="text-xl font-medium">{activeChat?.name}</h1>
-
-          {/* Profile, Settings, Logout */}
-          <div
-            className="relative"
-            onClick={(e) => {
-              e.stopPropagation();
-              setProfileMenuOpen(!profileMenuOpen);
-            }}
-          >
-            <div className="flex items-center cursor-pointer select-none space-x-2">
-              <UserCircleIcon className="w-8 h-8 text-indigo-400" />
-              <span className="text-sm font-medium text-indigo-300">
-                You
-              </span>
-            </div>
-
-            {profileMenuOpen && (
-              <div className="absolute right-0 mt-2 w-36 bg-slate-800 border border-slate-600 rounded shadow z-20 text-sm">
-                <button
-                  onClick={() => {
-                    alert('Profile clicked (mock)');
-                    setProfileMenuOpen(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-slate-700 text-slate-200"
-                >
-                  Profile
-                </button>
-                <button
-                  onClick={() => {
-                    alert('Settings clicked (mock)');
-                    setProfileMenuOpen(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-slate-700 text-slate-200 flex items-center gap-1"
-                >
-                  <Cog6ToothIcon className="w-4 h-4" />
-                  Settings
-                </button>
-                <button
-                  onClick={() => {
-                    alert('Logout clicked (mock)');
-                    setProfileMenuOpen(false);
-                  }}
-                  className="block w-full text-left px-4 py-2 hover:bg-slate-700 text-red-400 flex items-center gap-1"
-                >
-                  <ArrowRightOnRectangleIcon className="w-4 h-4" />
-                  Logout
-                </button>
-              </div>
-            )}
-          </div>
+          <h1 className="text-xl font-medium truncate">{activeChat?.name}</h1>
+          {/* Profile icon and dropdown removed */}
         </header>
 
         {/* Chat Messages */}
