@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -11,6 +13,7 @@ const SignupForm = () => {
     agreed: false,
   });
 
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -25,12 +28,12 @@ const SignupForm = () => {
     e.preventDefault();
 
     if (!formData.agreed) {
-      alert('Veuillez accepter les termes et conditions.');
+      toast.warning('Veuillez accepter les termes et conditions.');
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      alert('Les mots de passe ne correspondent pas.');
+      toast.error('Les mots de passe ne correspondent pas.');
       return;
     }
 
@@ -48,18 +51,19 @@ const SignupForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert('Inscription réussie.');
-        navigate('/login');
+        toast.success('Inscription réussie. Redirection...');
+        setTimeout(() => navigate('/login'), 2000);
       } else {
-        alert(data.message || 'Erreur lors de l’inscription.');
+        toast.error(data.message || 'Erreur lors de l’inscription.');
       }
     } catch (err) {
-      alert('Erreur de réseau.');
+      toast.error('Erreur de réseau.');
     }
   };
 
   return (
     <section className="bg-sky-200 min-h-screen flex items-center justify-center px-4">
+      <ToastContainer />
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
         <div className="flex justify-center mb-4">
           <img src="/Images/Planifya-v2.png" alt="Logo" className="h-12" />
@@ -72,10 +76,46 @@ const SignupForm = () => {
             className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white" />
           <input type="email" name="email" placeholder="Adresse e-mail" required value={formData.email} onChange={handleChange}
             className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white" />
-          <input type="password" name="password" placeholder="Mot de passe" required value={formData.password} onChange={handleChange}
-            className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white" />
-          <input type="password" name="confirmPassword" placeholder="Confirmez le mot de passe" required value={formData.confirmPassword} onChange={handleChange}
-            className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white" />
+
+          {/* Password Field with Show/Hide */}
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="password"
+              placeholder="Mot de passe"
+              required
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-3 text-sm text-gray-600 dark:text-gray-300"
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
+          </div>
+
+          <div className="relative">
+            <input
+              type={showPassword ? 'text' : 'password'}
+              name="confirmPassword"
+              placeholder="Confirmez le mot de passe"
+              required
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-3 text-sm text-gray-600 dark:text-gray-300"
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
+          </div>
+
           <div className="flex items-start">
             <input type="checkbox" name="agreed" checked={formData.agreed} onChange={handleChange}
               className="mt-1 w-4 h-4" />
