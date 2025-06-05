@@ -8,6 +8,26 @@ import LandingPage from './Pages/LandingPage';
 
 // Dashboard page 
 import Dashboard from './Pages/Dashboard/Dashboard';
+import AdminLogin from './components/Signup/AdminLogin';
+
+// user dashboard
+import UserDashboard from './Pages/Dashboarduser/dashboarduser';
+import ChatBot from './Pages/Dashboarduser/Chatbot';
+import {
+  initialPosts,
+  sidebarItems,
+  platformColors,
+  getPlatformIcon
+
+} from './Pages/Dashboarduser/Constants';
+import { CalendarView, HistoryView, PostDetailsModal } from './Pages/Dashboarduser/CalenderandHistory';
+import { PostForm, HistoryFilterModal } from './Pages/Dashboarduser/form';
+
+
+//form after signup
+import ExForm from './Pages/exploringform';
+
+
 
 function App() {
   return (
@@ -17,6 +37,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/signup" element={<SignupForm />} />
+        <Route path="/AdminLogin" element={<AdminLogin />} />
 
         {/* Dashboardroutes */}
         <Route path="/dashboard" element={<Dashboard />} />
@@ -24,6 +45,18 @@ function App() {
         <Route path="/dashboard/history" element={<History />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/settings" element={<Settings />} /> */}
+        <Route path="/userDashboard" element={<UserDashboard />} />
+        <Route path="/chatbot" element={<ChatBot />} />
+        <Route path="/calendar" element={<CalendarView />} />
+        <Route path="/history" element={<HistoryView />} />
+        <Route path="/post-details" element={<PostDetailsModal />} />
+        <Route path="/post-form" element={<PostForm />} />
+        <Route path="/history-filter" element={<HistoryFilterModal />} />
+        <Route path="/ex" element={<ExForm />} />
+        {sidebarItems.map((item, index) => (
+          <Route key={index} path={item.path} element={<item.component />} />
+        ))}
+        
       </Routes>
     </Router>
   );
