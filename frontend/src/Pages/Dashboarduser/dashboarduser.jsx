@@ -1,0 +1,264 @@
+import React, { useState } from "react";
+import { Menu } from "lucide-react";
+import ChatBot from "./Chatbot";
+import { 
+  initialPosts, 
+  platformColors, 
+  sidebarItems 
+} from "../Dashboarduser/Constants";
+import { CalendarView, HistoryView, PostDetailsModal } from './CalenderandHistory';
+import { PostForm, HistoryFilterModal } from './form';
+import UserProfile from "./userprofil";
+
+export default function UserDashboard() {
+  const today = new Date();
+  const [posts, setPosts] = useState(initialPosts);
+  const [currentPage, setCurrentPage] = useState("calendar");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
+  const [form, setForm] = useState({ 
+    date: "", 
+    title: "", 
+    content: "", 
+    platform: "instagram", 
+    customPlatform: "",
+    color: "#E4405F",  
+  });
+  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(today.getFullYear());
+  const [selectedPostIndex, setSelectedPostIndex] = useState(null);
+  const [showPostDetails, setShowPostDetails] = useState(null);
+  const [filters, setFilters] = useState({
+    startDate: "",
+    platform: "all"
+  });
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
+  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+
+  const handleSidebarItemClick = (itemId) => {
+    if (itemId === "logout") {
+      setIsLogoutConfirmOpen(true);
+      return;
+    }
+    setCurrentPage(itemId);
+  };
+
+  const handleLogoutConfirm = () => {
+    setIsLogoutConfirmOpen(false);
+    // Redirect to main page or login page after logout
+    window.location.href = "/";
+  };
+
+  const handleLogoutCancel = () => {
+    setIsLogoutConfirmOpen(false);
+  };
+
+  const handleSavePost = () => {
+    if (!form.title || !form.content || !form.date) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    const postData = {
+      ...form,
+      color: form.platform === "other" ? form.color : platformColors[form.platform]
+    };
+
+    const updatedPosts = [...posts];
+    if (selectedPostIndex !== null) {
+      updatedPosts[selectedPostIndex] = postData;
+    } else {
+      updatedPosts.push(postData);
+    }
+    setPosts(updatedPosts);
+    setForm({ 
+      date: "", 
+      title: "", 
+      content: "", 
+      platform: "instagram", 
+      customPlatform: "",
+      color: "#E4405F", 
+      mediaType: "image" 
+    });
+    setIsDialogOpen(false);
+    setSelectedPostIndex(null);
+  };
+
+  const handleEditPost = (index) => {
+    setForm(posts[index]);
+    setSelectedPostIndex(index);
+    setIsDialogOpen(true);
+  };
+
+  const handleDeletePost = (index) => {
+    const updatedPosts = posts.filter((_, i) => i !== index);
+    setPosts(updatedPosts);
+    setShowPostDetails(null);
+  };
+
+  const renderPlaceholderView = (pageName) => (
+    <div className="bg-gray-800 rounded-lg p-6 text-center">
+      <h2 className="text-2xl font-bold mb-4 capitalize">{pageName}</h2>
+      <p className="text-gray-400">This page is under construction. Coming soon!</p>
+    </div>
+  );
+
+  const renderCurrentPage = () => {
+    switch(currentPage) {
+      case "calendar":
+        return (
+          <CalendarView 
+            posts={posts}
+            currentMonth={currentMonth}
+            currentYear={currentYear}
+            setCurrentMonth={setCurrentMonth}
+            setCurrentYear={setCurrentYear}
+            setShowPostDetails={setShowPostDetails}
+            handleEditPost={handleEditPost}
+            handleDeletePost={handleDeletePost}
+          />
+        );
+      case "history":
+        return (
+          <HistoryView 
+            posts={posts}
+            filters={filters}
+            setIsHistoryFilterOpen={setIsHistoryFilterOpen}
+            handleEditPost={handleEditPost}
+            handleDeletePost={handleDeletePost}
+          />
+        );
+      case "alerts":
+        return renderPlaceholderView("alerts");
+      case "settings":
+        return renderPlaceholderView("settings");
+        case "profile":
+      return <UserProfile />;
+      case "chatbot":
+        return <ChatBot />;
+      default:
+        return (
+          <CalendarView 
+            posts={posts}
+            currentMonth={currentMonth}
+            currentYear={currentYear}
+            setCurrentMonth={setCurrentMonth}
+            setCurrentYear={setCurrentYear}
+            setShowPostDetails={setShowPostDetails}
+            handleEditPost={handleEditPost}
+            handleDeletePost={handleDeletePost}
+          />
+        );
+    }
+  };
+
+  return (
+    <div className="flex h-screen bg-gray-900 text-white">
+      {/* Dynamic Sidebar */}
+      <aside className={`${isSidebarExpanded ? 'w-48' : 'w-24'} bg-gray-800 flex flex-col py-4 transition-all duration-300 ease-in-out`}>
+        {/* Menu Toggle Button */}
+        <div className="flex justify-center mb-6">
+          <button
+            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+            className="text-white hover:text-blue-400 transition-colors"
+            aria-label="Toggle Menu"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Dynamic Menu Items */}
+        <div className="space-y-4 flex flex-col items-center">
+          {sidebarItems.map((item) => {
+            const IconComponent = item.icon;
+            const isActive = currentPage === item.id;
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleSidebarItemClick(item.id)}
+                className={`hover:text-${item.color}-400 flex ${isSidebarExpanded ? 'flex-row w-full px-4 justify-start' : 'flex-col'} items-center transition-colors ${
+                  isActive ? `text-${item.color}-400 bg-gray-700 ${isSidebarExpanded ? 'rounded-lg' : 'rounded'}` : 'text-white'
+                } ${isSidebarExpanded ? 'py-3' : 'py-2'}`}
+              >
+                <IconComponent className="w-5 h-5" />
+                <span className={`${isSidebarExpanded ? 'ml-3 text-sm' : 'text-xs mt-1'}`}>
+                  {item.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </aside>
+
+      <main className="flex-1 p-6 overflow-y-auto">
+        <header className="flex items-center justify-between mb-6">
+          <img src="/Images/Planifya-v2.png" alt="logo" className="h-10 w-auto" />
+          <div className="flex items-center space-x-4">
+            <input
+              type="text"
+              placeholder="Search posts..."
+              className="w-96 px-4 py-2 rounded-full bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <button
+              onClick={() => setIsDialogOpen(true)}
+              className="bg-blue-600 hover:bg-blue-700 transition-all duration-200 px-5 py-2.5 rounded-full shadow-md hover:shadow-lg text-sm font-medium"
+            >
+              + Create Post
+            </button>
+          </div>
+        </header>
+
+        {/* Dynamic Content Area */}
+        {renderCurrentPage()}
+
+        {/* Modals */}
+        <PostDetailsModal 
+          showPostDetails={showPostDetails}
+          setShowPostDetails={setShowPostDetails}
+        />
+
+        <PostForm 
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          form={form}
+          setForm={setForm}
+          selectedPostIndex={selectedPostIndex}
+          setSelectedPostIndex={setSelectedPostIndex}
+          handleSavePost={handleSavePost}
+        />
+
+        <HistoryFilterModal 
+          isHistoryFilterOpen={isHistoryFilterOpen}
+          setIsHistoryFilterOpen={setIsHistoryFilterOpen}
+          filters={filters}
+          setFilters={setFilters}
+        />
+      </main>
+
+      {/* Logout Confirmation Modal */}
+      {isLogoutConfirmOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">
+            <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
+            <p className="mb-6">Are you sure you want to log out?</p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={handleLogoutCancel}
+                className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleLogoutConfirm}
+                className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition-colors text-white"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
