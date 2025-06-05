@@ -23,10 +23,8 @@ const SignupForm = () => {
       [name]: type === 'checkbox' ? checked : value,
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.agreed) {
       toast.warning('Veuillez accepter les termes et conditions.');
       return;
@@ -38,7 +36,7 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/signup', {
+      const response = await fetch('http://localhost:5000/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

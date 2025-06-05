@@ -30,12 +30,12 @@ const LoginForm = () => {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         toast.success('Connexion réussie !');
-        setTimeout(() => navigate('/dashboard'), 2000);
+        setTimeout(() => navigate('/userDashboard'), 2000);
       } else {
         toast.error(data.message || 'Erreur de connexion');
       }
     } catch (err) {
-      toast.error('Erreur de réseau.');
+      alert('Erreur de réseau.');
     }
   };
 
@@ -43,7 +43,7 @@ const LoginForm = () => {
     <section className="bg-sky-200 min-h-screen flex items-center justify-center px-4">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <div className="w-full max-w-md bg-white dark:bg-gray-800 dark:border dark:border-gray-700 rounded-lg shadow-lg p-6 sm:p-8 relative">
-        
+
         {/* Logo inside the card */}
         <div className="flex justify-center mb-4">
           <Link to="/Home" className="flex items-center">
