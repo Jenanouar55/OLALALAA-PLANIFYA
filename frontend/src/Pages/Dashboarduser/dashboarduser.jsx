@@ -8,6 +8,7 @@ import {
 } from "../Dashboarduser/Constants";
 import { CalendarView, HistoryView, PostDetailsModal } from './CalenderandHistory';
 import { PostForm, HistoryFilterModal } from './form';
+import UserProfile from "./userprofil";
 
 export default function UserDashboard() {
   const today = new Date();
@@ -131,6 +132,8 @@ export default function UserDashboard() {
         return renderPlaceholderView("alerts");
       case "settings":
         return renderPlaceholderView("settings");
+        case "profile":
+      return <UserProfile />;
       case "chatbot":
         return <ChatBot />;
       default:

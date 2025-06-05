@@ -24,6 +24,10 @@ import { CalendarView, HistoryView, PostDetailsModal } from './Pages/Dashboardus
 import { PostForm, HistoryFilterModal } from './Pages/Dashboarduser/form';
 
 
+//form after signup
+import ExForm from './Pages/exploringform';
+
+
 
 function App() {
   return (
@@ -48,9 +52,11 @@ function App() {
         <Route path="/post-details" element={<PostDetailsModal />} />
         <Route path="/post-form" element={<PostForm />} />
         <Route path="/history-filter" element={<HistoryFilterModal />} />
+        <Route path="/ex" element={<ExForm />} />
         {sidebarItems.map((item, index) => (
           <Route key={index} path={item.path} element={<item.component />} />
         ))}
+        
       </Routes>
     </Router>
   );

@@ -14,7 +14,8 @@ import {
   Share2,
   Image,
   Video,
-  FileText
+  FileText,
+  User
 } from "lucide-react";
 import ChatBot from "./Chatbot";
 
@@ -50,8 +51,10 @@ export const sidebarItems = [
   { id: "history", icon: History, label: "History", color: "green" },
   { id: "alerts", icon: Bell, label: "Alerts", color: "blue" },
   { id: "settings", icon: Settings, label: "Settings", color: "blue" },
+  { id: "profile", icon: User, label: "Profile", color: "blue" },
   { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
+  
 ];
 
 // Utility function to get platform icons
