@@ -13,56 +13,55 @@ import {
 import { Link } from "react-router-dom";
 
 const Navbar = () => (
-  <header className="bg-white shadow-md p-4 flex justify-between items-center">
-    <h2 className="text-3xl font-extrabold">
-      <span className="text-yellow-400 font-bold">Rekrute</span>
-      <span className="ml-1 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-transparent bg-clip-text font-semibold">
-        Admin
-      </span>
-    </h2>
-    <button className="text-gray-600 hover:text-blue-600">
+  <header className="bg-[#1e1e2f] shadow-md p-4 flex justify-between items-center border-b border-gray-700">
+    <img src="/Images/Planifya-v2.png" alt="Logo" className="h-15" />
+    <button className="text-gray-300 hover:text-blue-400">
       <Bell className="w-6 h-6" />
     </button>
   </header>
 );
 
 const Sidebar = () => (
-  <aside className="bg-gradient-to-br from-blue-100 to-blue-50 md:w-64 p-6 h-screen flex flex-col justify-between shadow-md">
-    <nav className="space-y-4 text-gray-800 font-medium">
-      <Link to="/dashboard" className="flex items-center gap-3 hover:text-blue-600">
+  <aside className="bg-[#121826] md:w-64 p-6 h-screen flex flex-col justify-between shadow-md border-r border-gray-700">
+    <nav className="space-y-5 text-gray-300 font-medium">
+      <Link to="/dashboard" className="flex items-center gap-3 hover:text-blue-400">
         <LayoutDashboard className="w-5 h-5" />
         Dashboard
       </Link>
-      <Link to="/users" className="flex items-center gap-3 hover:text-blue-600">
+      <Link to="/users" className="flex items-center gap-3 hover:text-blue-400">
         <Users className="w-5 h-5" />
         Utilisateurs
       </Link>
-      <Link to="/settings" className="flex items-center gap-3 hover:text-blue-600">
+      <Link to="/settings" className="flex items-center gap-3 hover:text-blue-400">
         <Settings className="w-5 h-5" />
         Paramètres
       </Link>
-      <Link to="/contact" className="flex items-center gap-3 hover:text-blue-600">
+      <Link to="/contact" className="flex items-center gap-3 hover:text-blue-400">
         <Mail className="w-5 h-5" />
         Contact
+      </Link>
+      <Link to="/events" className="flex items-center gap-3 hover:text-blue-400">
+        <Mail className="w-5 h-5" />
+        events
       </Link>
     </nav>
   </aside>
 );
 
 const StatCard = ({ title, value, icon: Icon }) => (
-  <div className="bg-white shadow rounded-lg p-4 flex items-center gap-4">
-    <Icon className="w-8 h-8 text-blue-500" />
+  <div className="bg-[#2a2f45] shadow rounded-lg p-4 flex items-center gap-4">
+    <Icon className="w-8 h-8 text-blue-400" />
     <div>
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className="text-lg font-bold text-gray-800">{value}</p>
+      <p className="text-sm text-gray-400">{title}</p>
+      <p className="text-lg font-bold text-white">{value}</p>
     </div>
   </div>
 );
 
 const DashboardContent = () => (
-  <main className="flex justify-center items-start py-10 px-4">
+  <main className="flex justify-center items-start py-10 px-4 bg-[#1e1e2f] min-h-screen">
     <div className="w-full max-w-6xl flex flex-col gap-8">
-      <h2 className="text-2xl font-semibold text-gray-800">
+      <h2 className="text-2xl font-semibold text-white">
         Bienvenue Admin 👋
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -70,19 +69,12 @@ const DashboardContent = () => (
         <StatCard title="Candidatures" value="48" icon={FileText} />
         <StatCard title="Nouveaux messages" value="5" icon={Mail} />
       </div>
-      {/* <div className="bg-white rounded-xl shadow-sm p-5">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Activité récente</h3>
-        <ul className="space-y-3 text-sm text-gray-700">
-          <li>✅ Haroual yasser a postulé pour le poste "Data Analyst".</li>
-          <li>🕓 Nouvel utilisateur ajouté : Nouhaila.</li>
-          <li>📨 Nouveau message reçu via le formulaire de contact.</li>
-        </ul>
-      </div> */}
-      <div className="bg-white rounded-xl shadow-sm p-5 border">
-        <h3 className="text-lg font-bold text-gray-800 mb-4">Gestion des utilisateurs</h3>
-        <table className="w-full text-left text-sm">
+
+      <div className="bg-[#2a2f45] rounded-xl shadow-sm p-5 border border-gray-700">
+        <h3 className="text-lg font-bold text-white mb-4">Gestion des utilisateurs</h3>
+        <table className="w-full text-left text-sm text-gray-300">
           <thead>
-            <tr className="text-gray-600 border-b">
+            <tr className="border-b border-gray-600">
               <th className="py-2">Nom</th>
               <th>Email</th>
               <th>Rôle</th>
@@ -97,17 +89,17 @@ const DashboardContent = () => (
                 email: "Halim@gmail.com",
                 role: "Admin",
                 status: "Actif",
-                statusColor: "text-green-600",
+                statusColor: "text-green-400",
               },
               {
                 name: "HalimHalima",
                 email: "Halima@example.com",
                 role: "Utilisateur",
                 status: "En attente",
-                statusColor: "text-yellow-600",
+                statusColor: "text-yellow-400",
               },
             ].map((user, idx) => (
-              <tr key={idx} className="border-b hover:bg-gray-50">
+              <tr key={idx} className="border-b border-gray-700 hover:bg-[#2e3448]">
                 <td className="py-2">{user.name}</td>
                 <td>{user.email}</td>
                 <td>{user.role}</td>
@@ -118,13 +110,13 @@ const DashboardContent = () => (
                 </td>
                 <td className="flex gap-2 py-2">
                   <button
-                    className="p-1 rounded hover:bg-blue-100 text-blue-600"
+                    className="p-1 rounded hover:bg-blue-800 text-blue-400"
                     title="Modifier"
                   >
                     <Pencil className="w-4 h-4" />
                   </button>
                   <button
-                    className="p-1 rounded hover:bg-red-100 text-red-600"
+                    className="p-1 rounded hover:bg-red-800 text-red-400"
                     title="Supprimer"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -141,11 +133,11 @@ const DashboardContent = () => (
 
 export default function AdminPanel() {
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-blue-100 to-blue-50">
+    <div className="min-h-screen flex flex-col bg-[#1e1e2f]">
       <Navbar />
       <div className="flex flex-1">
         <Sidebar />
-        <div className="flex-grow ">
+        <div className="flex-grow">
           <DashboardContent />
         </div>
       </div>

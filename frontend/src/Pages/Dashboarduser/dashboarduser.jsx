@@ -10,6 +10,7 @@ import { CalendarView, HistoryView, PostDetailsModal } from './CalenderandHistor
 import { PostForm, HistoryFilterModal } from './form';
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom"
+import UserProfile from "./userprofil";
 export default function UserDashboard() {
   const today = new Date();
   const [posts, setPosts] = useState([]);
@@ -200,6 +201,8 @@ export default function UserDashboard() {
         return renderPlaceholderView("alerts");
       case "settings":
         return renderPlaceholderView("settings");
+      case "profile":
+        return <UserProfile />;
       case "chatbot":
         return <ChatBot />;
       default:

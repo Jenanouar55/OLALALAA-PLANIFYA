@@ -25,6 +25,11 @@ import { CalendarView, HistoryView, PostDetailsModal } from './Pages/Dashboardus
 import { PostForm, HistoryFilterModal } from './Pages/Dashboarduser/form';
 
 
+//form after signup
+import ExForm from './Pages/exploringform';
+import Events from './pages/Dashboard/Events';
+
+
 
 function App() {
   return (
@@ -43,18 +48,20 @@ function App() {
           <Dashboard />
         } /> */}
         <Route path="/dashboard" element={
-          <ProtectedRoutes>
-            <Dashboard />
-          </ProtectedRoutes>} />
+          // <ProtectedRoutes>
+          <Dashboard />
+          // </ProtectedRoutes>
+        } />
+        <Route path="/events" element={<Events />} />
 
         {/* <Route path="/dashboard/contact" element={<Contact />} />
         <Route path="/dashboard/history" element={<History />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/settings" element={<Settings />} /> */}
         <Route path="/userDashboard" element={
-          <ProtectedRoutes>
-            <UserDashboard />
-          </ProtectedRoutes>
+          // <ProtectedRoutes>
+          <UserDashboard />
+          // </ProtectedRoutes>
         } />
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/calendar" element={<CalendarView />} />
@@ -62,9 +69,11 @@ function App() {
         <Route path="/post-details" element={<PostDetailsModal />} />
         <Route path="/post-form" element={<PostForm />} />
         <Route path="/history-filter" element={<HistoryFilterModal />} />
+        <Route path="/ex" element={<ExForm />} />
         {sidebarItems.map((item, index) => (
           <Route key={index} path={item.path} element={<item.component />} />
         ))}
+
       </Routes>
     </Router>
   );

@@ -14,7 +14,7 @@ const SignupForm = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const Navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -50,7 +50,9 @@ const SignupForm = () => {
 
       if (response.ok) {
         toast.success('Inscription réussie. Redirection...');
-        setTimeout(() => navigate('/login'), 2000);
+        Navigate("/ex")
+        // setTimeout(() => Navigate('/login'), 2000);
+        localStorage.setItem("token", data.token)
       } else {
         toast.error(data.message || 'Erreur lors de l’inscription.');
       }
