@@ -62,7 +62,7 @@ export default function UserDashboard() {
     };
 
     fetchPosts();
-  }, []); // Empty array means run once on mount
+  }, []);
   const handleSidebarItemClick = (itemId) => {
     if (itemId === "logout") {
       setIsLogoutConfirmOpen(true);
