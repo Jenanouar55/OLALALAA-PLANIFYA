@@ -9,6 +9,7 @@ import {
   FileText,
   Pencil,
   Trash2,
+  PartyPopper,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -41,7 +42,7 @@ const Sidebar = () => (
         Contact
       </Link>
       <Link to="/events" className="flex items-center gap-3 hover:text-blue-400">
-        <Mail className="w-5 h-5" />
+        <PartyPopper className="w-5 h-5" />
         events
       </Link>
     </nav>

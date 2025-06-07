@@ -14,9 +14,6 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-
-
-
 const Sidebar = () => (
     <aside className="bg-[#121826] md:w-64 p-6 h-screen flex flex-col justify-between shadow-md border-r border-gray-700">
         <nav className="space-y-5 text-gray-300 font-medium">
@@ -44,7 +41,68 @@ const Sidebar = () => (
     </aside>
 );
 
+const EventForm = ({
+    form,
+    setForm,
+    selectedEventIndex,
+    handleSaveEvent,
+    handleCancel
+}) => {
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-gray-800 border border-gray-700 text-white p-6 rounded shadow-lg w-96 max-h-[90vh] overflow-y-auto">
+                <h2 className="text-lg font-semibold mb-4">
+                    {selectedEventIndex !== null ? "Edit Event" : "Create New Event"}
+                </h2>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block mb-1">Date *</label>
+                        <input
+                            type="date"
+                            value={form.date}
+                            onChange={(e) => setForm({ ...form, date: e.target.value })}
+                            className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-1">event name *</label>
+                        <input
+                            type="text"
+                            value={form.name}
+                            onChange={(e) => setForm({ ...form, name: e.target.value })}
+                            className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
+                            placeholder="Enter event name"
+                        />
+                    </div>
+                    <div>
+                        <label className="block mb-1">description *</label>
+                        <textarea
+                            value={form.description}
+                            onChange={(e) => setForm({ ...form, description: e.target.value })}
+                            className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white h-24"
+                            placeholder="Write your event description here..."
+                        />
+                    </div>
+                </div>
 
+                <div className="mt-6 flex justify-end space-x-2">
+                    <button
+                        onClick={handleSaveEvent}
+                        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
+                    >
+                        {selectedEventIndex !== null ? "Update Event" : "Create Event"}
+                    </button>
+                    <button
+                        onClick={handleCancel}
+                        className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
 
 function Events() {
     const resetForm = () => {
@@ -54,14 +112,16 @@ function Events() {
             description: ""
         });
     };
+
     const handleCancel = () => {
         setIsDialogOpen(false);
         setSelectedEventIndex(null);
         resetForm();
     };
+
     const today = new Date();
     const [events, setEvents] = useState([]);
-    const Navigate = useNavigate()
+    const Navigate = useNavigate();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [form, setForm] = useState({
         date: "",
@@ -70,18 +130,21 @@ function Events() {
     });
     const [selectedEventIndex, setSelectedEventIndex] = useState(null);
     const [showEventDetails, setShowEventDetails] = useState(null);
+
     const handleEditEvent = (index) => {
         setForm(events[index]);
         setSelectedEventIndex(index);
         setIsDialogOpen(true);
     };
+
     const handleSaveEvent = async () => {
         if (!form.name || !form.description || !form.date) {
             alert("Please fill in all required fields");
             return;
         }
-        const method = selectedEventIndex == null ? 'POST' : "PUT"
-        const link = selectedEventIndex == null ? 'http://localhost:5000/api/admin/events/' : "http://localhost:5000/api/admin/events/" + form._id
+        const method = selectedEventIndex == null ? 'POST' : "PUT";
+        const link = selectedEventIndex == null ? 'http://localhost:5000/api/admin/events/' : "http://localhost:5000/api/admin/events/" + form._id;
+
         try {
             const response = await fetch(link, {
                 method: method,
@@ -99,6 +162,7 @@ function Events() {
         } catch (err) {
             toast.error('Erreur de réseau.');
         }
+
         const eventData = {
             ...form,
             color: form.platform === "other" ? form.color : platformColors[form.platform]
@@ -118,6 +182,7 @@ function Events() {
         setIsDialogOpen(false);
         setSelectedEventIndex(null);
     };
+
     const handleDeleteEvent = async (index) => {
         try {
             const response = await fetch("http://localhost:5000/api/admin/events/" + index, {
@@ -139,63 +204,6 @@ function Events() {
         const updatedEvents = events.filter((_, i) => i !== index);
         setEvents(updatedEvents);
         setShowEventDetails(null);
-    };
-    const EventForm = () => {
-        return (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-gray-800 border border-gray-700 text-white p-6 rounded shadow-lg w-96 max-h-[90vh] overflow-y-auto">
-                    <h2 className="text-lg font-semibold mb-4">
-                        {selectedEventIndex !== null ? "Edit Event" : "Create New Event"}
-                    </h2>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block mb-1">Date *</label>
-                            <input
-                                type="date"
-                                value={form.date}
-                                onChange={(e) => setForm({ ...form, date: e.target.value })}
-                                className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
-                            />
-                        </div>
-                        <div>
-                            <label className="block mb-1">event name *</label>
-                            <input
-                                type="text"
-                                value={form.name}
-                                onChange={(e) => setForm({ ...form, name: e.target.value })}
-                                className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
-                                placeholder="Enter event name"
-                            />
-                        </div>
-                        <div>
-                            <label className="block mb-1" >description *</label>
-                            <textarea
-                                value={form.description}
-                                onChange={(e) => setForm({ ...form, description: e.target.value })}
-                                className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white h-24"
-                                placeholder="Write your event description here..."
-                            />
-                        </div>
-
-                    </div>
-
-                    <div className="mt-6 flex justify-end space-x-2">
-                        <button
-                            onClick={handleSaveEvent}
-                            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-                        >
-                            {selectedEventIndex !== null ? "Update Event" : "Create Event"}
-                        </button>
-                        <button
-                            onClick={handleCancel}
-                            className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
     };
 
     useEffect(() => {
@@ -222,10 +230,19 @@ function Events() {
         };
 
         fetchEvents();
-    }, [])
+    }, []);
+
     return (
         <>
-            {isDialogOpen && <EventForm />}
+            {isDialogOpen && (
+                <EventForm
+                    form={form}
+                    setForm={setForm}
+                    selectedEventIndex={selectedEventIndex}
+                    handleSaveEvent={handleSaveEvent}
+                    handleCancel={handleCancel}
+                />
+            )}
             <div className="min-h-screen flex flex-col bg-[#1e1e2f]">
                 <header className="bg-[#1e1e2f] shadow-md p-4 flex justify-between items-center border-b border-gray-700">
                     <img src="/Images/Planifya-v2.png" alt="Logo" className="h-15" />
@@ -273,8 +290,7 @@ function Events() {
                                                 <p className="text-sm text-gray-100">{event.description}</p>
                                             </div>
                                         </div>
-                                    )
-                                    )}
+                                    ))}
                                 </div>
                             </div>
                         </main>
@@ -282,8 +298,7 @@ function Events() {
                 </div>
             </div>
         </>
-
-    )
+    );
 }
 
-export default Events
+export default Events;
