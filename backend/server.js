@@ -5,6 +5,9 @@ const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const profileRoutes = require('./routes/profileRoutes');
+const aiRoutes = require('./routes/aiRoutes');
+
+
 
 
 
@@ -22,6 +25,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/ai', aiRoutes);
 
 
 const PORT = process.env.PORT || 5000;
