@@ -1,10 +1,14 @@
+require('dotenv').config();
 const Profile = require('../models/Profile');
 const { formatUserContextPrompt } = require('../utils/promptBuilder');
 const axios = require('axios');
-const cohere = require('cohere-ai');
+const { CohereClient } = require("cohere-ai");
 
-// Init Cohere
-cohere.init(process.env.COHERE_API_KEY);
+
+console.log("Key from env:", process.env.COHERE_API_KEY);
+const cohere = new CohereClient({
+  token: process.env.COHERE_API_KEY,
+});
 
 // 🧠 AI Handler - supports 'openai' or 'cohere'
 const callAI = async (prompt) => {
@@ -16,7 +20,7 @@ const callAI = async (prompt) => {
         model: 'command-r', // we can choose another model depending on our usage
         message: prompt,
       });
-      return response.body.text;
+      return response.text;
     } catch (err) {
       console.error('Cohere API error:', err.response?.data || err.message);
       throw new Error('Failed to get response from Cohere');
