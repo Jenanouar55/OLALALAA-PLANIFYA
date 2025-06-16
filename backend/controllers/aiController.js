@@ -1,9 +1,29 @@
 const Profile = require('../models/Profile');
 const { formatUserContextPrompt } = require('../utils/promptBuilder');
 const axios = require('axios');
+const cohere = require('cohere-ai');
 
-// Helper to send to OpenAI with error handling
-const callOpenAI = async (prompt) => {
+// Init Cohere
+cohere.init(process.env.COHERE_API_KEY);
+
+// 🧠 AI Handler - supports 'openai' or 'cohere'
+const callAI = async (prompt) => {
+  const provider = process.env.AI_PROVIDER || 'openai';
+
+  if (provider === 'cohere') {
+    try {
+      const response = await cohere.chat({
+        model: 'command-r', // we can choose another model depending on our usage
+        message: prompt,
+      });
+      return response.body.text;
+    } catch (err) {
+      console.error('Cohere API error:', err.response?.data || err.message);
+      throw new Error('Failed to get response from Cohere');
+    }
+  }
+
+  // Default to OpenAI
   try {
     const res = await axios.post(
       'https://api.openai.com/v1/chat/completions',
@@ -20,7 +40,7 @@ const callOpenAI = async (prompt) => {
     );
     return res.data.choices[0].message.content;
   } catch (err) {
-    console.error('Error calling OpenAI:', err.response?.data || err.message);
+    console.error('OpenAI API error:', err.response?.data || err.message);
     throw new Error('Failed to get response from OpenAI');
   }
 };
@@ -37,7 +57,7 @@ const generateCaption = async (req, res) => {
     if (!profile) return res.status(404).json({ error: 'User profile not found' });
 
     const prompt = formatUserContextPrompt(profile, `Generate 3 social media captions about: "${topic}". Use a ${tone} tone.`);
-    const result = await callOpenAI(prompt);
+    const result = await callAI(prompt);
     res.json({ result });
   } catch (err) {
     console.error('Caption generation error:', err.message);
@@ -53,7 +73,7 @@ const generateContentIdeas = async (req, res) => {
     if (!profile) return res.status(404).json({ error: 'User profile not found' });
 
     const prompt = formatUserContextPrompt(profile, `Suggest content ideas for ${timeFrame}. Return them as a list with short descriptions.`);
-    const result = await callOpenAI(prompt);
+    const result = await callAI(prompt);
     res.json({ result });
   } catch (err) {
     console.error('Content idea generation error:', err.message);
@@ -69,7 +89,7 @@ const generateScript = async (req, res) => {
     if (!profile) return res.status(404).json({ error: 'User profile not found' });
 
     const prompt = formatUserContextPrompt(profile, `Write a short, engaging video script about: "${topic}". Max 30 seconds.`);
-    const result = await callOpenAI(prompt);
+    const result = await callAI(prompt);
     res.json({ result });
   } catch (err) {
     console.error('Script generation error:', err.message);
@@ -85,7 +105,7 @@ const chatStrategy = async (req, res) => {
     if (!profile) return res.status(404).json({ error: 'User profile not found' });
 
     const prompt = formatUserContextPrompt(profile, `The user asked: "${message}". Answer as a helpful content strategist.`);
-    const result = await callOpenAI(prompt);
+    const result = await callAI(prompt);
     res.json({ result });
   } catch (err) {
     console.error('Strategy chat error:', err.message);
