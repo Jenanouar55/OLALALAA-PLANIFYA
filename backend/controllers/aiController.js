@@ -3,32 +3,41 @@ const Profile = require('../models/Profile');
 const { formatUserContextPrompt } = require('../utils/promptBuilder');
 const axios = require('axios');
 const { CohereClient } = require("cohere-ai");
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 
 console.log("Key from env:", process.env.COHERE_API_KEY);
-const cohere = new CohereClient({
-  token: process.env.COHERE_API_KEY,
-});
+const cohere = new CohereClient({ token: process.env.COHERE_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-// 🧠 AI Handler - supports 'openai' or 'cohere'
+console.log("Gemini Key:", process.env.GEMINI_API_KEY);
+
+// AI Handler
 const callAI = async (prompt) => {
-  const provider = process.env.AI_PROVIDER || 'openai';
-
-  if (provider === 'cohere') {
-    try {
-      const response = await cohere.chat({
-        model: 'command-r', // we can choose another model depending on our usage
-        message: prompt,
-      });
-      return response.text;
-    } catch (err) {
-      console.error('Cohere API error:', err.response?.data || err.message);
-      throw new Error('Failed to get response from Cohere');
-    }
+  try {
+    // Gemini first
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    if (text) return text;
+  } catch (err) {
+    console.warn('Gemini failed:', err.message);
   }
 
-  // Default to OpenAI
   try {
+    // Fallback: Cohere
+    const response = await cohere.chat({
+      model: 'command-r',
+      message: prompt,
+    });
+    if (response.text) return response.text;
+  } catch (err) {
+    console.warn('Cohere failed:', err.message);
+  }
+
+  try {
+    // Last fallback: OpenAI
     const res = await axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
@@ -44,8 +53,8 @@ const callAI = async (prompt) => {
     );
     return res.data.choices[0].message.content;
   } catch (err) {
-    console.error('OpenAI API error:', err.response?.data || err.message);
-    throw new Error('Failed to get response from OpenAI');
+    console.error('OpenAI failed:', err.message);
+    throw new Error('All AI providers failed.');
   }
 };
 
@@ -53,7 +62,7 @@ const getUserProfile = async (userId) => {
   return await Profile.findOne({ user: userId });
 };
 
-// 🎯 Caption Generator
+// Caption Generator
 const generateCaption = async (req, res) => {
   try {
     const { topic, tone } = req.body;
@@ -69,7 +78,7 @@ const generateCaption = async (req, res) => {
   }
 };
 
-// 🗓️ Content Calendar Ideas
+// Content Calendar Ideas
 const generateContentIdeas = async (req, res) => {
   try {
     const { timeFrame } = req.body;
@@ -85,7 +94,7 @@ const generateContentIdeas = async (req, res) => {
   }
 };
 
-// 🎥 Script Generator
+// Script Generator
 const generateScript = async (req, res) => {
   try {
     const { topic } = req.body;
@@ -101,7 +110,7 @@ const generateScript = async (req, res) => {
   }
 };
 
-// 📈 Strategy Chat
+// Strategy Chat
 const chatStrategy = async (req, res) => {
   try {
     const { message } = req.body;
