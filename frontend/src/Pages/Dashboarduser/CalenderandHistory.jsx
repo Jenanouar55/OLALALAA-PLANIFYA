@@ -120,57 +120,7 @@ export const HistoryView = ({
   };
 
   // Helper function to render platform badges
-  const renderPlatformBadges = (post) => {
-    // Handle both new (multiple platforms) and legacy (single platform) formats
-    const platforms = post.platforms && Array.isArray(post.platforms)
-      ? post.platforms
-      : post.platform
-        ? [post.platform]
-        : [];
-
-    return (
-      <div className="flex flex-wrap gap-1">
-        {platforms.map((platform, index) => (
-          <div
-            key={index}
-            className="flex items-center space-x-1 px-2 py-1 rounded text-white text-xs"
-            style={{
-              backgroundColor: platform === "other"
-                ? post.color
-                : getPlatformColor(platform)
-            }}
-          >
-            {getPlatformIcon(platform)}
-            <span>
-              {platform === "other"
-                ? post.customPlatform || "Custom"
-                : platform === "x"
-                // ? "X" 
-                // : platform.charAt(0).toUpperCase() + platform.slice(1)
-              }
-            </span>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  // Helper function to get platform color (you might need to import this from Constants)
-  const getPlatformColor = (platform) => {
-    const platformColors = {
-      instagram: "#E4405F",
-      facebook: "#1877F2",
-      twitter: "#1DA1F2",
-      x: "#000000",
-      linkedin: "#0A66C2",
-      youtube: "#FF0000",
-      tiktok: "#000000",
-      snapchat: "#FFFC00",
-      pinterest: "#BD081C",
-      other: "#6B7280"
-    };
-    return platformColors[platform] || "#6B7280";
-  };
+  
 
   const renderPlatformBadges = (post) => {
     const platforms = post.platforms && Array.isArray(post.platforms) ? post.platforms : post.platform ? [post.platform] : [];
