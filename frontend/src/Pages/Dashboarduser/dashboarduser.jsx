@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Menu } from "lucide-react";
 import ChatBot from "./Chatbot";
 import {
@@ -13,8 +13,7 @@ import { useNavigate } from "react-router-dom"
 import UserProfile from "./userprofil";
 export default function UserDashboard() {
   const today = new Date();
-  const [posts, setPosts] = useState([]);
-  const Navigate = useNavigate()
+  const [posts, setPosts] = useState(initialPosts);
   const [currentPage, setCurrentPage] = useState("calendar");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
@@ -22,7 +21,7 @@ export default function UserDashboard() {
     date: "",
     title: "",
     content: "",
-    platform: "",
+    platform: "instagram",
     customPlatform: "",
     color: "#E4405F",
   });
@@ -73,41 +72,18 @@ export default function UserDashboard() {
 
   const handleLogoutConfirm = () => {
     setIsLogoutConfirmOpen(false);
-    localStorage.removeItem("token")
-    // Navigate("/login")
-    window.location.reload()
-    // Navigate("/")
+    // Redirect to main page or login page after logout
+    window.location.href = "/";
   };
 
   const handleLogoutCancel = () => {
     setIsLogoutConfirmOpen(false);
   };
 
-  const handleSavePost = async () => {
+  const handleSavePost = () => {
     if (!form.title || !form.content || !form.date) {
       alert("Please fill in all required fields");
       return;
-    }
-
-    const method = selectedPostIndex == null ? 'POST' : "PUT"
-    const link = selectedPostIndex == null ? 'http://localhost:5000/api/posts' : "http://localhost:5000/api/posts/" + form._id
-    try {
-      const response = await fetch(link, {
-        method: method,
-        headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") },
-        body: JSON.stringify(form)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('form created successfully');
-        setTimeout(() => navigate('/userDashboard'), 2000);
-      } else {
-        toast.error(data.message || 'Erreur lors de creation.');
-      }
-    } catch (err) {
-      toast.error('Erreur de réseau.');
     }
 
     const postData = {
@@ -141,25 +117,7 @@ export default function UserDashboard() {
     setIsDialogOpen(true);
   };
 
-  const handleDeletePost = async (index) => {
-    console.log(index);
-    try {
-      const response = await fetch("http://localhost:5000/api/posts/" + index, {
-        method: "DELETE",
-        headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") }
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('form deleted successfully');
-        setTimeout(() => navigate('/userDashboard'), 2000);
-      } else {
-        toast.error(data.message || 'Erreur lors de delete.');
-      }
-    } catch (err) {
-      toast.error('Erreur de réseau.');
-    }
+  const handleDeletePost = (index) => {
     const updatedPosts = posts.filter((_, i) => i !== index);
     setPosts(updatedPosts);
     setShowPostDetails(null);
