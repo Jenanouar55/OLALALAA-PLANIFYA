@@ -28,7 +28,6 @@ const SignupForm = () => {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.agreed) {
       toast.warning('Veuillez accepter les termes et conditions.');
       toast.warning('Veuillez accepter les termes et conditions.');

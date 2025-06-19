@@ -21,13 +21,13 @@ import {
 
 // Initial posts data
 export const initialPosts = [
-  { 
-    date: "2025-06-05", 
-    title: "Welcome Post", 
-    content: "Welcome to our social media journey!", 
-    platform: "instagram",
+  {
+    date: "2025-06-05",
+    title: "Welcome Post",
+    content: "Welcome to our social media journey!",
+    platforms: "",
     customPlatform: "",
-    color: "#e11d48", 
+    color: "#e11d48",
     mediaType: "image"
   },
 ];
@@ -54,12 +54,12 @@ export const sidebarItems = [
   { id: "profile", icon: User, label: "Profile", color: "blue" },
   { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
-  
+
 ];
 
 // Utility function to get platform icons
 export const getPlatformIcon = (platform) => {
-  switch(platform) {
+  switch (platform) {
     case "tiktok": return <Camera className="w-4 h-4" />;
     case "instagram": return <Instagram className="w-4 h-4" />;
     case "facebook": return <Facebook className="w-4 h-4" />;
@@ -75,7 +75,7 @@ export const getPlatformIcon = (platform) => {
 
 // Utility function to get media type icons
 export const getMediaIcon = (mediaType) => {
-  switch(mediaType) {
+  switch (mediaType) {
     case "image": return <Image className="w-3 h-3" />;
     case "video": return <Video className="w-3 h-3" />;
     case "text": return <FileText className="w-3 h-3" />;
