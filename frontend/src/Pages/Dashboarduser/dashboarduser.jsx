@@ -1,30 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Menu } from "lucide-react";
 import ChatBot from "./Chatbot";
-import {
-  initialPosts,
-  platformColors,
-  sidebarItems
+import { 
+  initialPosts, 
+  platformColors, 
+  sidebarItems 
 } from "../Dashboarduser/Constants";
 import { CalendarView, HistoryView, PostDetailsModal } from './CalenderandHistory';
 import { PostForm, HistoryFilterModal } from './form';
 import UserProfile from "./userprofil";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom"
+
 export default function UserDashboard() {
   const today = new Date();
-  const [posts, setPosts] = useState([]);
-  const Navigate = useNavigate()
+  const [posts, setPosts] = useState(initialPosts);
   const [currentPage, setCurrentPage] = useState("calendar");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
-  const [form, setForm] = useState({
-    date: "",
-    title: "",
-    content: "",
-    platform: "",
+  const [form, setForm] = useState({ 
+    date: "", 
+    title: "", 
+    content: "", 
+    platform: "instagram", 
     customPlatform: "",
-    color: "#E4405F",
+    color: "#E4405F",  
   });
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
@@ -37,32 +35,6 @@ export default function UserDashboard() {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/posts", {
-          method: "GET",
-          headers: {
-            'Content-Type': 'application/json',
-            "authorization": 'Bearer ' + localStorage.getItem("token")
-          }
-          // Removed the body since this is a GET request
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          setPosts(data);
-        } else {
-          toast.error(data.message || 'Erreur de fetch.');
-        }
-      } catch (err) {
-        toast.error('Erreur de réseau.');
-      }
-    };
-
-    fetchPosts();
-  }, []); // Empty array means run once on mount
   const handleSidebarItemClick = (itemId) => {
     if (itemId === "logout") {
       setIsLogoutConfirmOpen(true);
@@ -73,41 +45,18 @@ export default function UserDashboard() {
 
   const handleLogoutConfirm = () => {
     setIsLogoutConfirmOpen(false);
-    localStorage.removeItem("token")
-    // Navigate("/login")
-    window.location.reload()
-    // Navigate("/")
+    // Redirect to main page or login page after logout
+    window.location.href = "/";
   };
 
   const handleLogoutCancel = () => {
     setIsLogoutConfirmOpen(false);
   };
 
-  const handleSavePost = async () => {
+  const handleSavePost = () => {
     if (!form.title || !form.content || !form.date) {
       alert("Please fill in all required fields");
       return;
-    }
-
-    const method = selectedPostIndex == null ? 'POST' : "PUT"
-    const link = selectedPostIndex == null ? 'http://localhost:5000/api/posts' : "http://localhost:5000/api/posts/" + form._id
-    try {
-      const response = await fetch(link, {
-        method: method,
-        headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") },
-        body: JSON.stringify(form)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('form created successfully');
-        setTimeout(() => navigate('/userDashboard'), 2000);
-      } else {
-        toast.error(data.message || 'Erreur lors de creation.');
-      }
-    } catch (err) {
-      toast.error('Erreur de réseau.');
     }
 
     const postData = {
@@ -122,14 +71,14 @@ export default function UserDashboard() {
       updatedPosts.push(postData);
     }
     setPosts(updatedPosts);
-    setForm({
-      date: "",
-      title: "",
-      content: "",
-      platform: "instagram",
+    setForm({ 
+      date: "", 
+      title: "", 
+      content: "", 
+      platform: "instagram", 
       customPlatform: "",
-      color: "#E4405F",
-      mediaType: "image"
+      color: "#E4405F", 
+      mediaType: "image" 
     });
     setIsDialogOpen(false);
     setSelectedPostIndex(null);
@@ -141,25 +90,7 @@ export default function UserDashboard() {
     setIsDialogOpen(true);
   };
 
-  const handleDeletePost = async (index) => {
-    console.log(index);
-    try {
-      const response = await fetch("http://localhost:5000/api/posts/" + index, {
-        method: "DELETE",
-        headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") }
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        toast.success('form deleted successfully');
-        setTimeout(() => navigate('/userDashboard'), 2000);
-      } else {
-        toast.error(data.message || 'Erreur lors de delete.');
-      }
-    } catch (err) {
-      toast.error('Erreur de réseau.');
-    }
+  const handleDeletePost = (index) => {
     const updatedPosts = posts.filter((_, i) => i !== index);
     setPosts(updatedPosts);
     setShowPostDetails(null);
@@ -173,10 +104,10 @@ export default function UserDashboard() {
   );
 
   const renderCurrentPage = () => {
-    switch (currentPage) {
+    switch(currentPage) {
       case "calendar":
         return (
-          <CalendarView
+          <CalendarView 
             posts={posts}
             currentMonth={currentMonth}
             currentYear={currentYear}
@@ -189,7 +120,7 @@ export default function UserDashboard() {
         );
       case "history":
         return (
-          <HistoryView
+          <HistoryView 
             posts={posts}
             filters={filters}
             setIsHistoryFilterOpen={setIsHistoryFilterOpen}
@@ -207,7 +138,7 @@ export default function UserDashboard() {
         return <ChatBot />;
       default:
         return (
-          <CalendarView
+          <CalendarView 
             posts={posts}
             currentMonth={currentMonth}
             currentYear={currentYear}
@@ -241,13 +172,14 @@ export default function UserDashboard() {
           {sidebarItems.map((item) => {
             const IconComponent = item.icon;
             const isActive = currentPage === item.id;
-
+            
             return (
               <button
                 key={item.id}
                 onClick={() => handleSidebarItemClick(item.id)}
-                className={`hover:text-${item.color}-400 flex ${isSidebarExpanded ? 'flex-row w-full px-4 justify-start' : 'flex-col'} items-center transition-colors ${isActive ? `text-${item.color}-400 bg-gray-700 ${isSidebarExpanded ? 'rounded-lg' : 'rounded'}` : 'text-white'
-                  } ${isSidebarExpanded ? 'py-3' : 'py-2'}`}
+                className={`hover:text-${item.color}-400 flex ${isSidebarExpanded ? 'flex-row w-full px-4 justify-start' : 'flex-col'} items-center transition-colors ${
+                  isActive ? `text-${item.color}-400 bg-gray-700 ${isSidebarExpanded ? 'rounded-lg' : 'rounded'}` : 'text-white'
+                } ${isSidebarExpanded ? 'py-3' : 'py-2'}`}
               >
                 <IconComponent className="w-5 h-5" />
                 <span className={`${isSidebarExpanded ? 'ml-3 text-sm' : 'text-xs mt-1'}`}>
@@ -281,12 +213,12 @@ export default function UserDashboard() {
         {renderCurrentPage()}
 
         {/* Modals */}
-        <PostDetailsModal
+        <PostDetailsModal 
           showPostDetails={showPostDetails}
           setShowPostDetails={setShowPostDetails}
         />
 
-        <PostForm
+        <PostForm 
           isDialogOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           form={form}
@@ -296,7 +228,7 @@ export default function UserDashboard() {
           handleSavePost={handleSavePost}
         />
 
-        <HistoryFilterModal
+        <HistoryFilterModal 
           isHistoryFilterOpen={isHistoryFilterOpen}
           setIsHistoryFilterOpen={setIsHistoryFilterOpen}
           filters={filters}

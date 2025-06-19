@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -68,6 +72,8 @@ const LoginForm = () => {
               required
               value={formData.email}
               onChange={handleChange}
+              value={formData.email}
+              onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
                          block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 
@@ -75,12 +81,12 @@ const LoginForm = () => {
                          dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
-
           <div className="relative">
             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Mot de passe
             </label>
             <input
+              type={showPassword ? 'text' : 'password'}
               type={showPassword ? 'text' : 'password'}
               name="password"
               id="password"
@@ -88,12 +94,22 @@ const LoginForm = () => {
               required
               value={formData.password}
               onChange={handleChange}
+              value={formData.password}
+              onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
+                         block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 
                          block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 
                          dark:placeholder-gray-400 dark:text-white 
                          dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-[38px] text-lg text-gray-600 dark:text-gray-300"
+            >
+              {showPassword ? '🙈' : '👁️'}
+            </button>
             <button
               type="button"
               onClick={() => setShowPassword((prev) => !prev)}

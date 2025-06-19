@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Existing imports
+
+// Existing imports
 import LoginForm from './components/Signup/LoginPage';
 import SignupForm from './components/Signup/SignupForm';
 import LandingPage from './Pages/LandingPage';
@@ -34,6 +36,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/*routes */}
         {/*routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginForm />} />
