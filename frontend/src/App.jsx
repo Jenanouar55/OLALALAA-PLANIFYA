@@ -29,6 +29,7 @@ import { PostForm, HistoryFilterModal } from './Pages/Dashboarduser/form';
 
 //form after signup
 import ExForm from './Pages/exploringform';
+import Events from './pages/Dashboard/Events';
 
 
 
@@ -50,18 +51,20 @@ function App() {
           <Dashboard />
         } /> */}
         <Route path="/dashboard" element={
-          <ProtectedRoutes>
-            <Dashboard />
-          </ProtectedRoutes>} />
+          // <ProtectedRoutes>
+          <Dashboard />
+          // </ProtectedRoutes>
+        } />
+        <Route path="/events" element={<Events />} />
 
         {/* <Route path="/dashboard/contact" element={<Contact />} />
         <Route path="/dashboard/history" element={<History />} />
         <Route path="/dashboard/profile" element={<Profile />} />
         <Route path="/dashboard/settings" element={<Settings />} /> */}
         <Route path="/userDashboard" element={
-          <ProtectedRoutes>
-            <UserDashboard />
-          </ProtectedRoutes>
+          // <ProtectedRoutes>
+          <UserDashboard />
+          // </ProtectedRoutes>
         } />
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/calendar" element={<CalendarView />} />
@@ -73,7 +76,7 @@ function App() {
         {sidebarItems.map((item, index) => (
           <Route key={index} path={item.path} element={<item.component />} />
         ))}
-        
+
       </Routes>
     </Router>
   );

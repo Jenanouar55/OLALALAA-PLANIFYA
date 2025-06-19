@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pencil, Trash, Filter } from "lucide-react";
 import { getPlatformIcon, getMediaIcon } from "../Dashboarduser/Constants";
 
-export const CalendarView = ({ 
+export const CalendarView = ({
   posts,
   currentMonth,
   currentYear,
@@ -90,14 +90,22 @@ export const CalendarView = ({
   );
 };
 
-export const HistoryView = ({ posts, filters, setIsHistoryFilterOpen, handleEditPost, handleDeletePost }) => {
+export const HistoryView = ({
+  posts,
+  filters,
+  setIsHistoryFilterOpen,
+  handleEditPost,
+  handleDeletePost
+}) => {
   const getFilteredPosts = () => {
     return posts.filter(post => {
       const postDate = new Date(post.date);
       const startDate = filters.startDate ? new Date(filters.startDate) : null;
       const endDate = filters.endDate ? new Date(filters.endDate) : null;
+
       const dateMatch = (!startDate || postDate >= startDate) && (!endDate || postDate <= endDate);
 
+      // Updated platform filtering to handle multiple platforms
       let platformMatch = false;
       if (filters.platform === "all") {
         platformMatch = true;
@@ -111,6 +119,43 @@ export const HistoryView = ({ posts, filters, setIsHistoryFilterOpen, handleEdit
     });
   };
 
+  // Helper function to render platform badges
+  const renderPlatformBadges = (post) => {
+    // Handle both new (multiple platforms) and legacy (single platform) formats
+    const platforms = post.platforms && Array.isArray(post.platforms)
+      ? post.platforms
+      : post.platform
+        ? [post.platform]
+        : [];
+
+    return (
+      <div className="flex flex-wrap gap-1">
+        {platforms.map((platform, index) => (
+          <div
+            key={index}
+            className="flex items-center space-x-1 px-2 py-1 rounded text-white text-xs"
+            style={{
+              backgroundColor: platform === "other"
+                ? post.color
+                : getPlatformColor(platform)
+            }}
+          >
+            {getPlatformIcon(platform)}
+            <span>
+              {platform === "other"
+                ? post.customPlatform || "Custom"
+                : platform === "x"
+                // ? "X" 
+                // : platform.charAt(0).toUpperCase() + platform.slice(1)
+              }
+            </span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Helper function to get platform color (you might need to import this from Constants)
   const getPlatformColor = (platform) => {
     const platformColors = {
       instagram: "#E4405F",
@@ -163,15 +208,26 @@ export const HistoryView = ({ posts, filters, setIsHistoryFilterOpen, handleEdit
                     <button onClick={() => handleEditPost(posts.findIndex(p => p === post))} className="text-blue-400 hover:text-blue-300">
                       <Pencil className="w-4 h-4" />
                     </button>
-                    <button onClick={() => handleDeletePost(posts.findIndex(p => p === post))} className="text-red-400 hover:text-red-300">
+                    <button
+                      onClick={() => handleDeletePost(post._id)}
+                      className="text-red-400 hover:text-red-300"
+                    >
                       <Trash className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
-                <div className="mb-3">{renderPlatformBadges(post)}</div>
-                <p className="text-sm text-gray-300 mb-2">{new Date(post.date).toLocaleDateString('en-US', {
-                  year: 'numeric', month: 'long', day: 'numeric'
-                })}</p>
+
+                <div className="mb-3">
+                  {renderPlatformBadges(post)}
+                </div>
+
+                <p className="text-sm text-gray-300 mb-2">
+                  {new Date(post.date).toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  })}
+                </p>
                 <p className="text-sm text-gray-100">{post.content}</p>
               </div>
             </div>
@@ -186,10 +242,20 @@ export const PostDetailsModal = ({ showPostDetails, setShowPostDetails }) => {
   if (!showPostDetails) return null;
 
   const renderPlatformInfo = (post) => {
-    const platforms = post.platforms && Array.isArray(post.platforms) ? post.platforms : post.platform ? [post.platform] : [];
+    const platforms = post.platforms && Array.isArray(post.platforms)
+      ? post.platforms
+      : post.platform
+        ? [post.platform]
+        : [];
+
     return platforms.map((platform, index) => (
       <span key={index}>
-        {platform === "other" ? post.customPlatform || "Custom Platform" : platform === "x" ? "X (Twitter)" : platform.charAt(0).toUpperCase() + platform.slice(1)}
+        {platform === "other"
+          ? post.customPlatform || "Custom Platform"
+          : platform === "x"
+            ? "X (Twitter)"
+            : platform.charAt(0).toUpperCase() + platform.slice(1)
+        }
         {index < platforms.length - 1 ? ", " : ""}
       </span>
     ));

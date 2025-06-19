@@ -67,8 +67,7 @@ const LoginForm = () => {
               placeholder="nom@gmail.com"
               required
               value={formData.email}
-              onChange={handleChange}
-              value={formData.email}
+            
               onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
@@ -83,13 +82,10 @@ const LoginForm = () => {
             </label>
             <input
               type={showPassword ? 'text' : 'password'}
-              type={showPassword ? 'text' : 'password'}
               name="password"
               id="password"
               placeholder="••••••••"
               required
-              value={formData.password}
-              onChange={handleChange}
               value={formData.password}
               onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
@@ -106,13 +102,7 @@ const LoginForm = () => {
             >
               {showPassword ? '🙈' : '👁️'}
             </button>
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-[38px] text-lg text-gray-600 dark:text-gray-300"
-            >
-              {showPassword ? '🙈' : '👁️'}
-            </button>
+            
           </div>
 
           <button
