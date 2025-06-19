@@ -20,10 +20,6 @@ export const PostForm = ({
           ? prev.platforms.filter((p) => p !== platform)
           : [...(prev.platforms || []), platform],
       };
-<<<<<<< HEAD
-
-=======
->>>>>>> 5f791244dbeaa3940d29d5ba8677264147580d03
     });
   };
 
@@ -32,11 +28,8 @@ export const PostForm = ({
       date: "",
       title: "",
       content: "",
-<<<<<<< HEAD
       platform: [],
-=======
       platforms: [],
->>>>>>> 5f791244dbeaa3940d29d5ba8677264147580d03
       customPlatform: "",
       color: "#E4405F",
       mediaType: "image",
@@ -98,14 +91,9 @@ export const PostForm = ({
                     key={platform}
                     type="button"
                     onClick={() => handlePlatformToggle(platform)}
-<<<<<<< HEAD
-                    className={`px-3 py-2 rounded text-xs font-medium capitalize transition flex items-center justify-center space-x-1 ${isSelected ? "ring-2 ring-blue-400" : "hover:bg-gray-600"
-                      }`}
-=======
                     className={`px-3 py-2 rounded text-xs font-medium capitalize transition flex items-center justify-center space-x-1 ${
                       isSelected ? "ring-2 ring-blue-400" : "hover:bg-gray-600"
                     }`}
->>>>>>> 5f791244dbeaa3940d29d5ba8677264147580d03
                     style={{ backgroundColor: platformColors[platform] }}
                   >
                     {getPlatformIcon(platform)}
