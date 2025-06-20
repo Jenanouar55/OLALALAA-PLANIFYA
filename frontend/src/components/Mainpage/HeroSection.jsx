@@ -5,10 +5,9 @@ import { Link } from "react-router-dom";
 const HeroSection = () => {
   const canvasRef = useRef(null);
   const headingRef = useRef(null);
-  const [buttonWidth, setButtonWidth] = useState(0); // ✅ THIS LINE IS IMPORTANT
+  const [buttonWidth, setButtonWidth] = useState(0);
 
   useEffect(() => {
-    // Canvas setup (unchanged)
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     canvas.width = window.innerWidth;
@@ -30,7 +29,7 @@ const HeroSection = () => {
     }
 
     function animate() {
-      ctx.fillStyle = "#000";
+      ctx.fillStyle = "#0c1a2b"; //"#000000"
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       stars.forEach((star) => {
@@ -45,7 +44,7 @@ const HeroSection = () => {
 
         ctx.beginPath();
         ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
-        ctx.fillStyle = star.color.replace('0.8', star.opacity.toFixed(2));
+        ctx.fillStyle = star.color.replace("0.8", star.opacity.toFixed(2));
         ctx.shadowBlur = 10;
         ctx.shadowColor = star.color;
         ctx.fill();
@@ -75,14 +74,14 @@ const HeroSection = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-screen text-white overflow-hidden bg-black">
+    <div className="relative w-full h-screen text-white overflow-hidden bg-[#0c1a2b]">
       <canvas
         ref={canvasRef}
         className="absolute inset-0 z-0 w-full h-full"
       ></canvas>
 
       <main className="relative z-10 h-full flex flex-col justify-center items-center text-center px-4">
-       <motion.h1
+        <motion.h1
           ref={headingRef}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -94,14 +93,12 @@ const HeroSection = () => {
           <span className="text-[#7B61FF]">Brillez.</span>
         </motion.h1>
 
-
-
-         <motion.p
+        <motion.p
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.5, duration: 1 }}
           className="text-gray-300 text-base sm:text-lg max-w-xl mb-8 font-bold"
-          style={{ fontFamily: "'Changa', sans-serif" }} // or 'Tajawal'
+          style={{ fontFamily: "'Changa', sans-serif" }}
         >
           Le calendrier intelligent pour les créateurs et agences : idées,
           légendes et jours clés, tout en un seul endroit.
