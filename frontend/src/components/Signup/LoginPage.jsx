@@ -1,7 +1,4 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -72,8 +69,6 @@ const LoginForm = () => {
               required
               value={formData.email}
               onChange={handleChange}
-              value={formData.email}
-              onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
                          block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 
@@ -87,13 +82,10 @@ const LoginForm = () => {
             </label>
             <input
               type={showPassword ? 'text' : 'password'}
-              type={showPassword ? 'text' : 'password'}
               name="password"
               id="password"
               placeholder="••••••••"
               required
-              value={formData.password}
-              onChange={handleChange}
               value={formData.password}
               onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 

@@ -12,10 +12,6 @@ const cors = require('cors');
 dotenv.config();
 const apiKey = process.env.CALENDARIFIC_API_KEY;
 connectDB();
-dotenv.config();
-const apiKey = process.env.CALENDARIFIC_API_KEY;
-connectDB();
-
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -27,7 +23,5 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/profile', profileRoutes);
 
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
