@@ -12,6 +12,8 @@ const cors = require('cors');
 dotenv.config();
 const apiKey = process.env.CALENDARIFIC_API_KEY;
 connectDB();
+dotenv.config();
+
 
 const app = express();
 app.use(cors());
@@ -28,3 +30,4 @@ app.use('/api/stripe', stripeRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+

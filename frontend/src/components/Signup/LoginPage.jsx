@@ -67,6 +67,7 @@ const LoginForm = () => {
               placeholder="nom@gmail.com"
               required
               value={formData.email}
+            
               onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
@@ -75,7 +76,6 @@ const LoginForm = () => {
                          dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
-
           <div className="relative">
             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Mot de passe
@@ -91,6 +91,7 @@ const LoginForm = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
                          block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 
+                         block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 
                          dark:placeholder-gray-400 dark:text-white 
                          dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
@@ -101,6 +102,7 @@ const LoginForm = () => {
             >
               {showPassword ? '🙈' : '👁️'}
             </button>
+            
           </div>
 
           <button

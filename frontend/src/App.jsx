@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Existing imports
+
+// Existing imports
 import LoginForm from './components/Signup/LoginPage';
 import SignupForm from './components/Signup/SignupForm';
 import LandingPage from './Pages/LandingPage';
@@ -27,7 +29,7 @@ import { PostForm, HistoryFilterModal } from './Pages/Dashboarduser/form';
 
 //form after signup
 import ExForm from './Pages/exploringform';
-import Events from './pages/Dashboard/Events';
+import Events from './Pages/Dashboard/Events';
 
 
 
@@ -35,6 +37,7 @@ function App() {
   return (
     <Router>
       <Routes>
+        {/*routes */}
         {/*routes */}
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginForm />} />

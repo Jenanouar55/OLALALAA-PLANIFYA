@@ -1,13 +1,13 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const postController = require('../controllers/postController');
-const authMiddleware = require('../middlewares/authMiddleware');
+const postController = require("../controllers/postController");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 router.use(authMiddleware); // all routes below are protected
 
-router.post('/', postController.createPost);
-router.get('/', postController.getMyPosts);
-router.put('/:id', postController.updatePost);
-router.delete('/:id', postController.deletePost);
+router.post("/", postController.createPost);
+router.get("/", postController.getMyPosts);
+router.put("/:id", postController.updatePost);
+router.delete("/:id", postController.deletePost);
 
 module.exports = router;
