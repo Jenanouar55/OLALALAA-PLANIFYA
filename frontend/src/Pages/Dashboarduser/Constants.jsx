@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
 import {
   CalendarDays,
   LogOut,
@@ -15,6 +19,7 @@ import {
   Image,
   Video,
   FileText,
+<<<<<<< HEAD
   User,
   Pencil,
   CalendarCheck,
@@ -24,6 +29,13 @@ import {
 // import ChatBot from "./Chatbot";
 
 
+=======
+  User
+} from "lucide-react";
+import ChatBot from "./Chatbot";
+
+// Initial posts data
+>>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
 export const initialPosts = [
   {
     date: "2025-06-05",
@@ -51,6 +63,7 @@ export const platformColors = {
 
 // Dynamic sidebar menu items
 export const sidebarItems = [
+<<<<<<< HEAD
 
   { id: "calendar", icon: CalendarDays, label: "Calendar", color: "blue" },
   { id: "profile", icon: User, label: "Profile", color: "blue" },
@@ -63,6 +76,16 @@ export const sidebarItems = [
   { id: "alerts", icon: Bell, label: "Alerts", color: "blue" },
   { id: "settings", icon: Settings, label: "Settings", color: "blue" },
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
+=======
+  { id: "calendar", icon: CalendarDays, label: "Calendar", color: "blue" },
+  { id: "history", icon: History, label: "History", color: "green" },
+  { id: "alerts", icon: Bell, label: "Alerts", color: "blue" },
+  { id: "settings", icon: Settings, label: "Settings", color: "blue" },
+  { id: "profile", icon: User, label: "Profile", color: "blue" },
+  { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
+  { id: "logout", icon: LogOut, label: "Logout", color: "red" }
+
+>>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
 ];
 
 

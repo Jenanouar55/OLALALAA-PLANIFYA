@@ -12,9 +12,12 @@ const cors = require('cors');
 dotenv.config();
 const apiKey = process.env.CALENDARIFIC_API_KEY;
 connectDB();
+<<<<<<< HEAD
 dotenv.config();
 
 
+=======
+>>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -28,4 +31,7 @@ app.use('/api/profile', profileRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+<<<<<<< HEAD
 
+=======
+>>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -67,7 +71,10 @@ const LoginForm = () => {
               placeholder="nom@gmail.com"
               required
               value={formData.email}
+<<<<<<< HEAD
             
+=======
+>>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
               onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 

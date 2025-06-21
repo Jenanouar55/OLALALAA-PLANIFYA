@@ -26,7 +26,7 @@ export default function UserDashboard() {
     date: "",
     title: "",
     content: "",
-    platform: "",
+    platform: "instagram",
     customPlatform: "",
     color: "#E4405F",
   });
