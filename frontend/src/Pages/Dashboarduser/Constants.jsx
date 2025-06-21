@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-
->>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
 import {
   CalendarDays,
   LogOut,
@@ -19,7 +15,6 @@ import {
   Image,
   Video,
   FileText,
-<<<<<<< HEAD
   User,
   Pencil,
   CalendarCheck,
@@ -28,14 +23,7 @@ import {
 } from "lucide-react";
 // import ChatBot from "./Chatbot";
 
-
-=======
-  User
-} from "lucide-react";
-import ChatBot from "./Chatbot";
-
 // Initial posts data
->>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
 export const initialPosts = [
   {
     date: "2025-06-05",
@@ -63,8 +51,6 @@ export const platformColors = {
 
 // Dynamic sidebar menu items
 export const sidebarItems = [
-<<<<<<< HEAD
-
   { id: "calendar", icon: CalendarDays, label: "Calendar", color: "blue" },
   { id: "profile", icon: User, label: "Profile", color: "blue" },
   { id: "CalendarIdeas", icon: CalendarCheck, label: "Calendar Ideas", color: "blue" },
@@ -76,41 +62,41 @@ export const sidebarItems = [
   { id: "alerts", icon: Bell, label: "Alerts", color: "blue" },
   { id: "settings", icon: Settings, label: "Settings", color: "blue" },
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
-=======
-  { id: "calendar", icon: CalendarDays, label: "Calendar", color: "blue" },
-  { id: "history", icon: History, label: "History", color: "green" },
-  { id: "alerts", icon: Bell, label: "Alerts", color: "blue" },
-  { id: "settings", icon: Settings, label: "Settings", color: "blue" },
-  { id: "profile", icon: User, label: "Profile", color: "blue" },
-  { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
-  { id: "logout", icon: LogOut, label: "Logout", color: "red" }
-
->>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
 ];
-
 
 // Utility function to get platform icons
 export const getPlatformIcon = (platform) => {
   switch (platform) {
-    case "tiktok": return <Camera className="w-4 h-4" />;
-    case "instagram": return <Instagram className="w-4 h-4" />;
-    case "facebook": return <Facebook className="w-4 h-4" />;
-    case "youtube": return <Youtube className="w-4 h-4" />;
-    case "linkedin": return <Linkedin className="w-4 h-4" />;
-    case "x": return <Twitter className="w-4 h-4" />;
-    case "snapchat": return <Camera className="w-4 h-4" />;
-    case "pinterest": return <Share2 className="w-4 h-4" />;
-    case "other": return <Share2 className="w-4 h-4" />;
-    default: return <Share2 className="w-4 h-4" />;
+    case "tiktok":
+    case "snapchat":
+      return <Camera className="w-4 h-4" />;
+    case "instagram":
+      return <Instagram className="w-4 h-4" />;
+    case "facebook":
+      return <Facebook className="w-4 h-4" />;
+    case "youtube":
+      return <Youtube className="w-4 h-4" />;
+    case "linkedin":
+      return <Linkedin className="w-4 h-4" />;
+    case "x":
+      return <Twitter className="w-4 h-4" />;
+    case "pinterest":
+    case "other":
+    default:
+      return <Share2 className="w-4 h-4" />;
   }
 };
 
 // Utility function to get media type icons
 export const getMediaIcon = (mediaType) => {
   switch (mediaType) {
-    case "image": return <Image className="w-3 h-3" />;
-    case "video": return <Video className="w-3 h-3" />;
-    case "text": return <FileText className="w-3 h-3" />;
-    default: return <Image className="w-3 h-3" />;
+    case "image":
+      return <Image className="w-3 h-3" />;
+    case "video":
+      return <Video className="w-3 h-3" />;
+    case "text":
+      return <FileText className="w-3 h-3" />;
+    default:
+      return <Image className="w-3 h-3" />;
   }
 };

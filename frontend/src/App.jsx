@@ -35,6 +35,7 @@ import Events from './Pages/Dashboard/Events';
 import SuccessPage from './Pages/SuccessPage';
 import CancelPage from './Pages/CancelPage';
 import PricingPage from './Pages/PricingPage';
+import BillingPage from './Pages/Dashboard/billing'; 
 
 
 function App() {
@@ -52,6 +53,7 @@ function App() {
         <Route path="/cancel" element={<SuccessPage />} />
         <Route path="/sucess" element={<CancelPage />} />
         <Route path="/Pricing" element={<PricingPage />} />
+        <Route path="/b" element={<BillingPage />} />
 
         <Route path="/dashboard" element={
           // <ProtectedRoutes>
