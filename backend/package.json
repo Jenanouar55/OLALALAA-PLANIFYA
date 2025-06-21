@@ -25,10 +25,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1",
-<<<<<<< HEAD
-    "openai": "^4.104.0"
-=======
-    "openai": "^4.96.2"
->>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
+    "openai": "^4.104.0",
+    "stripe": "^18.2.1"
   }
 }

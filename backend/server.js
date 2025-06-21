@@ -5,8 +5,8 @@ const authRoutes = require('./routes/authRoutes');
 const postRoutes = require('./routes/postRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const profileRoutes = require('./routes/profileRoutes');
-
-
+const aiRoutes = require('./routes/aiRoutes');
+const stripeRoutes = require('./routes/stripeRoutes');
 
 const cors = require('cors');
 dotenv.config();
@@ -27,6 +27,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/profile', profileRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/stripe', stripeRoutes);
 
 
 const PORT = process.env.PORT || 5000;
