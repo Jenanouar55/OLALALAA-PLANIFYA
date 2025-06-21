@@ -120,9 +120,6 @@ export const HistoryView = ({
   };
 
   // Helper function to render platform badges
-<<<<<<< HEAD
-  
-=======
   const renderPlatformBadges = (post) => {
     // Handle both new (multiple platforms) and legacy (single platform) formats
     const platforms = post.platforms && Array.isArray(post.platforms)
@@ -130,14 +127,16 @@ export const HistoryView = ({
       : post.platform
         ? [post.platform]
         : [];
->>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
+
+        
 
   const renderPlatformBadges = (post) => {
     const platforms = post.platforms && Array.isArray(post.platforms) ? post.platforms : post.platform ? [post.platform] : [];
     return (
       <div className="flex flex-wrap gap-1">
         {platforms.map((platform, index) => (
-<<<<<<< HEAD
+
+
           <div key={index} className="flex items-center space-x-1 px-2 py-1 rounded text-white text-xs" style={{ backgroundColor: platform === "other" ? post.color : getPlatformColor(platform) }}>
             {getPlatformIcon(platform)}
             <span>{platform === "other" ? post.customPlatform || "Custom" : platform === "x" ? "X" : platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
@@ -160,7 +159,8 @@ export const HistoryView = ({
                 // : platform.charAt(0).toUpperCase() + platform.slice(1)
               }
             </span>
->>>>>>> 15e06733f5b556203d8e5fdbeae3020cdbb6bd4a
+
+
           </div>
         ))}
       </div>
