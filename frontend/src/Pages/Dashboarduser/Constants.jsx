@@ -59,7 +59,7 @@ export const sidebarItems = [
   { id: "captiongenerator", icon: Type, label: "Caption", color: "blue" },
   { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
   { id: "history", icon: History, label: "History", color: "green" },
-  { id: "alerts", icon: Bell, label: "Alerts", color: "blue" },
+  { id: "alerts", icon: Bell, label: "NotificationsPage", color: "blue" },
   { id: "settings", icon: Settings, label: "Settings", color: "blue" },
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
 ];
