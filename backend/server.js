@@ -2,12 +2,13 @@ const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const cors = require('cors');
-const bodyParser = require('body-parser');
-const { stripeWebhookHandler } = require('./controllers/stripeWebhookController');
 
 dotenv.config();
 connectDB();
 const app = express();
+
+// cron job to reset tokens
+require('./cronJobs/tokenReset');
 
 // Stripe webhook (uses raw body) must come befroe express.json()
 const stripeWebhookRoutes = require('./routes/stripeWebhookRoutes');

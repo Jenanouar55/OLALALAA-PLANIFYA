@@ -21,6 +21,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.1",
+    "node-cron": "^4.1.1",
     "openai": "^4.104.0",
     "stripe": "^18.2.1"
   }
