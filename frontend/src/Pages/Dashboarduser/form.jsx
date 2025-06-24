@@ -20,7 +20,6 @@ export const PostForm = ({
           ? prev.platforms.filter((p) => p !== platform)
           : [...(prev.platforms || []), platform],
       };
-
     });
   };
 

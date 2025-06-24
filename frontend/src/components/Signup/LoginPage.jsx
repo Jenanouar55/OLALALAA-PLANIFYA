@@ -56,6 +56,7 @@ const LoginForm = () => {
         </h1>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Email */}
           <div>
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Adresse e-mail
@@ -67,7 +68,6 @@ const LoginForm = () => {
               placeholder="nom@gmail.com"
               required
               value={formData.email}
-            
               onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
@@ -76,6 +76,8 @@ const LoginForm = () => {
                          dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
           </div>
+
+          {/* Password */}
           <div className="relative">
             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Mot de passe
@@ -91,7 +93,6 @@ const LoginForm = () => {
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
                          block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 
-                         block w-full p-2.5 pr-10 dark:bg-gray-700 dark:border-gray-600 
                          dark:placeholder-gray-400 dark:text-white 
                          dark:focus:ring-blue-500 dark:focus:border-blue-500"
             />
@@ -102,9 +103,9 @@ const LoginForm = () => {
             >
               {showPassword ? '🙈' : '👁️'}
             </button>
-            
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             className="block w-40 mx-auto text-purple-700 hover:text-white border border-purple-700 
@@ -116,6 +117,7 @@ const LoginForm = () => {
             Se connecter
           </button>
 
+          {/* Sign up link */}
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
             Pas encore de compte ? <Link to="/signup" className="text-blue-600 dark:text-blue-400">Inscrivez-vous</Link>
           </p>

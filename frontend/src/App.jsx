@@ -31,6 +31,11 @@ import { PostForm, HistoryFilterModal } from './Pages/Dashboarduser/form';
 import ExForm from './Pages/exploringform';
 import Events from './Pages/Dashboard/Events';
 
+// payment pages
+import SuccessPage from './Pages/SuccessPage';
+import CancelPage from './Pages/CancelPage';
+import PricingPage from './Pages/PricingPage';
+import BillingPage from './Pages/Dashboard/billing'; 
 
 
 function App() {
@@ -44,23 +49,18 @@ function App() {
         <Route path="/signup" element={<SignupForm />} />
         <Route path="/AdminLogin" element={<AdminLogin />} />
 
-        {/* Dashboardroutes */}
+        {/* payments  */}
+        <Route path="/cancel" element={<SuccessPage />} />
+        <Route path="/sucess" element={<CancelPage />} />
+        <Route path="/Pricing" element={<PricingPage />} />
+        <Route path="/b" element={<BillingPage />} />
 
-        {/* <Route path="/dashboard" element={
-
-          <Dashboard />
-        } /> */}
         <Route path="/dashboard" element={
           // <ProtectedRoutes>
           <Dashboard />
           // </ProtectedRoutes>
         } />
         <Route path="/events" element={<Events />} />
-
-        {/* <Route path="/dashboard/contact" element={<Contact />} />
-        <Route path="/dashboard/history" element={<History />} />
-        <Route path="/dashboard/profile" element={<Profile />} />
-        <Route path="/dashboard/settings" element={<Settings />} /> */}
         <Route path="/userDashboard" element={
           // <ProtectedRoutes>
           <UserDashboard />

@@ -5,6 +5,7 @@ import ScriptGenerator from "./scriptgenerator"
 import CalendarIdeas from "./CalendarIdeas";
 import CaptionGenerator from "./captiongenearor";
 import StrategyTips from "./Stips";
+import NotificationsPage from "./alerts";
 import {
   initialPosts,
   platformColors,
@@ -26,7 +27,7 @@ export default function UserDashboard() {
     date: "",
     title: "",
     content: "",
-    platform: "",
+    platform: "instagram",
     customPlatform: "",
     color: "#E4405F",
   });
@@ -50,7 +51,6 @@ export default function UserDashboard() {
             'Content-Type': 'application/json',
             "authorization": 'Bearer ' + localStorage.getItem("token")
           }
-          // Removed the body since this is a GET request
         });
 
         const data = await response.json();
@@ -202,7 +202,7 @@ export default function UserDashboard() {
           />
         );
       case "alerts":
-        return renderPlaceholderView("alerts");
+        return <NotificationsPage />;
       case "settings":
         return renderPlaceholderView("settings");
       case "profile":
