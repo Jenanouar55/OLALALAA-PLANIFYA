@@ -33,6 +33,30 @@ const profileSchema = new mongoose.Schema({
   bestContentLinks: { type: [String] },
   additionalInfo: { type: String },
 
+  plan: {
+  type: String,
+  enum: ['free', 'starter', 'pro'],
+  default: 'free'
+  },
+  tokens: {
+    type: Number,
+    default: 15
+  },
+  stripeCustomerId: {
+    type: String
+  },
+  stripeSubscriptionId: {
+    type: String
+  },
+  planRenewalDate: {
+    type: Date
+  },
+  subscriptionStatus: {
+    type: String,
+    enum: ['pending', 'active', 'canceled', 'past_due', 'incomplete', 'unpaid'],
+    default: 'active'
+  }
+
 }, { timestamps: true });
 
 module.exports = mongoose.model('Profile', profileSchema);

@@ -31,6 +31,10 @@ const createCheckoutSession = async (req, res) => {
       ],
       success_url: `${process.env.CLIENT_URL}/success`, 
       cancel_url: `${process.env.CLIENT_URL}/cancel`,
+      metadata: {
+          userId: req.user.id,     // '684cb42b270119ffde101e5f', ----TESTING----
+          plan: planId
+  }
     });
 
     res.json({ url: session.url });
