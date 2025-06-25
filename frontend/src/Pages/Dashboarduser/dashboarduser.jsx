@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Menu } from "lucide-react";
 import ChatBot from "./Chatbot";
+import ScriptGenerator from "./scriptgenerator"
+import CalendarIdeas from "./CalendarIdeas";
+import CaptionGenerator from "./captiongenearor";
+import StrategyTips from "./Stips";
 import {
   initialPosts,
   platformColors,
@@ -205,6 +209,16 @@ export default function UserDashboard() {
         return <UserProfile />;
       case "chatbot":
         return <ChatBot />;
+       case "scriptgenerator":
+        return <ScriptGenerator />;
+        case "CalendarIdeas":
+        return <CalendarIdeas />;
+         case "captiongenerator":
+        return <CaptionGenerator />;
+         case "strategytips":
+        return <StrategyTips />;
+
+
       default:
         return (
           <CalendarView
@@ -221,43 +235,51 @@ export default function UserDashboard() {
     }
   };
 
-  return (
-    <div className="flex h-screen bg-gray-900 text-white">
-      {/* Dynamic Sidebar */}
-      <aside className={`${isSidebarExpanded ? 'w-48' : 'w-24'} bg-gray-800 flex flex-col py-4 transition-all duration-300 ease-in-out`}>
-        {/* Menu Toggle Button */}
-        <div className="flex justify-center mb-6">
-          <button
-            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-            className="text-white hover:text-blue-400 transition-colors"
-            aria-label="Toggle Menu"
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
+      return (
+        <div className="flex h-screen bg-gray-900 text-white">
+          {/* Sidebar */}
+             <aside
+              className={`${
+                isSidebarExpanded ? 'w-60' : 'w-20'
+              } bg-gray-800 h-screen flex flex-col items-center transition-all duration-300 ease-in-out`}
+            >
+              {/* Toggle Button + Menu Items Container */}
+              <nav className="w-full flex-1 flex flex-col items-center space-y-2 mt-4">
+                {/* Toggle Button */}
+                <button
+                  onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+                  className="text-white hover:text-blue-400 p-2 rounded transition-colors"
+                >
+                  <Menu className="w-6 h-6" />
+                </button>
 
-        {/* Dynamic Menu Items */}
-        <div className="space-y-4 flex flex-col items-center">
-          {sidebarItems.map((item) => {
-            const IconComponent = item.icon;
-            const isActive = currentPage === item.id;
+                {/* Menu Items */}
+                {sidebarItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = currentPage === item.id;
 
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleSidebarItemClick(item.id)}
-                className={`hover:text-${item.color}-400 flex ${isSidebarExpanded ? 'flex-row w-full px-4 justify-start' : 'flex-col'} items-center transition-colors ${isActive ? `text-${item.color}-400 bg-gray-700 ${isSidebarExpanded ? 'rounded-lg' : 'rounded'}` : 'text-white'
-                  } ${isSidebarExpanded ? 'py-3' : 'py-2'}`}
-              >
-                <IconComponent className="w-5 h-5" />
-                <span className={`${isSidebarExpanded ? 'ml-3 text-sm' : 'text-xs mt-1'}`}>
-                  {item.label}
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </aside>
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleSidebarItemClick(item.id)}
+                      className={`flex items-center ${
+                        isSidebarExpanded ? 'justify-start px-4' : 'justify-center'
+                      } w-full p-3 rounded-lg transition-colors duration-200 ${
+                        isActive ? 'bg-gray-700 text-blue-400' : 'text-white hover:bg-gray-700 hover:text-blue-300'
+                      }`}
+                    >
+                      <Icon className="w-5 h-5" />
+                      {isSidebarExpanded && (
+                        <span className="ml-3 text-sm font-medium">{item.label}</span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+            </aside>
+
+
+
 
       <main className="flex-1 p-6 overflow-y-auto">
         <header className="flex items-center justify-between mb-6">
@@ -277,10 +299,10 @@ export default function UserDashboard() {
           </div>
         </header>
 
-        {/* Dynamic Content Area */}
+        
         {renderCurrentPage()}
 
-        {/* Modals */}
+    
         <PostDetailsModal
           showPostDetails={showPostDetails}
           setShowPostDetails={setShowPostDetails}
@@ -303,8 +325,6 @@ export default function UserDashboard() {
           setFilters={setFilters}
         />
       </main>
-
-      {/* Logout Confirmation Modal */}
       {isLogoutConfirmOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
           <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">

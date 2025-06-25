@@ -29,7 +29,7 @@ import { PostForm, HistoryFilterModal } from './Pages/Dashboarduser/form';
 
 //form after signup
 import ExForm from './Pages/exploringform';
-import Events from './pages/Dashboard/Events';
+import Events from './Pages/Dashboard/Events';
 
 
 

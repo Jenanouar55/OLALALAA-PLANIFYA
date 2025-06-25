@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
@@ -68,6 +67,7 @@ const LoginForm = () => {
               placeholder="nom@gmail.com"
               required
               value={formData.email}
+
               onChange={handleChange}
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg 
                          focus:ring-blue-500 focus:border-blue-500 
@@ -102,13 +102,7 @@ const LoginForm = () => {
             >
               {showPassword ? '🙈' : '👁️'}
             </button>
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-[38px] text-lg text-gray-600 dark:text-gray-300"
-            >
-              {showPassword ? '🙈' : '👁️'}
-            </button>
+
           </div>
 
           <button
