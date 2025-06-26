@@ -13,6 +13,9 @@ require('./cronJobs/tokenReset');
 // cron job to send post reminders
 require('./cronJobs/postReminder');
 
+// cron job to send event reminders
+require('./cronJobs/eventReminders');
+
 // Stripe webhook (uses raw body) must come befroe express.json()
 const stripeWebhookRoutes = require('./routes/stripeWebhookRoutes');
 app.use('/api', stripeWebhookRoutes);
