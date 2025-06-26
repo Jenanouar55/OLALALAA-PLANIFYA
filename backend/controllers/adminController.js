@@ -71,3 +71,20 @@ exports.sendManualNotification = async (req, res) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
+//manually update tokens for a user
+exports.addTokens = async (req, res) => {
+  try {
+    const { tokens } = req.body;
+    const profile = await Profile.findOne({ user: req.params.id });
+    if (!profile) return res.status(404).json({ error: 'Profile not found' });
+
+    profile.tokens += Number(tokens);
+    await profile.save();
+
+    res.json({ message: `Added ${tokens} tokens to user.` });
+  } catch (err) {
+    console.error('Add tokens error:', err.message);
+    res.status(500).json({ error: 'Failed to add tokens' });
+  }
+};

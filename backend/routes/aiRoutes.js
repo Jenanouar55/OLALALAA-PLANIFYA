@@ -2,13 +2,14 @@ const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middlewares/authMiddleware');
 const aiController = require('../controllers/aiController');
+const requireTokens = require('../middlewares/tokenMiddleware');
 
-console.log("authMiddleware:", typeof authMiddleware);
-console.log(aiController);
+router.use(authMiddleware);
+
 // Protected routes for AI tools
-router.post('/caption', authMiddleware, aiController.generateCaption);
-router.post('/calendar-ideas', authMiddleware, aiController.generateContentIdeas); 
-router.post('/script', authMiddleware, aiController.generateScript);
-router.post('/strategy-chat', authMiddleware, aiController.chatStrategy);
+router.post('/caption', requireTokens, aiController.generateCaption);
+router.post('/calendar-ideas', requireTokens, aiController.generateContentIdeas); 
+router.post('/script', requireTokens, aiController.generateScript);
+router.post('/strategy-chat', requireTokens, aiController.chatStrategy);
 
 module.exports = router;
