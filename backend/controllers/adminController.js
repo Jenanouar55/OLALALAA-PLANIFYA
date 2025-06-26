@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const { createNotification } = require('../utils/notificationService');
 
 // Get all users
 exports.getAllUsers = async (req, res) => {
@@ -44,5 +45,29 @@ exports.getUserById = async (req, res) => {
     res.json(user);
   } catch (err) {
     res.status(500).json({ error: 'Failed to get user' });
+  }
+};
+
+//send manual notification
+exports.sendManualNotification = async (req, res) => {
+  const { userId, title, message, type } = req.body;
+
+  if (!title || !message || !type)
+    return res.status(400).json({ message: 'Missing required fields' });
+
+  try {
+    if (userId === 'all') {
+      const allProfiles = await Profile.find();
+      for (const profile of allProfiles) {
+        await createNotification(profile.user, { title, message, type });
+      }
+      return res.status(200).json({ message: 'Notification sent to all users' });
+    } else {
+      await createNotification(userId, { title, message, type });
+      return res.status(200).json({ message: 'Notification sent to user' });
+    }
+  } catch (err) {
+    console.error('Manual notification error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 };

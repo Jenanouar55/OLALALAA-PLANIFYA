@@ -17,6 +17,12 @@ const resetMonthlyTokens = async () => {
         profile.tokens = tokenMap[profile.plan] || 15;
         profile.planRenewalDate = now;
         await profile.save();
+        await createNotification(profile.user, {
+          title: 'Monthly Tokens Reset',
+          message: `Your tokens for the ${profile.plan} plan have been reset.`,
+          type: 'reminder'
+        });
+
         console.log(`Tokens reset for user ${profile.user}`);
       }
     }

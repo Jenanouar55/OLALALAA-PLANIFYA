@@ -10,6 +10,9 @@ const app = express();
 // cron job to reset tokens
 require('./cronJobs/tokenReset');
 
+// cron job to send post reminders
+require('./cronJobs/postReminder');
+
 // Stripe webhook (uses raw body) must come befroe express.json()
 const stripeWebhookRoutes = require('./routes/stripeWebhookRoutes');
 app.use('/api', stripeWebhookRoutes);
