@@ -5,8 +5,10 @@ const postSchema = new mongoose.Schema({
   content: { type: String },
   date: { type: Date, default: Date.now },
   platform: {
-    type: [String],
-    enum: ['tiktok', 'instagram', 'facebook', 'youtube', 'linkedin', 'x', 'snapchat', 'pinterest', 'other'],
+    type: [{
+      type: String,
+      enum: ['tiktok', 'instagram', 'facebook', 'youtube', 'linkedin', 'x', 'snapchat', 'pinterest', 'other']
+    }],
     required: true
   },
   customPlatform: { type: String }, // filled only if "other" is in platform
