@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { FiCamera } from "react-icons/fi";
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("edit");
@@ -6,17 +7,33 @@ export default function UserProfile() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [user, setUser] = useState({
+  const defaultUser = {
     name: "haroual",
     username: "king",
     email: "yassir@example.com",
     bio: "Passionate about tech reviews and travel vlogs.",
     location: "tata, MA",
     profilePic: null,
-  });
+  };
 
-  const [formData, setFormData] = useState(user);
+  const [user, setUser] = useState(defaultUser);
+  const [formData, setFormData] = useState(defaultUser);
   const [previewPic, setPreviewPic] = useState(null);
+
+  // Load user profile from localStorage on mount
+  useEffect(() => {
+    const storedUser = localStorage.getItem("userProfile");
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      setUser(parsed);
+      setFormData(parsed);
+    }
+  }, []);
+
+  // Save user profile to localStorage
+  const saveUserToLocalStorage = (userData) => {
+    localStorage.setItem("userProfile", JSON.stringify(userData));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,17 +43,24 @@ export default function UserProfile() {
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setFormData((prev) => ({ ...prev, profilePic: file }));
-      setPreviewPic(URL.createObjectURL(file));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result;
+        setFormData((prev) => ({ ...prev, profilePic: base64 }));
+        setPreviewPic(base64);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const toggleEdit = () => {
     if (isEditing) {
-      setUser((prev) => ({
+      const updatedUser = {
         ...formData,
-        profilePic: previewPic || prev.profilePic,
-      }));
+        profilePic: formData.profilePic || user.profilePic,
+      };
+      setUser(updatedUser);
+      saveUserToLocalStorage(updatedUser);
       setPreviewPic(null);
     } else {
       setFormData(user);
@@ -48,6 +72,13 @@ export default function UserProfile() {
     if (confirmPassword === "password123") {
       alert("Account deleted successfully.");
       setShowDeleteModal(false);
+      // Optionally clear localStorage and reset user:
+      localStorage.removeItem("userProfile");
+      setUser(defaultUser);
+      setFormData(defaultUser);
+      setActiveTab("edit");
+      setIsEditing(false);
+      setConfirmPassword("");
     } else {
       alert("Incorrect password.");
     }
@@ -90,26 +121,33 @@ export default function UserProfile() {
               </button>
             </div>
 
-            {/* Profile Picture */}
+            {/* Profile Picture with Camera Icon */}
             <div className="flex items-center gap-6 mb-6">
-              <img
-                src={displayPic}
-                alt="Profile"
-                className="w-24 h-24 rounded-full object-cover border-2 border-purple-500"
-              />
-              {isEditing && (
-                <div>
-                  <label className="block text-sm mb-1 text-gray-400">
-                    Change Profile Picture
-                  </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="text-sm"
-                  />
-                </div>
-              )}
+              <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-purple-500">
+                <img
+                  src={displayPic}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+                {isEditing && (
+                  <>
+                    <label
+                      htmlFor="profilePicInput"
+                      className="absolute bottom-1 right-1 bg-purple-600 p-1 rounded-full cursor-pointer hover:bg-purple-700"
+                      title="Change Profile Picture"
+                    >
+                      <FiCamera className="text-white" size={20} />
+                    </label>
+                    <input
+                      id="profilePicInput"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </>
+                )}
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -153,10 +191,24 @@ export default function UserProfile() {
           <div className="max-w-md mx-auto bg-gray-800 p-6 rounded-2xl shadow-lg">
             <h2 className="text-2xl font-bold mb-4">Update Password</h2>
             <form className="space-y-4">
-              <input type="password" placeholder="Current Password" className="w-full p-2 bg-gray-700 rounded border border-gray-600" />
-              <input type="password" placeholder="New Password" className="w-full p-2 bg-gray-700 rounded border border-gray-600" />
-              <input type="password" placeholder="Confirm New Password" className="w-full p-2 bg-gray-700 rounded border border-gray-600" />
-              <button className="bg-purple-600 px-4 py-2 rounded-md hover:bg-purple-700">Update</button>
+              <input
+                type="password"
+                placeholder="Current Password"
+                className="w-full p-2 bg-gray-700 rounded border border-gray-600"
+              />
+              <input
+                type="password"
+                placeholder="New Password"
+                className="w-full p-2 bg-gray-700 rounded border border-gray-600"
+              />
+              <input
+                type="password"
+                placeholder="Confirm New Password"
+                className="w-full p-2 bg-gray-700 rounded border border-gray-600"
+              />
+              <button className="bg-purple-600 px-4 py-2 rounded-md hover:bg-purple-700">
+                Update
+              </button>
             </form>
           </div>
         )}
@@ -178,7 +230,9 @@ export default function UserProfile() {
         {showDeleteModal && (
           <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
             <div className="bg-gray-800 p-6 rounded-xl w-full max-w-md">
-              <h2 className="text-xl font-bold text-red-500 mb-4">Confirm Deletion</h2>
+              <h2 className="text-xl font-bold text-red-500 mb-4">
+                Confirm Deletion
+              </h2>
               <p className="mb-3">Enter your password to confirm deletion:</p>
               <input
                 type="password"
