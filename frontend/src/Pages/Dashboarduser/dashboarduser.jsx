@@ -5,6 +5,7 @@ import ScriptGenerator from "./scriptgenerator"
 import CalendarIdeas from "./CalendarIdeas";
 import CaptionGenerator from "./captiongenearor";
 import StrategyTips from "./Stips";
+import NotificationsPage from "./alerts";
 import {
   initialPosts,
   platformColors,
@@ -18,7 +19,7 @@ import UserProfile from "./userprofil";
 export default function UserDashboard() {
   const today = new Date();
   const [posts, setPosts] = useState([]);
-  const Navigate = useNavigate()
+  const navigate = useNavigate()
   const [currentPage, setCurrentPage] = useState("calendar");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
@@ -50,7 +51,6 @@ export default function UserDashboard() {
             'Content-Type': 'application/json',
             "authorization": 'Bearer ' + localStorage.getItem("token")
           }
-          // Removed the body since this is a GET request
         });
 
         const data = await response.json();
@@ -76,12 +76,13 @@ export default function UserDashboard() {
   };
 
   const handleLogoutConfirm = () => {
-    setIsLogoutConfirmOpen(false);
-    localStorage.removeItem("token")
-    // Navigate("/login")
-    window.location.reload()
-    // Navigate("/")
-  };
+
+  setIsLogoutConfirmOpen(false);
+  localStorage.removeItem("token");
+  navigate("/login"); 
+};
+
+ 
 
   const handleLogoutCancel = () => {
     setIsLogoutConfirmOpen(false);
@@ -202,7 +203,7 @@ export default function UserDashboard() {
           />
         );
       case "alerts":
-        return renderPlaceholderView("alerts");
+        return <NotificationsPage />;
       case "settings":
         return renderPlaceholderView("settings");
       case "profile":
