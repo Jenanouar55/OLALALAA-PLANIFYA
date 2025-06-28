@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Check, ClipboardCopy, Loader2 } from "lucide-react";
+import axios from "axios";
 
 export default function CaptionGenerator() {
   const [platform, setPlatform] = useState("Instagram");
@@ -12,17 +13,32 @@ export default function CaptionGenerator() {
   const platforms = ["Instagram", "TikTok", "Facebook", "LinkedIn"];
   const tones = ["Professional", "Friendly", "Funny", "Inspiring"];
 
-  const generateCaption = (e) => {
+  const generateCaption = async (e) => {
     e.preventDefault();
     if (!topic) return;
 
     setLoading(true);
     setCopied(false);
-    setTimeout(() => {
-      const mockCaption = `Here's a ${tone.toLowerCase()} caption for your ${platform} post about "${topic}"! ✨`;
-      setCaption(mockCaption);
+    try {
+      const response = await axios.post("http://localhost:5000/api/ai/caption", {
+        platform,
+        tone,
+        topic,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
+      if (response.data && response.data.result) {
+        setCaption(response.data.result);
+      } else {
+        console.log("Failed to generate script. The response was empty.");
+      }
+    } catch (err) {
+      console.error("Error fetching AI script:", err);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const copyToClipboard = () => {
@@ -96,9 +112,8 @@ export default function CaptionGenerator() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded font-semibold text-lg transition-colors ${
-              loading ? "bg-gray-600 cursor-not-allowed" : "bg-purple-600 hover:bg-purple-700"
-            }`}
+            className={`w-full py-3 rounded font-semibold text-lg transition-colors ${loading ? "bg-gray-600 cursor-not-allowed" : "bg-purple-600 hover:bg-purple-700"
+              }`}
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -117,7 +132,7 @@ export default function CaptionGenerator() {
               onClick={copyToClipboard}
               className="flex items-center gap-2 text-sm bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white"
             >
-              {copied ? <Check className="w-4 h-4" /> : <ClipboardCopy className="w-4 h-4" />} 
+              {copied ? <Check className="w-4 h-4" /> : <ClipboardCopy className="w-4 h-4" />}
               {copied ? "Copied!" : "Copy to Clipboard"}
             </button>
           </div>

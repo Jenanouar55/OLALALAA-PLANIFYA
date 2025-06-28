@@ -17,7 +17,9 @@ import {
   FileText,
   User,
   Type,
-  Lightbulb
+  Lightbulb,
+  CalendarCheck,
+  Pencil
 } from "lucide-react";
 
 export const initialPosts = [
