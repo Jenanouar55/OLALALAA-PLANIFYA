@@ -77,12 +77,12 @@ export default function UserDashboard() {
 
   const handleLogoutConfirm = () => {
 
-  setIsLogoutConfirmOpen(false);
-  localStorage.removeItem("token");
-  navigate("/login"); 
-};
+    setIsLogoutConfirmOpen(false);
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
- 
+
 
   const handleLogoutCancel = () => {
     setIsLogoutConfirmOpen(false);
@@ -210,14 +210,14 @@ export default function UserDashboard() {
         return <UserProfile />;
       case "chatbot":
         return <ChatBot />;
-       case "scriptgenerator":
+      case "scriptgenerator":
         return <ScriptGenerator />;
-        case "CalendarIdeas":
+      case "CalendarIdeas":
         return <CalendarIdeas />;
-         case "captiongenerator":
+      case "captiongenerator":
         return <CaptionGenerator />;
-         case "strategytips":
-        return <StrategyTips />;
+      //  case "strategytips":
+      // return <StrategyTips />;
 
 
       default:
@@ -236,48 +236,45 @@ export default function UserDashboard() {
     }
   };
 
-      return (
-        <div className="flex h-screen bg-gray-900 text-white">
-          {/* Sidebar */}
-             <aside
-              className={`${
-                isSidebarExpanded ? 'w-60' : 'w-20'
-              } bg-gray-800 h-screen flex flex-col items-center transition-all duration-300 ease-in-out`}
-            >
-              {/* Toggle Button + Menu Items Container */}
-              <nav className="w-full flex-1 flex flex-col items-center space-y-2 mt-4">
-                {/* Toggle Button */}
-                <button
-                  onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
-                  className="text-white hover:text-blue-400 p-2 rounded transition-colors"
-                >
-                  <Menu className="w-6 h-6" />
-                </button>
+  return (
+    <div className="flex h-screen bg-gray-900 text-white">
+      {/* Sidebar */}
+      <aside
+        className={`${isSidebarExpanded ? 'w-60' : 'w-20'
+          } bg-gray-800 h-screen flex flex-col items-center transition-all duration-300 ease-in-out`}
+      >
+        {/* Toggle Button + Menu Items Container */}
+        <nav className="w-full flex-1 flex flex-col items-center space-y-2 mt-4">
+          {/* Toggle Button */}
+          <button
+            onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
+            className="text-white hover:text-blue-400 p-2 rounded transition-colors"
+          >
+            <Menu className="w-6 h-6" />
+          </button>
 
-                {/* Menu Items */}
-                {sidebarItems.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = currentPage === item.id;
+          {/* Menu Items */}
+          {sidebarItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentPage === item.id;
 
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleSidebarItemClick(item.id)}
-                      className={`flex items-center ${
-                        isSidebarExpanded ? 'justify-start px-4' : 'justify-center'
-                      } w-full p-3 rounded-lg transition-colors duration-200 ${
-                        isActive ? 'bg-gray-700 text-blue-400' : 'text-white hover:bg-gray-700 hover:text-blue-300'
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                      {isSidebarExpanded && (
-                        <span className="ml-3 text-sm font-medium">{item.label}</span>
-                      )}
-                    </button>
-                  );
-                })}
-              </nav>
-            </aside>
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleSidebarItemClick(item.id)}
+                className={`flex items-center ${isSidebarExpanded ? 'justify-start px-4' : 'justify-center'
+                  } w-full p-3 rounded-lg transition-colors duration-200 ${isActive ? 'bg-gray-700 text-blue-400' : 'text-white hover:bg-gray-700 hover:text-blue-300'
+                  }`}
+              >
+                <Icon className="w-5 h-5" />
+                {isSidebarExpanded && (
+                  <span className="ml-3 text-sm font-medium">{item.label}</span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+      </aside>
 
 
 
@@ -300,10 +297,10 @@ export default function UserDashboard() {
           </div>
         </header>
 
-        
+
         {renderCurrentPage()}
 
-    
+
         <PostDetailsModal
           showPostDetails={showPostDetails}
           setShowPostDetails={setShowPostDetails}
