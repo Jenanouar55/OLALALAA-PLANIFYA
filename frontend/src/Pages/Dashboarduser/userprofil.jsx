@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FiCamera } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa";
+import axios from "axios";
 
 export default function UserProfile() {
   const [activeTab, setActiveTab] = useState("edit");
@@ -58,7 +59,7 @@ export default function UserProfile() {
       if (!contentType || !contentType.includes('application/json')) {
         const textResponse = await response.text();
         console.error('Response is not JSON:', textResponse);
-        setError('Server returned invalid response format. Make sure your backend server is running on port 5000.');
+        setError('Server returned invalid response format');
         setLoading(false);
         return;
       }
@@ -175,19 +176,32 @@ export default function UserProfile() {
     setIsEditing(!isEditing);
   };
 
-  const handleDeleteAccount = () => {
-    if (confirmPassword === "password") {
-      alert("Account deleted successfully");
-      setShowDeleteModal(false);
-      setUser(defaultUser);
-      setFormData(defaultUser);
-      setActiveTab("edit");
-      setIsEditing(false);
-      setConfirmPassword("");
-    } else {
-      alert("Incorrect password.");
-    }
-  };
+ const handleDeleteAccount = async () => {
+  const token = localStorage.getItem('token');
+  try {
+    const response = await axios.delete('/api/users/delete-account', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: {
+        password: confirmPassword,
+      },
+    });
+
+    alert(response.data.message);
+    setShowDeleteModal(false);
+    setUser(defaultUser);
+    setFormData(defaultUser);
+    setActiveTab("edit");
+    setIsEditing(false);
+    setConfirmPassword("");
+    localStorage.removeItem('token');
+    window.location.href = '/';
+  } catch (error) {
+    console.error('Delete account error:', error);
+    alert(error.response?.data?.message || "Something went wrong.");
+  }
+};
 
   const displayPic = previewPic || user.profilePic || "/profile.jpg";
   const fullName = `${user.firstName} ${user.lastName}`.trim() || "User";
