@@ -35,7 +35,7 @@ import Events from './Pages/Dashboard/Events';
 import SuccessPage from './Pages/SuccessPage';
 import CancelPage from './Pages/CancelPage';
 import PricingPage from './Pages/PricingPage';
-import BillingPage from './Pages/Dashboard/billing'; 
+import BillingPage from './Pages/Dashboard/billing';
 
 
 function App() {
@@ -56,15 +56,15 @@ function App() {
         <Route path="/b" element={<BillingPage />} />
 
         <Route path="/dashboard" element={
-          // <ProtectedRoutes>
-          <Dashboard />
-          // </ProtectedRoutes>
+          <ProtectedRoutes>
+            <Dashboard />
+          </ProtectedRoutes>
         } />
         <Route path="/events" element={<Events />} />
         <Route path="/userDashboard" element={
-          // <ProtectedRoutes>
-          <UserDashboard />
-          // </ProtectedRoutes>
+          <ProtectedRoutes>
+            <UserDashboard />
+          </ProtectedRoutes>
         } />
         <Route path="/chatbot" element={<ChatBot />} />
         <Route path="/calendar" element={<CalendarView />} />

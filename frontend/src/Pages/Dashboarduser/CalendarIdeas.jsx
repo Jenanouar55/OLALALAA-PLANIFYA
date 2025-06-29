@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 
 const icons = {
@@ -85,23 +86,38 @@ export default function CalendarIdeas() {
     return `Idea for ${category} on ${platform} scheduled for ${date} (#${randomSuffix})`;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!date) return;
 
     setLoading(true);
-    setTimeout(() => {
-      const newIdea = {
-        id: Date.now(),
-        date,
-        platform,
-        category,
-        idea: generateIdeaText(category, platform, date),
-        saved: false,
-      };
-      setIdeas((prev) => [newIdea, ...prev]);
-      setLoading(false);
-    }, 1500);
+    try {
+      const response = await axios.post("http://localhost:5000/api/ai/calendar-ideas", {
+        message: input
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
+      if (response.data && response.data.result) {
+        const updated = conversations.map((chat) =>
+          chat.id === activeChatId
+            ? {
+              ...chat,
+              messages: [...chat.messages, { sender: 'user', text: response.data.result }],
+            }
+            : chat
+        );
+        setConversations(updated);
+        setInput('');
+      } else {
+        console.log("Failed to generate script. The response was empty.");
+      }
+    } catch (err) {
+      console.error("Error fetching AI script:", err);
+    } finally {
+      console.error(false);
+    }
   };
 
   const toggleSave = (id) => {
@@ -201,11 +217,10 @@ export default function CalendarIdeas() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded font-semibold text-lg transition-colors ${
-              loading
-                ? "bg-gray-600 cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700"
-            }`}
+            className={`w-full py-3 rounded font-semibold text-lg transition-colors ${loading
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-purple-600 hover:bg-purple-700"
+              }`}
           >
             {loading ? (
               <>
@@ -235,7 +250,7 @@ export default function CalendarIdeas() {
                 </p>
               </div>
               <div className="flex space-x-4 items-center">
-                
+
                 <span
                   onClick={() => toggleSave(id)}
                   role="button"

@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 
 const icons = {
@@ -118,19 +119,32 @@ export default function ScriptGenerator() {
   const [copied, setCopied] = useState(false);
   const [liked, setLiked] = useState(null); // null / true / false
 
-  const generateScript = () => {
+  const generateScript = async () => {
     setLoading(true);
     setScript("");
     setCopied(false);
     setLiked(null);
-    setTimeout(() => {
-      setScript(
-        `Generated script for: ${topic} (${type}) ${
-          duration ? `- ${duration} sec` : ""
-        }`
-      );
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/ai/script", {
+        topic,
+        type,
+        duration,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
+      if (response.data && response.data.result) {
+        setScript(response.data.result);
+      } else {
+        console.log("Failed to generate script. The response was empty.");
+      }
+    } catch (err) {
+      console.error("Error fetching AI script:", err);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const handleGenerate = () => {
@@ -183,7 +197,6 @@ export default function ScriptGenerator() {
           Script/Idea Generator
         </h1>
 
-        {/* Inputs */}
         <div>
           <label className="block text-sm font-semibold mb-1">Topic</label>
           <input
@@ -223,27 +236,22 @@ export default function ScriptGenerator() {
           />
         </div>
 
-        {/* Generate button */}
         <div className="flex justify-center">
           <button
             onClick={handleGenerate}
             disabled={loading || !topic}
-            className={`px-6 py-2 rounded-lg font-semibold transition-colors duration-300 ${
-              loading || !topic
-                ? "bg-gray-600 cursor-not-allowed"
-                : "bg-blue-600 hover:bg-blue-700"
-            }`}
+            className={`px-6 py-2 rounded-lg font-semibold transition-colors duration-300 ${loading || !topic
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+              }`}
           >
             {loading ? "Generating..." : "Generate Script"}
           </button>
         </div>
-
-        {/* Generated Output + Actions */}
         {script && (
           <div className="relative mt-6 p-4 border border-blue-600 rounded-lg bg-[#0f172a]/80">
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg font-bold">Generated Output:</h2>
-              {/* Action Icons */}
               <div className="flex space-x-6 text-gray-400">
                 <button
                   onClick={handleDelete}
@@ -256,13 +264,12 @@ export default function ScriptGenerator() {
                   onClick={handleRegenerate}
                   disabled={loading}
                   title="Regenerate"
-                  className={`hover:text-blue-400 transition-colors ${
-                    loading ? "cursor-not-allowed opacity-50" : ""
-                  }`}
+                  className={`hover:text-blue-400 transition-colors ${loading ? "cursor-not-allowed opacity-50" : ""
+                    }`}
                 >
                   {icons.regenerate}
                 </button>
-               
+
                 <button
                   onClick={handleCopy}
                   title="Copy to Clipboard"

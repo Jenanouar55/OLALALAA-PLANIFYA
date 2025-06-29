@@ -16,17 +16,14 @@ import {
   Video,
   FileText,
   User,
-  Pencil,
-  CalendarCheck,
   Type,
-  Lightbulb
+  Lightbulb,
+  CalendarCheck,
+  Pencil
 } from "lucide-react";
-// import ChatBot from "./Chatbot";
 
-// Initial posts data
 export const initialPosts = [
   {
-    date: "2025-06-05",
     title: "Welcome Post",
     content: "Welcome to our social media journey!",
     platforms: "",

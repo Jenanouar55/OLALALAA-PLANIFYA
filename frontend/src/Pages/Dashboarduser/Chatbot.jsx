@@ -5,7 +5,7 @@ import {
   ArrowRightOnRectangleIcon,
 } from '@heroicons/react/24/solid';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
-
+import axios from "axios";
 const ChatBot = () => {
   const [conversations, setConversations] = useState([
     {
@@ -24,35 +24,63 @@ const ChatBot = () => {
 
   const activeChat = conversations.find((c) => c.id === activeChatId);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!input.trim()) return;
-
-    const updated = conversations.map((chat) =>
-      chat.id === activeChatId
-        ? {
-            ...chat,
-            messages: [...chat.messages, { sender: 'user', text: input }],
-          }
-        : chat
-    );
-    setConversations(updated);
-    setInput('');
-
-    setTimeout(() => {
-      setConversations((prev) =>
-        prev.map((chat) =>
+    conversations.push(input);
+    setConversations(conversations);
+    try {
+      const response = await axios.post("http://localhost:5000/api/ai/strategy-chat", {
+        message: input
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
+      if (response.data && response.data.result) {
+        const updated = conversations.map((chat) =>
           chat.id === activeChatId
             ? {
-                ...chat,
-                messages: [
-                  ...chat.messages,
-                  { sender: 'bot', text: `You said: "${input}"` },
-                ],
-              }
+              ...chat,
+              messages: [...chat.messages, { sender: 'user', text: response.data.result }],
+            }
             : chat
-        )
-      );
-    }, 600);
+        );
+        setConversations(updated);
+        setInput('');
+      } else {
+        console.log("Failed to generate script. The response was empty.");
+      }
+    } catch (err) {
+      console.error("Error fetching AI script:", err);
+    } finally {
+      console.error(false);
+    }
+    // const updated = conversations.map((chat) =>
+    //   chat.id === activeChatId
+    //     ? {
+    //       ...chat,
+    //       messages: [...chat.messages, { sender: 'user', text: input }],
+    //     }
+    //     : chat
+    // );
+    // setConversations(updated);
+
+
+    // setTimeout(() => {
+    //   setConversations((prev) =>
+    //     prev.map((chat) =>
+    //       chat.id === activeChatId
+    //         ? {
+    //           ...chat,
+    //           messages: [
+    //             ...chat.messages,
+    //             { sender: 'bot', text: `You said: "${input}"` },
+    //           ],
+    //         }
+    //         : chat
+    //     )
+    //   );
+    // }, 600);
   };
 
   const handleNewChat = () => {
@@ -66,38 +94,37 @@ const ChatBot = () => {
     setActiveChatId(newId);
   };
 
-  const handleRename = (id, newName) => {
-    if (!newName.trim()) return;
-    setConversations(
-      conversations.map((chat) =>
-        chat.id === id ? { ...chat, name: newName } : chat
-      )
-    );
-    setEditingChatId(null);
-  };
+  // const handleRename = (id, newName) => {
+  //   if (!newName.trim()) return;
+  //   setConversations(
+  //     conversations.map((chat) =>
+  //       chat.id === id ? { ...chat, name: newName } : chat
+  //     )
+  //   );
+  //   setEditingChatId(null);
+  // };
 
-  const handleDelete = (id) => {
-    const filtered = conversations.filter((chat) => chat.id !== id);
-    setConversations(filtered);
-    setMenuOpenId(null);
-    if (id === activeChatId && filtered.length > 0) {
-      setActiveChatId(filtered[0].id);
-    } else if (filtered.length === 0) {
-      handleNewChat();
-    }
-  };
+  // const handleDelete = (id) => {
+  //   const filtered = conversations.filter((chat) => chat.id !== id);
+  //   setConversations(filtered);
+  //   setMenuOpenId(null);
+  //   if (id === activeChatId && filtered.length > 0) {
+  //     setActiveChatId(filtered[0].id);
+  //   } else if (filtered.length === 0) {
+  //     handleNewChat();
+  //   }
+  // };
 
-  const handleShare = (id) => {
-    const chat = conversations.find((c) => c.id === id);
-    alert(`Sharing chat "${chat.name}" (mock action)`);
-    setMenuOpenId(null);
-  };
+  // const handleShare = (id) => {
+  //   const chat = conversations.find((c) => c.id === id);
+  //   alert(`Sharing chat "${chat.name}" (mock action)`);
+  //   setMenuOpenId(null);
+  // };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [conversations, activeChatId]);
 
-  // Close sidebar menus on outside click
   useEffect(() => {
     const closeMenus = () => {
       setMenuOpenId(null);
@@ -109,7 +136,7 @@ const ChatBot = () => {
   return (
     <div className="flex h-screen bg-slate-900 text-slate-300 font-sans overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
+      {/* <aside className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
         <button
           onClick={handleNewChat}
           className="flex items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-indigo-700 transition"
@@ -121,11 +148,10 @@ const ChatBot = () => {
           {conversations.map((conv) => (
             <div
               key={conv.id}
-              className={`group relative flex justify-between items-center px-4 py-3 text-sm hover:bg-slate-700 cursor-pointer ${
-                conv.id === activeChatId
-                  ? 'bg-slate-700 text-indigo-300 font-semibold'
-                  : 'text-slate-300'
-              }`}
+              className={`group relative flex justify-between items-center px-4 py-3 text-sm hover:bg-slate-700 cursor-pointer ${conv.id === activeChatId
+                ? 'bg-slate-700 text-indigo-300 font-semibold'
+                : 'text-slate-300'
+                }`}
               onClick={() => setActiveChatId(conv.id)}
             >
               <div onClick={(e) => e.stopPropagation()} className="flex-1">
@@ -147,7 +173,6 @@ const ChatBot = () => {
                 )}
               </div>
 
-              {/* Dropdown Button */}
               <div
                 className="relative"
                 onClick={(e) => {
@@ -188,7 +213,7 @@ const ChatBot = () => {
             </div>
           ))}
         </div>
-      </aside>
+      </aside> */}
 
       {/* Main Chat Area */}
       <main className="flex-1 flex flex-col">
@@ -203,16 +228,14 @@ const ChatBot = () => {
           {activeChat?.messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex ${
-                msg.sender === 'user' ? 'justify-end' : 'justify-start'
-              }`}
+              className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'
+                }`}
             >
               <div
-                className={`rounded-xl px-4 py-3 max-w-md text-sm shadow ${
-                  msg.sender === 'user'
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-slate-800 border border-slate-700 text-slate-300'
-                }`}
+                className={`rounded-xl px-4 py-3 max-w-md text-sm shadow ${msg.sender === 'user'
+                  ? 'bg-indigo-600 text-white'
+                  : 'bg-slate-800 border border-slate-700 text-slate-300'
+                  }`}
               >
                 {msg.text}
               </div>
