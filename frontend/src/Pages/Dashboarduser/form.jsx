@@ -1,6 +1,6 @@
 import React from "react";
 import { X } from "lucide-react";
-import { platformColors, getPlatformIcon } from "../Dashboarduser/Constants";
+import { platformColors, getPlatformIcon } from "./Constants";
 
 export const PostForm = ({
   isDialogOpen,

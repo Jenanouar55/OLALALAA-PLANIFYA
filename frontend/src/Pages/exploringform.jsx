@@ -140,7 +140,7 @@ const ExForm = () => {
       });
 
       alert("Profile created successfully!");
-      window.location.href = "/userprofile";
+      window.location.href = "/userdashboard";
     } catch (error) {
       console.error("Error submitting profile:", error);
       alert(error.response?.data?.message || "Something went wrong. Please try again.");
