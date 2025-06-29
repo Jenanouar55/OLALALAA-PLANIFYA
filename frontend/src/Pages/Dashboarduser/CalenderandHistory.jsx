@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Pencil, Trash, Filter } from "lucide-react";
-import { getPlatformIcon, getMediaIcon } from "../Dashboarduser/Constants";
+import { getPlatformIcon } from "./Constants";
 
-// Dummy fallback for platform color if not imported
+
 const getPlatformColor = (platform) => {
   const colors = {
     facebook: "#3b5998",
@@ -129,7 +129,6 @@ export const HistoryView = ({
       const postDate = new Date(post.date);
       const startDate = filters.startDate ? new Date(filters.startDate) : null;
       const endDate = filters.endDate ? new Date(filters.endDate) : null;
-
       const dateMatch = (!startDate || postDate >= startDate) && (!endDate || postDate <= endDate);
 
       let platformMatch = false;
@@ -137,7 +136,7 @@ export const HistoryView = ({
         platformMatch = true;
       } else if (post.platforms && Array.isArray(post.platforms)) {
         platformMatch = post.platforms.includes(filters.platform);
-      } else if (post.platform) {
+      } else if (typeof post.platform === "string") {
         platformMatch = post.platform === filters.platform;
       }
 
@@ -146,28 +145,33 @@ export const HistoryView = ({
   };
 
   const renderPlatformBadges = (post) => {
-    const platforms = post.platforms && Array.isArray(post.platforms)
+    const platforms = Array.isArray(post.platforms)
       ? post.platforms
-      : post.platform ? [post.platform] : [];
+      : typeof post.platform === "string"
+        ? [post.platform]
+        : [];
 
     return (
       <div className="flex flex-wrap gap-1">
-        {platforms.map((platform, index) => (
-          <div
-            key={index}
-            className="flex items-center space-x-1 px-2 py-1 rounded text-white text-xs"
-            style={{ backgroundColor: platform === "other" ? post.color : getPlatformColor(platform) }}
-          >
-            {getPlatformIcon(platform)}
-            <span>
-              {platform === "other"
-                ? post.customPlatform || "Custom"
-                : platform === "x"
-                  ? "X"
-                  : platform.charAt(0).toUpperCase() + platform.slice(1)}
-            </span>
-          </div>
-        ))}
+        {platforms.map((platform, index) => {
+          const safePlatform = typeof platform === "string" ? platform : "other";
+          return (
+            <div
+              key={index}
+              className="flex items-center space-x-1 px-2 py-1 rounded text-white text-xs"
+              style={{ backgroundColor: safePlatform === "other" ? post.color : getPlatformColor(safePlatform) }}
+            >
+              {getPlatformIcon(safePlatform)}
+              <span>
+                {safePlatform === "other"
+                  ? post.customPlatform || "Custom"
+                  : safePlatform === "x"
+                    ? "X"
+                    : safePlatform.charAt(0).toUpperCase() + safePlatform.slice(1)}
+              </span>
+            </div>
+          );
+        })}
       </div>
     );
   };
@@ -226,30 +230,44 @@ export const PostDetailsModal = ({ showPostDetails, setShowPostDetails }) => {
   if (!showPostDetails) return null;
 
   const renderPlatformInfo = (post) => {
-    const platforms = post.platforms && Array.isArray(post.platforms)
+    const platforms = Array.isArray(post.platforms)
       ? post.platforms
-      : post.platform ? [post.platform] : [];
+      : typeof post.platform === "string"
+        ? [post.platform]
+        : [];
 
-    return platforms.map((platform, index) => (
-      <span key={index}>
-        {platform === "other"
-          ? post.customPlatform || "Custom Platform"
-          : platform === "x"
-            ? "X (Twitter)"
-            : platform.charAt(0).toUpperCase() + platform.slice(1)}
-        {index < platforms.length - 1 ? ", " : ""}
-      </span>
-    ));
+    return platforms.map((platform, index) => {
+      const safePlatform = typeof platform === "string" ? platform : "other";
+      return (
+        <span key={index}>
+          {safePlatform === "other"
+            ? post.customPlatform || "Custom Platform"
+            : safePlatform === "x"
+              ? "X (Twitter)"
+              : safePlatform.charAt(0).toUpperCase() + safePlatform.slice(1)}
+          {index < platforms.length - 1 ? ", " : ""}
+        </span>
+      );
+    });
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg p-6 w-full max-w-md relative">
-        <button className="absolute top-2 right-2 text-gray-500 hover:text-white" onClick={() => setShowPostDetails(null)}>✕</button>
-        <h2 className="text-xl font-bold mb-2">{showPostDetails.title}</h2>
-        <p className="mb-2"><strong>Date:</strong> {new Date(showPostDetails.date).toLocaleString()}</p>
-        <p className="mb-2"><strong>Platform(s):</strong> {renderPlatformInfo(showPostDetails)}</p>
-        <p><strong>Description:</strong><br />{showPostDetails.content}</p>
+      <div className="bg-white dark:bg-gray-900 text-black dark:text-white rounded-lg p-6 w-full max-w-md">
+        <h2 className="text-xl font-semibold mb-4">{showPostDetails.title}</h2>
+        <p className="mb-2">{showPostDetails.content}</p>
+        <p className="mb-2 text-sm text-gray-500">
+          Platforms: {renderPlatformInfo(showPostDetails)}
+        </p>
+        <p className="text-sm text-gray-500 mb-4">
+          Date: {new Date(showPostDetails.date).toLocaleDateString()}
+        </p>
+        <button
+          onClick={() => setShowPostDetails(null)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+        >
+          Close
+        </button>
       </div>
     </div>
   );
