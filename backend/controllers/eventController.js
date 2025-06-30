@@ -1,5 +1,5 @@
-const Event = require('../models/Event');
-const axios = require('axios');
+const Event = require("../models/Event");
+const axios = require("axios");
 
 // Get all events
 exports.getAllEvents = async (req, res) => {
@@ -10,7 +10,7 @@ exports.getAllEvents = async (req, res) => {
 // Get single event
 exports.getEventById = async (req, res) => {
   const event = await Event.findById(req.params.id);
-  if (!event) return res.status(404).json({ message: 'Event not found' });
+  if (!event) return res.status(404).json({ message: "Event not found" });
   res.json(event);
 };
 
@@ -23,14 +23,16 @@ exports.createEvent = async (req, res) => {
 
 // Update event
 exports.updateEvent = async (req, res) => {
-  const updated = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+  const updated = await Event.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
   res.json(updated);
 };
 
 // Delete event
 exports.deleteEvent = async (req, res) => {
   await Event.findByIdAndDelete(req.params.id);
-  res.json({ message: 'Event deleted' });
+  res.json({ message: "Event deleted" });
 };
 
 // Seed from Calendarific
@@ -43,16 +45,16 @@ exports.seedFromCalendarific = async (req, res) => {
     const { data } = await axios.get(url);
     const holidays = data.response.holidays;
 
-    const events = holidays.map(h => ({
+    const events = holidays.map((h) => ({
       name: h.name,
       description: h.description,
       date: h.date.iso,
     }));
 
     await Event.insertMany(events);
-    res.status(201).json({ message: 'Events seeded', count: events.length });
+    res.status(201).json({ message: "Events seeded", count: events.length });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: 'Failed to fetch from Calendarific' });
+    res.status(500).json({ message: "Failed to fetch from Calendarific" });
   }
 };

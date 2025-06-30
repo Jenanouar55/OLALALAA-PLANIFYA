@@ -68,25 +68,25 @@ export default function UserDashboard() {
       }
     };
 
-  const fetchTokens = async () => {
-  try {
-    const res = await fetch("http://localhost:5000/api/profile/tokens", {
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    });
+    const fetchTokens = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/profile/tokens", {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        });
 
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`Server responded with ${res.status}: ${errorText}`);
-    }
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Server responded with ${res.status}: ${errorText}`);
+        }
 
-    const data = await res.json(); 
-    setTokenCount(data.tokens);
-  } catch (err) {
-    console.error("Error fetching tokens:", err);
-  }
-};
+        const data = await res.json();
+        setTokenCount(data.tokens);
+      } catch (err) {
+        console.error("Error fetching tokens:", err);
+      }
+    };
 
 
 
@@ -108,6 +108,8 @@ export default function UserDashboard() {
     localStorage.removeItem("token");
     navigate("/login");
   };
+
+
 
   const handleLogoutCancel = () => {
     setIsLogoutConfirmOpen(false);
@@ -210,29 +212,73 @@ export default function UserDashboard() {
 
   const renderCurrentPage = () => {
     switch (currentPage) {
-      case "calendar": return <CalendarView {...{ posts, currentMonth, currentYear, setCurrentMonth, setCurrentYear, setShowPostDetails, handleEditPost, handleDeletePost }} />;
-      case "history": return <HistoryView {...{ posts, filters, setIsHistoryFilterOpen, handleEditPost, handleDeletePost }} />;
-      case "alerts": return <NotificationsPage />;
-      case "settings": return renderPlaceholderView("settings");
-      case "profile": return <UserProfile />;
-      case "chatbot": return <ChatBot />;
-      case "scriptgenerator": return <ScriptGenerator />;
-      case "CalendarIdeas": return <CalendarIdeas />;
-      case "captiongenerator": return <CaptionGenerator />;
-      case "strategytips": return <StrategyTips />;
-      default: return <CalendarView {...{ posts, currentMonth, currentYear, setCurrentMonth, setCurrentYear, setShowPostDetails, handleEditPost, handleDeletePost }} />;
+      case "calendar":
+        return (
+          <CalendarView
+            posts={posts}
+            currentMonth={currentMonth}
+            currentYear={currentYear}
+            setCurrentMonth={setCurrentMonth}
+            setCurrentYear={setCurrentYear}
+            setShowPostDetails={setShowPostDetails}
+            handleEditPost={handleEditPost}
+            handleDeletePost={handleDeletePost}
+          />
+        );
+      case "history":
+        return (
+          <HistoryView
+            posts={posts}
+            filters={filters}
+            setIsHistoryFilterOpen={setIsHistoryFilterOpen}
+            handleEditPost={handleEditPost}
+            handleDeletePost={handleDeletePost}
+          />
+        );
+      case "alerts":
+        return <NotificationsPage />;
+      case "settings":
+        return renderPlaceholderView("settings");
+      case "profile":
+        return <UserProfile />;
+      case "chatbot":
+        return <ChatBot />;
+      case "scriptgenerator":
+        return <ScriptGenerator />;
+      case "CalendarIdeas":
+        return <CalendarIdeas />;
+      case "captiongenerator":
+        return <CaptionGenerator />;
+      //  case "strategytips":
+      // return <StrategyTips />;
+
+
+      default:
+        return (
+          <CalendarView
+            posts={posts}
+            currentMonth={currentMonth}
+            currentYear={currentYear}
+            setCurrentMonth={setCurrentMonth}
+            setCurrentYear={setCurrentYear}
+            setShowPostDetails={setShowPostDetails}
+            handleEditPost={handleEditPost}
+            handleDeletePost={handleDeletePost}
+          />
+        );
     }
   };
 
   return (
     <div className="flex h-screen bg-gray-900 text-white">
-            {/* Sidebar */}
-            <aside
-        className={`${
-          isSidebarExpanded ? "w-60" : "w-20"
-        } bg-gray-800 h-screen flex flex-col justify-between transition-all duration-300 ease-in-out`}
+      {/* Sidebar */}
+      <aside
+        className={`${isSidebarExpanded ? 'w-60' : 'w-20'
+          } bg-gray-800 h-screen flex flex-col items-center transition-all duration-300 ease-in-out`}
       >
-        <nav className="w-full flex flex-col items-center space-y-2 mt-4">
+        {/* Toggle Button + Menu Items Container */}
+        <nav className="w-full flex-1 flex flex-col items-center space-y-2 mt-4">
+          {/* Toggle Button */}
           <button
             onClick={() => setIsSidebarExpanded(!isSidebarExpanded)}
             className="text-white hover:text-blue-400 p-2 rounded transition-colors"
@@ -240,6 +286,7 @@ export default function UserDashboard() {
             <Menu className="w-6 h-6" />
           </button>
 
+          {/* Menu Items */}
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentPage === item.id;
@@ -248,13 +295,9 @@ export default function UserDashboard() {
               <button
                 key={item.id}
                 onClick={() => handleSidebarItemClick(item.id)}
-                className={`flex items-center ${
-                  isSidebarExpanded ? "justify-start px-4" : "justify-center"
-                } w-full p-3 rounded-lg transition-colors duration-200 ${
-                  isActive
-                    ? "bg-gray-700 text-blue-400"
-                    : "text-white hover:bg-gray-700 hover:text-blue-300"
-                }`}
+                className={`flex items-center ${isSidebarExpanded ? 'justify-start px-4' : 'justify-center'
+                  } w-full p-3 rounded-lg transition-colors duration-200 ${isActive ? 'bg-gray-700 text-blue-400' : 'text-white hover:bg-gray-700 hover:text-blue-300'
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 {isSidebarExpanded && (
@@ -264,28 +307,9 @@ export default function UserDashboard() {
             );
           })}
         </nav>
-
-        {/* Token Counter (Bottom) */}
-        <div className="w-full px-3 py-4 bg-gradient-to-r from-yellow-500/20 to-yellow-300/10 border-t border-gray-700">
-          <div className="flex items-center space-x-2">
-            <div className="bg-yellow-500/20 p-2 rounded-full">
-              <Zap className="text-yellow-400 w-5 h-5" />
-            </div>
-            {isSidebarExpanded && (
-              <div>
-                <p className="text-xs text-gray-400">Tokens</p>
-                <p
-                  className={`text-sm font-bold ${
-                    tokenCount <= 5 ? "text-red-500 animate-pulse" : "text-yellow-300"
-                  }`}
-                >
-                  {tokenCount}
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
       </aside>
+
+
 
 
       {/* Main Area */}
@@ -307,11 +331,31 @@ export default function UserDashboard() {
           </div>
         </header>
 
+
         {renderCurrentPage()}
 
-        <PostDetailsModal {...{ showPostDetails, setShowPostDetails }} />
-        <PostForm {...{ isDialogOpen, setIsDialogOpen, form, setForm, selectedPostIndex, setSelectedPostIndex, handleSavePost }} />
-        <HistoryFilterModal {...{ isHistoryFilterOpen, setIsHistoryFilterOpen, filters, setFilters }} />
+
+        <PostDetailsModal
+          showPostDetails={showPostDetails}
+          setShowPostDetails={setShowPostDetails}
+        />
+
+        <PostForm
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          form={form}
+          setForm={setForm}
+          selectedPostIndex={selectedPostIndex}
+          setSelectedPostIndex={setSelectedPostIndex}
+          handleSavePost={handleSavePost}
+        />
+
+        <HistoryFilterModal
+          isHistoryFilterOpen={isHistoryFilterOpen}
+          setIsHistoryFilterOpen={setIsHistoryFilterOpen}
+          filters={filters}
+          setFilters={setFilters}
+        />
       </main>
 
       {/* Logout Modal */}

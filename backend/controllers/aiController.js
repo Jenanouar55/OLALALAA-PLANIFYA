@@ -84,14 +84,14 @@ const generateCaption = async (req, res) => {
 // Content Calendar Ideas
 const generateContentIdeas = async (req, res) => {
   try {
-    const { timeFrame } = req.body;
+    const { category, platform, date } = req.body;
     const profile = await getUserProfile(req.user._id);
     if (!profile)
       return res.status(404).json({ error: "User profile not found" });
 
     const prompt = formatUserContextPrompt(
       profile,
-      `Suggest content ideas for ${timeFrame}. Return them as a list with short descriptions.`
+      `Suggest content Ideas for ${category} on ${platform} scheduled for ${date}. Return them as a list with short descriptions.`
     );
     const result = await callAI(prompt);
     res.json({ result });

@@ -51,7 +51,7 @@ export const sidebarItems = [
   { id: "calendar", icon: CalendarDays, label: "Calendar", color: "blue" },
   { id: "profile", icon: User, label: "Profile", color: "blue" },
   { id: "CalendarIdeas", icon: CalendarCheck, label: "Calendar Ideas", color: "blue" },
-  { id: "strategytips", icon: Lightbulb, label: "Strategy Tips", color: "blue" },
+  // { id: "strategytips", icon: Lightbulb, label: "Strategy Tips", color: "blue" },
   { id: "scriptgenerator", icon: Pencil, label: "Script", color: "blue" },
   { id: "captiongenerator", icon: Type, label: "Caption", color: "blue" },
   { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
