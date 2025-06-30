@@ -70,7 +70,7 @@ export default function UserDashboard() {
 
     const fetchTokens = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/profile/tokens", {
+        const res = await fetch("http://localhost:5000/api/profile/me", {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
