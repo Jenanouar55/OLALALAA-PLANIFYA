@@ -1,22 +1,23 @@
-const Post = require('../models/Post');
+const Post = require("../models/Post");
 
 // Create a post
 exports.createPost = async (req, res) => {
   try {
-    const { title, content, platform, customPlatform } = req.body;
+    const { title, content, platform, customPlatform, date } = req.body;
 
     const newPost = new Post({
       title,
       content,
       platform,
       customPlatform,
+      date,
       user_id: req.user._id, // from authMiddleware
     });
 
     const savedPost = await newPost.save();
     res.status(201).json(savedPost);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create post' });
+    res.status(500).json({ error: "Failed to create post" });
   }
 };
 
@@ -26,7 +27,7 @@ exports.getMyPosts = async (req, res) => {
     const posts = await Post.find({ user_id: req.user._id });
     res.status(200).json(posts);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch posts' });
+    res.status(500).json({ error: "Failed to fetch posts" });
   }
 };
 
@@ -38,10 +39,10 @@ exports.updatePost = async (req, res) => {
       req.body,
       { new: true }
     );
-    if (!updated) return res.status(404).json({ error: 'Post not found' });
+    if (!updated) return res.status(404).json({ error: "Post not found" });
     res.status(200).json(updated);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update post' });
+    res.status(500).json({ error: "Failed to update post" });
   }
 };
 
@@ -52,9 +53,9 @@ exports.deletePost = async (req, res) => {
       _id: req.params.id,
       user_id: req.user._id,
     });
-    if (!deleted) return res.status(404).json({ error: 'Post not found' });
-    res.status(200).json({ message: 'Post deleted successfully' });
+    if (!deleted) return res.status(404).json({ error: "Post not found" });
+    res.status(200).json({ message: "Post deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete post' });
+    res.status(500).json({ error: "Failed to delete post" });
   }
 };

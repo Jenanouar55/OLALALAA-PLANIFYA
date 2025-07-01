@@ -12,13 +12,14 @@ export const PostForm = ({
   handleSavePost,
 }) => {
   const handlePlatformToggle = (platform) => {
+    console.log(form);
     setForm((prev) => {
-      const isAlreadySelected = prev.platforms?.includes(platform);
+      const isAlreadySelected = prev.platform?.includes(platform);
       return {
         ...prev,
-        platforms: isAlreadySelected
-          ? prev.platforms.filter((p) => p !== platform)
-          : [...(prev.platforms || []), platform],
+        platform: isAlreadySelected
+          ? prev.platform.filter((p) => p !== platform)
+          : [...(prev.platform || []), platform],
       };
     });
   };
@@ -45,6 +46,7 @@ export const PostForm = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+
       <div className="bg-gray-800 border border-gray-700 text-white p-6 rounded shadow-lg w-96 max-h-[90vh] overflow-y-auto">
         <h2 className="text-lg font-semibold mb-4">
           {selectedPostIndex !== null ? "Edit Post" : "Create New Post"}
@@ -54,7 +56,7 @@ export const PostForm = ({
             <label className="block mb-1">Date *</label>
             <input
               type="date"
-              value={form.date}
+              value={form.date.split('T')[0]}
               onChange={(e) => setForm({ ...form, date: e.target.value })}
               className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
             />
@@ -83,7 +85,7 @@ export const PostForm = ({
             <label className="block mb-2">Platform(s)</label>
             <div className="grid grid-cols-3 gap-2 mb-2">
               {Object.keys(platformColors).map((platform) => {
-                const isSelected = form.platforms?.includes(platform);
+                const isSelected = form.platform?.includes(platform);
 
                 return (
                   <button
@@ -103,7 +105,7 @@ export const PostForm = ({
               })}
             </div>
 
-            {form.platforms?.includes("other") && (
+            {form.platform?.includes("other") && (
               <>
                 <input
                   type="text"
