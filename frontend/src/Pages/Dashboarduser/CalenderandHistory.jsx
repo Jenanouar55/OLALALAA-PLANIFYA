@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React from "react";
 import { Pencil, Trash, Filter } from "lucide-react";
 import { getPlatformIcon } from "./Constants";
-
 
 const getPlatformColor = (platform) => {
   const colors = {
@@ -27,7 +26,7 @@ export const CalendarView = ({
   handleDeletePost
 }) => {
   const getPostsForDate = (dateStr) =>
-    posts.map((post, index) => ({ ...post, index })).filter((post) => post.date === dateStr);
+    posts.filter((post) => post.date && post.date.split("T")[0] === dateStr);
 
   const generateCalendarDays = () => {
     const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
@@ -42,6 +41,12 @@ export const CalendarView = ({
     return days;
   };
 
+  const changeMonth = (delta) => {
+    const newDate = new Date(currentYear, currentMonth + delta, 1);
+    setCurrentMonth(newDate.getMonth());
+    setCurrentYear(newDate.getFullYear());
+  };
+
   const calendarDays = generateCalendarDays();
 
   return (
@@ -49,15 +54,10 @@ export const CalendarView = ({
       <div className="flex items-center space-x-2 mb-4">
         <button
           className="bg-gray-700 px-3 py-1 rounded"
-          onClick={() => {
-            if (currentMonth === 0) {
-              setCurrentMonth(11);
-              setCurrentYear(currentYear - 1);
-            } else {
-              setCurrentMonth(currentMonth - 1);
-            }
-          }}
-        >❮</button>
+          onClick={() => changeMonth(-1)}
+        >
+          ❮
+        </button>
         <h2 className="text-lg font-semibold px-4 py-1 bg-gray-700 rounded">
           {new Date(currentYear, currentMonth).toLocaleString("default", {
             month: "long",
@@ -66,15 +66,10 @@ export const CalendarView = ({
         </h2>
         <button
           className="bg-gray-700 px-3 py-1 rounded"
-          onClick={() => {
-            if (currentMonth === 11) {
-              setCurrentMonth(0);
-              setCurrentYear(currentYear + 1);
-            } else {
-              setCurrentMonth(currentMonth + 1);
-            }
-          }}
-        >❯</button>
+          onClick={() => changeMonth(1)}
+        >
+          ❯
+        </button>
       </div>
 
       <div className="grid grid-cols-7 gap-2 text-center">
@@ -83,29 +78,24 @@ export const CalendarView = ({
         ))}
         {calendarDays.map((date, i) => {
           if (!date) return <div key={i} className="h-24"></div>;
+
           const dateStr = date.toISOString().split("T")[0];
+          const postsForDate = getPostsForDate(dateStr);
+
           return (
             <div key={i} className="relative h-24 bg-gray-800 rounded p-1 text-left text-sm border border-gray-700">
-              <span
-                className="text-white text-sm"
-                title={date.toLocaleDateString(undefined, {
-                  weekday: "long",
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric"
-                })}
-              >{date.getDate()}</span>
-              {getPostsForDate(dateStr).map((post, idx) => (
+              <span className="text-white text-sm">{date.getDate()}</span>
+              {postsForDate.map((post, idx) => (
                 <div
-                  key={idx}
+                  key={post._id || idx}
                   onClick={() => setShowPostDetails(post)}
                   className="absolute top-5 left-0 right-0 text-xs mt-1 h-6 px-2 py-1 rounded text-white flex justify-between items-center cursor-pointer hover:opacity-80"
                   style={{ backgroundColor: post.color }}
                 >
                   <span>{post.title.length > 15 ? post.title.slice(0, 13) + "…" : post.title}</span>
                   <span className="flex space-x-1">
-                    <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(post.index); }} />
-                    <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(post.index); }} />
+                    <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(post._id); }} />
+                    <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(post._id); }} />
                   </span>
                 </div>
               ))}
@@ -138,6 +128,8 @@ export const HistoryView = ({
         platformMatch = post.platforms.includes(filters.platform);
       } else if (typeof post.platform === "string") {
         platformMatch = post.platform === filters.platform;
+      } else if (Array.isArray(post.platform)) {
+        platformMatch = post.platform.includes(filters.platform);
       }
 
       return dateMatch && platformMatch;
@@ -145,11 +137,7 @@ export const HistoryView = ({
   };
 
   const renderPlatformBadges = (post) => {
-    const platforms = Array.isArray(post.platforms)
-      ? post.platforms
-      : typeof post.platform === "string"
-        ? [post.platform]
-        : [];
+    const platforms = Array.isArray(post.platform) ? post.platform : [];
 
     return (
       <div className="flex flex-wrap gap-1">
@@ -163,11 +151,7 @@ export const HistoryView = ({
             >
               {getPlatformIcon(safePlatform)}
               <span>
-                {safePlatform === "other"
-                  ? post.customPlatform || "Custom"
-                  : safePlatform === "x"
-                    ? "X"
-                    : safePlatform.charAt(0).toUpperCase() + safePlatform.slice(1)}
+                {safePlatform.charAt(0).toUpperCase() + safePlatform.slice(1)}
               </span>
             </div>
           );
@@ -175,6 +159,8 @@ export const HistoryView = ({
       </div>
     );
   };
+
+  const filteredPosts = getFilteredPosts();
 
   return (
     <div className="bg-gray-800 rounded-lg p-6">
@@ -189,16 +175,16 @@ export const HistoryView = ({
         </button>
       </div>
       <div className="space-y-4">
-        {getFilteredPosts().length === 0 ? (
+        {filteredPosts.length === 0 ? (
           <p className="text-gray-400 text-center py-8">No posts found</p>
         ) : (
-          getFilteredPosts().map((post, index) => (
-            <div key={index} className="bg-gray-700 rounded-lg p-4 flex justify-between items-start">
+          filteredPosts.map((post) => (
+            <div key={post._id} className="bg-gray-700 rounded-lg p-4 flex justify-between items-start">
               <div className="flex-1">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="font-semibold text-lg">{post.title}</h3>
                   <div className="flex space-x-2 ml-4">
-                    <button onClick={() => handleEditPost(posts.findIndex(p => p === post))} className="text-blue-400 hover:text-blue-300">
+                    <button onClick={() => handleEditPost(post._id)} className="text-blue-400 hover:text-blue-300">
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button onClick={() => handleDeletePost(post._id)} className="text-red-400 hover:text-red-300">
@@ -206,9 +192,7 @@ export const HistoryView = ({
                     </button>
                   </div>
                 </div>
-
                 {renderPlatformBadges(post)}
-
                 <p className="text-sm text-gray-300 mt-2">
                   {new Date(post.date).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -230,11 +214,7 @@ export const PostDetailsModal = ({ showPostDetails, setShowPostDetails }) => {
   if (!showPostDetails) return null;
 
   const renderPlatformInfo = (post) => {
-    const platforms = Array.isArray(post.platforms)
-      ? post.platforms
-      : typeof post.platform === "string"
-        ? [post.platform]
-        : [];
+    const platforms = Array.isArray(post.platform) ? post.platform : [];
 
     return platforms.map((platform, index) => {
       const safePlatform = typeof platform === "string" ? platform : "other";
