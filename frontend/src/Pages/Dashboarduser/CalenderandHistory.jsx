@@ -152,8 +152,8 @@ export const HistoryView = ({
   };
 
   const renderPlatformBadges = (post) => {
-    const platforms = Array.isArray(post.platforms)
-      ? post.platforms
+    const platforms = Array.isArray(post.platform)
+      ? post.platform
       : typeof post.platform === "string"
         ? [post.platform]
         : [];

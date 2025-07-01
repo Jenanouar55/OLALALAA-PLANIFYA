@@ -106,6 +106,7 @@ export default function UserDashboard() {
   const handleLogoutConfirm = () => {
     setIsLogoutConfirmOpen(false);
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     navigate("/login");
   };
 
