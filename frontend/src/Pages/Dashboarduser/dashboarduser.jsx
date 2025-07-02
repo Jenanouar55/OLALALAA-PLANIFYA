@@ -35,7 +35,7 @@ export default function UserDashboard() {
     date: "",
     title: "",
     content: "",
-    platform: "instagram",
+    platform: "",
     customPlatform: "",
     color: "#E4405F",
   });
@@ -106,6 +106,7 @@ export default function UserDashboard() {
   const handleLogoutConfirm = () => {
     setIsLogoutConfirmOpen(false);
     localStorage.removeItem("token");
+    localStorage.removeItem("role");
     navigate("/login");
   };
 
@@ -135,7 +136,6 @@ export default function UserDashboard() {
       });
 
       const data = await response.json();
-
       if (response.ok) {
         toast.success('Form created successfully');
         setTimeout(() => navigate('/userDashboard'), 2000);
@@ -170,6 +170,7 @@ export default function UserDashboard() {
   };
 
   const handleEditPost = (index) => {
+    console.log(index);
     setForm(posts[index]);
     setSelectedPostIndex(index);
     setIsDialogOpen(true);
@@ -196,9 +197,9 @@ export default function UserDashboard() {
       toast.error('Erreur de réseau.');
     }
 
-    const updatedPosts = posts.filter((_, i) => i !== index);
-    setPosts(updatedPosts);
-    setShowPostDetails(null);
+    const updatedPosts = await posts.filter((i) => i._id !== index);
+    await setPosts(updatedPosts);
+    await setShowPostDetails(null);
   };
 
   const renderPlaceholderView = (pageName) => (
@@ -226,11 +227,10 @@ export default function UserDashboard() {
 
   return (
     <div className="flex h-screen bg-gray-900 text-white">
-            {/* Sidebar */}
-            <aside
-        className={`${
-          isSidebarExpanded ? "w-60" : "w-20"
-        } bg-gray-800 h-screen flex flex-col justify-between transition-all duration-300 ease-in-out`}
+      {/* Sidebar */}
+      <aside
+        className={`${isSidebarExpanded ? "w-60" : "w-20"
+          } bg-gray-800 h-screen flex flex-col justify-between transition-all duration-300 ease-in-out`}
       >
         <nav className="w-full flex flex-col items-center space-y-2 mt-4">
           <button
@@ -248,13 +248,11 @@ export default function UserDashboard() {
               <button
                 key={item.id}
                 onClick={() => handleSidebarItemClick(item.id)}
-                className={`flex items-center ${
-                  isSidebarExpanded ? "justify-start px-4" : "justify-center"
-                } w-full p-3 rounded-lg transition-colors duration-200 ${
-                  isActive
+                className={`flex items-center ${isSidebarExpanded ? "justify-start px-4" : "justify-center"
+                  } w-full p-3 rounded-lg transition-colors duration-200 ${isActive
                     ? "bg-gray-700 text-blue-400"
                     : "text-white hover:bg-gray-700 hover:text-blue-300"
-                }`}
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 {isSidebarExpanded && (
@@ -265,7 +263,7 @@ export default function UserDashboard() {
           })}
         </nav>
 
-       
+
         <div className="w-full px-3 py-4 bg-gradient-to-r from-yellow-500/20 to-yellow-300/10 border-t border-gray-700">
           <div className="flex items-center space-x-2">
             <div className="bg-yellow-500/20 p-2 rounded-full">
@@ -275,9 +273,8 @@ export default function UserDashboard() {
               <div>
                 <p className="text-xs text-gray-400">Tokens</p>
                 <p
-                  className={`text-sm font-bold ${
-                    tokenCount <= 5 ? "text-red-500 animate-pulse" : "text-yellow-300"
-                  }`}
+                  className={`text-sm font-bold ${tokenCount <= 5 ? "text-red-500 animate-pulse" : "text-yellow-300"
+                    }`}
                 >
                   {tokenCount}
                 </p>
