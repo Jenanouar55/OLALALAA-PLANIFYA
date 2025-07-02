@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Pencil, Trash, Filter } from "lucide-react";
+import { Pencil, Trash, Filter, Star } from "lucide-react";
 import { getPlatformIcon } from "./Constants";
 
 
@@ -17,7 +17,7 @@ const getPlatformColor = (platform) => {
 };
 
 export const CalendarView = ({
-  posts,
+  posts, events,
   currentMonth,
   currentYear,
   setCurrentMonth,
@@ -88,33 +88,55 @@ export const CalendarView = ({
           const month = String(date.getMonth() + 1).padStart(2, '0');
           const day = String(date.getDate()).padStart(2, '0');
           const dateStr = `${year}-${month}-${day}`;
+          const postsForDate = posts.filter(p => p.date && p.date.startsWith(dateStr));
+          const eventsForDate = events.filter(e => e.date && e.date.startsWith(dateStr));
+
+          const calendarItems = [
+            ...postsForDate.map(item => ({ ...item, type: 'post' })),
+            ...eventsForDate.map(item => ({ ...item, type: 'event' })),
+          ];
           return (
             <div key={i} className="relative h-24 bg-gray-800 rounded p-1 text-left text-sm border border-gray-700">
               <span className="text-white text-sm" title={date.toLocaleDateString()}>
                 {date.getDate()}
               </span>
 
-              {getPostsForDate(dateStr).map((post, idx) => {
+              {calendarItems.map((item, idx) => {
                 const topPosition = 1.25 + (idx * 1.75);
 
-                return (
-                  <div
-                    key={post._id}
-                    onClick={() => setShowPostDetails(post)}
-                    className="absolute left-0 right-0 text-xs h-6 px-2 py-1 rounded text-white flex justify-between items-center cursor-pointer hover:opacity-80"
-                    style={{
-                      backgroundColor: post.color,
-                      top: `${topPosition}rem`
-                    }}
-                  >
-                    <span>{post.title.length > 15 ? `${post.title.slice(0, 13)}…` : post.title}</span>
-                    <span className="flex space-x-1">
-                      {/* Note: I've also corrected the handleEditPost call to pass the whole post object, which is more reliable. */}
-                      <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(posts.findIndex(p => p === post)); }} />
-                      <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(post._id); }} />
-                    </span>
-                  </div>
-                );
+                if (item.type === 'post') {
+                  return (
+                    <div
+                      key={`post-${item._id}`}
+                      onClick={() => setShowPostDetails(item)}
+                      className="absolute left-0 right-0 text-xs h-6 px-2 py-1 rounded text-white flex justify-between items-center cursor-pointer hover:opacity-80"
+                      style={{ backgroundColor: item.color, top: `${topPosition}rem` }}
+                    >
+                      <span>{item.title.length > 15 ? `${item.title.slice(0, 13)}…` : item.title}</span>
+                      <span className="flex space-x-1">
+                        <Pencil className="w-3 h-3" onClick={(e) => { e.stopPropagation(); handleEditPost(posts.findIndex(p => p._id === item._id)); }} />
+                        <Trash className="w-3 h-3" onClick={(e) => { e.stopPropagation(); handleDeletePost(item._id); }} />
+                      </span>
+                    </div>
+                  );
+                }
+
+                if (item.type === 'event') {
+                  return (
+                    <div
+                      key={`event-${item._id}`}
+                      // onClick={() => setShowPostDetails(item)}
+                      className="absolute left-0 right-0 text-xs h-6 px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-pointer hover:opacity-80"
+                      style={{ top: `${topPosition}rem` }}
+                    >
+                      <span className="flex items-center">
+                        <Star className="w-3 h-3 mr-1.5 flex-shrink-0" />
+                        <span>{item.name}</span>
+                      </span>
+                    </div>
+                  );
+                }
+                return null;
               })}
             </div>
           );

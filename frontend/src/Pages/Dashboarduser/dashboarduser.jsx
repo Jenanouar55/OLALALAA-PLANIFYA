@@ -25,6 +25,7 @@ export default function UserDashboard() {
 
   const [tokenCount, setTokenCount] = useState(0);
   const [posts, setPosts] = useState([]);
+  const [events, setEvents] = useState([]);
   const [currentPage, setCurrentPage] = useState("calendar");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
@@ -87,10 +88,28 @@ export default function UserDashboard() {
         console.error("Error fetching tokens:", err);
       }
     };
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/api/admin/events", {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        });
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          throw new Error(`Server responded with ${res.status}: ${errorText}`);
+        }
+        const data = await res.json();
+        setEvents(data);
+      } catch (err) {
+        console.error("Error fetching tokens:", err);
+      }
+    };
 
 
 
-
+    fetchEvents()
     fetchPosts();
     fetchTokens();
   }, []);
@@ -211,7 +230,7 @@ export default function UserDashboard() {
 
   const renderCurrentPage = () => {
     switch (currentPage) {
-      case "calendar": return <CalendarView {...{ posts, currentMonth, currentYear, setCurrentMonth, setCurrentYear, setShowPostDetails, handleEditPost, handleDeletePost }} />;
+      case "calendar": return <CalendarView {...{ posts, events, currentMonth, currentYear, setCurrentMonth, setCurrentYear, setShowPostDetails, handleEditPost, handleDeletePost }} />;
       case "history": return <HistoryView {...{ posts, filters, setIsHistoryFilterOpen, handleEditPost, handleDeletePost }} />;
       case "alerts": return <NotificationsPage />;
       case "settings": return renderPlaceholderView("settings");
