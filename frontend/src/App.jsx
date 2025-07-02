@@ -41,6 +41,7 @@ import AdminOnly from './routes/AdminOnly';
 import ConnectedOnly from './routes/ConnectedOnly';
 import UserOnly from './routes/UserOnly';
 import AlreadyConnected from './routes/AlreadyConnected';
+import BillingPage2 from './Pages/BillingPage2';
 
 
 function App() {
@@ -59,6 +60,7 @@ function App() {
         <Route path="/sucess" element={<CancelPage />} />
         <Route path="/Pricing" element={<PricingPage />} />
         <Route path="/b" element={<BillingPage />} />
+        <Route path="/c" element={<BillingPage2 />} />
 
         <Route element={<ConnectedOnly />}>
           <Route element={<UserOnly />}>
