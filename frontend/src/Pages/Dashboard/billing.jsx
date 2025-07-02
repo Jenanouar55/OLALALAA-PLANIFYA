@@ -1,134 +1,133 @@
-import React, { useEffect, useState } from "react";
+import React from 'react';
+import { CreditCard, Download, DollarSign } from 'lucide-react';
 
-const BillingModal = ({ open, onClose }) => {
-  if (!open) return null;
+// Mock data for billing history
+const billingHistory = [
+  {
+    invoiceId: 'INV-2025-0701',
+    date: 'July 1, 2025',
+    amount: '49.00 DH',
+    status: 'Paid',
+  },
+  {
+    invoiceId: 'INV-2025-0601',
+    date: 'June 1, 2025',
+    amount: '49.00 DH',
+    status: 'Paid',
+  },
+  {
+    invoiceId: 'INV-2025-0501',
+    date: 'May 1, 2025',
+    amount: '49.00 DH',
+    status: 'Paid',
+  },
+];
+
+// Mock data for the current user's plan
+const currentPlan = {
+  name: 'Starter',
+  price: '49 DH/month',
+  renewalDate: 'July 31, 2025',
+  tokensUsed: 42,
+  tokensTotal: 100,
+};
+
+const BillingPage = () => {
+  const tokenUsagePercentage = (currentPlan.tokensUsed / currentPlan.tokensTotal) * 100;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
-      <div className="bg-[#1e293b] text-white rounded-2xl p-6 w-full max-w-md shadow-lg relative animate-fadeIn">
+    <div className="bg-gray-900 text-white p-6 rounded-lg space-y-8">
 
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-4 text-gray-400 hover:text-white text-xl"
-        >
-          &times;
-        </button>
+      {/* --- Header --- */}
+      <header>
+        <h1 className="text-2xl font-bold">Billing & Subscriptions</h1>
+        <p className="text-gray-400 mt-1">Manage your plan, payment methods, and view your invoice history.</p>
+      </header>
 
-        <h2 className="text-2xl font-bold text-[#38bdf8] mb-4">Manage Your Plan</h2>
-        <p className="text-gray-300 mb-6">
-          Here you can cancel your subscription or change your plan. Choose an option below:
-        </p>
-
-        <div className="space-y-3">
-          <button
-            onClick={() => {
-              alert("Redirect to change plan flow");
-              onClose();
-            }}
-            className="w-full bg-blue-600 hover:bg-blue-700 transition font-semibold py-2 px-4 rounded-lg"
-          >
+      {/* --- Current Plan Section --- */}
+      <section className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+        <h2 className="text-lg font-semibold mb-4">Current Plan</h2>
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <p className="text-blue-400 font-bold text-xl">{currentPlan.name} Plan</p>
+            <p className="text-gray-300">{currentPlan.price}</p>
+            <p className="text-sm text-gray-400 mt-1">Renews on {currentPlan.renewalDate}</p>
+          </div>
+          <div>
+            <label className="text-sm font-medium">Token Usage</label>
+            <div className="w-full bg-gray-700 rounded-full h-2.5 mt-2">
+              <div
+                className="bg-blue-600 h-2.5 rounded-full"
+                style={{ width: `${tokenUsagePercentage}%` }}
+              ></div>
+            </div>
+            <p className="text-right text-sm text-gray-400 mt-1">{currentPlan.tokensUsed} / {currentPlan.tokensTotal} Tokens</p>
+          </div>
+        </div>
+        <div className="mt-6 flex space-x-4">
+          <button className="bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-md text-sm font-medium">
             Change Plan
           </button>
-
-          <button
-            onClick={() => {
-              alert("Redirect to cancel subscription or call API");
-              onClose();
-            }}
-            className="w-full border border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition font-semibold py-2 px-4 rounded-lg"
-          >
-            Cancel Plan
+          <button className="bg-transparent hover:bg-gray-700 border border-gray-600 transition px-4 py-2 rounded-md text-sm font-medium">
+            Cancel Subscription
           </button>
         </div>
-      </div>
-    </div>
-  );
-};
-const BillingPage = () => {
-  const [subscription, setSubscription] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [error, setError] = useState("");
+      </section>
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await new Promise((res) => setTimeout(res, 500));
-      const data = {
-        name: "Pro Plan",
-        price: "132 DH/mo",
-        tokensUsed: 420,
-        tokensTotal: 2000,
-        speed: "Priority",
-        tools: "All tools + Priority AI",
-        tracking: "Full stats",
-        support: "Priority support",
-        calendar: true,
-      };
-      setSubscription(data);
-      setLoading(false);
-    };
-
-    fetchData();
-  }, []);
-
-  const percentageUsed = subscription
-    ? Math.min((subscription.tokensUsed / subscription.tokensTotal) * 100, 100)
-    : 0;
-
-  return (
-    <div className="min-h-screen bg-[#0f172a] text-white px-4 py-10">
-      <div className="max-w-4xl mx-auto space-y-10">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold">Billing Overview</h1>
-          <p className="text-gray-400 mt-2">Manage your subscription and token usage</p>
+      {/* --- Payment Method Section --- */}
+      <section className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+        <h2 className="text-lg font-semibold mb-4">Payment Method</h2>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <CreditCard className="w-8 h-8 text-gray-400" />
+            <div>
+              <p className="font-medium">Visa ending in 1234</p>
+              <p className="text-sm text-gray-400">Expires 12/2028</p>
+            </div>
+          </div>
+          <button className="bg-gray-700 hover:bg-gray-600 transition px-4 py-2 rounded-md text-sm font-medium">
+            Update
+          </button>
         </div>
+      </section>
 
-        {loading ? (
-          <p className="text-center text-gray-400">Loading...</p>
-        ) : (
-          <>
-            <div className="bg-[#1e293b] rounded-2xl p-6 md:p-8 shadow-md">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-6">
-                <div>
-                  <h2 className="text-xl font-semibold text-[#38bdf8]">{subscription.name}</h2>
-                  <p className="text-2xl font-bold mt-1">{subscription.price}</p>
-                </div>
-                <div className="text-sm text-gray-300 space-y-1">
-                  <p>📅 Calendar Access: <span className="text-white">{subscription.calendar ? "Yes" : "No"}</span></p>
-                  <p>⚡ AI Speed: <span className="text-white">{subscription.speed}</span></p>
-                  <p>🧰 Tools: <span className="text-white">{subscription.tools}</span></p>
-                  <p>📊 Tracking: <span className="text-white">{subscription.tracking}</span></p>
-                  <p>🎧 Support: <span className="text-white">{subscription.support}</span></p>
-                </div>
-              </div>
-              <button
-                onClick={() => setModalOpen(true)}
-                className="mt-6 bg-[#3b82f6] hover:bg-blue-700 transition text-white font-semibold py-2 px-6 rounded-lg"
-              >
-                Manage / Cancel Plan
-              </button>
-            </div>
-
-            <div className="bg-[#1e293b] rounded-2xl p-6 md:p-8 shadow-md">
-              <h3 className="text-xl font-semibold text-[#38bdf8] mb-4">Token Usage</h3>
-              <div className="mb-2 text-sm text-gray-400 flex justify-between">
-                <span>{subscription.tokensUsed} used</span>
-                <span>{subscription.tokensTotal - subscription.tokensUsed} remaining</span>
-              </div>
-              <div className="w-full h-4 bg-[#334155] rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-[#38bdf8] transition-all duration-500"
-                  style={{ width: `${percentageUsed}%` }}
-                />
-              </div>
-              <p className="text-center mt-4 text-gray-400 text-sm">
-                Total tokens: <span className="text-white font-medium">{subscription.tokensTotal}</span>
-              </p>
-            </div>
-          </>
-        )}
-        <BillingModal open={modalOpen} onClose={() => setModalOpen(false)} />
-      </div>
+      {/* --- Billing History Section --- */}
+      <section className="bg-gray-800 p-6 rounded-lg border border-gray-700">
+        <h2 className="text-lg font-semibold mb-4">Billing History</h2>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-gray-700 text-sm text-gray-400">
+                <th className="py-2">Invoice ID</th>
+                <th className="py-2">Date</th>
+                <th className="py-2">Amount</th>
+                <th className="py-2">Status</th>
+                <th className="py-2 text-right"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {billingHistory.map((invoice) => (
+                <tr key={invoice.invoiceId} className="border-b border-gray-700 text-sm">
+                  <td className="py-3">{invoice.invoiceId}</td>
+                  <td className="py-3">{invoice.date}</td>
+                  <td className="py-3">{invoice.amount}</td>
+                  <td className="py-3">
+                    <span className="bg-green-800 text-green-300 px-2 py-1 rounded-full text-xs">
+                      {invoice.status}
+                    </span>
+                  </td>
+                  <td className="py-3 text-right">
+                    <button className="text-blue-400 hover:text-blue-300 flex items-center justify-end ml-auto">
+                      <Download className="w-4 h-4 mr-2" />
+                      PDF
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
     </div>
   );
 };
