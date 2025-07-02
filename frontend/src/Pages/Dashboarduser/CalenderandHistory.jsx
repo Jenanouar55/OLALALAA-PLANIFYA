@@ -63,6 +63,7 @@ export const CalendarView = ({
     }
     return days;
   };
+  const today = new Date();
 
   const calendarDays = generateCalendarDays();
 
@@ -94,7 +95,9 @@ export const CalendarView = ({
         ))}
         {calendarDays.map((date, i) => {
           if (!date) return <div key={i} className="h-24" />;
-
+          const isToday = date.getDate() === today.getDate() &&
+            date.getMonth() === today.getMonth() &&
+            date.getFullYear() === today.getFullYear();
           const year = date.getFullYear();
           const month = String(date.getMonth() + 1).padStart(2, '0');
           const day = String(date.getDate()).padStart(2, '0');
@@ -113,7 +116,9 @@ export const CalendarView = ({
               onDragLeave={handleDragLeave}
               className="relative h-24 bg-gray-800 rounded p-1 text-left text-sm border border-gray-700 transition-colors"
             >
-              <span className="text-white text-sm">{date.getDate()}</span>
+              <span className={`inline-flex items-center justify-center w-6 h-6 rounded-full text-sm ${isToday ? 'bg-blue-600 text-white font-bold' : 'text-white'}`}>
+                {date.getDate()}
+              </span>
               {calendarItems.map((item, idx) => {
                 const topPosition = 1.25 + (idx * 1.75);
 
@@ -142,7 +147,6 @@ export const CalendarView = ({
                     <div
                       key={`event-${item._id}`}
                       onClick={() => setShowPostDetails(item)}
-                      //here is where we need modification
                       className="text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-default"
                       style={{ top: `${topPosition}rem` }}
                     >
@@ -174,8 +178,8 @@ export const HistoryView = ({ posts, filters, setIsHistoryFilterOpen, handleEdit
       let platformMatch = false;
       if (filters.platform === "all") {
         platformMatch = true;
-      } else if (post.platforms && Array.isArray(post.platforms)) {
-        platformMatch = post.platforms.includes(filters.platform);
+      } else if (post.platform && Array.isArray(post.platform)) {
+        platformMatch = post.platform.includes(filters.platform);
       } else if (typeof post.platform === "string") {
         platformMatch = post.platform === filters.platform;
       }
@@ -185,7 +189,7 @@ export const HistoryView = ({ posts, filters, setIsHistoryFilterOpen, handleEdit
   };
 
   const renderPlatformBadges = (post) => {
-    const platforms = Array.isArray(post.platforms) ? post.platforms : (typeof post.platform === 'string' ? [post.platform] : []);
+    const platforms = Array.isArray(post.platform) ? post.platform : (typeof post.platform === 'string' ? [post.platform] : []);
     return (
       <div className="flex flex-wrap gap-1">
         {platforms.map((platform, index) => {
@@ -250,7 +254,7 @@ export const PostDetailsModal = ({ showPostDetails, setShowPostDetails }) => {
   if (!showPostDetails) return null;
 
   const renderPlatformInfo = (post) => {
-    const platforms = Array.isArray(post.platforms) ? post.platforms : (typeof post.platform === "string" ? [post.platform] : []);
+    const platforms = Array.isArray(post.platform) ? post.platform : (typeof post.platform === "string" ? [post.platform] : []);
     return platforms.map((platform, index) => (
       <span key={index}>{platform.charAt(0).toUpperCase() + platform.slice(1)}{index < platforms.length - 1 ? ", " : ""}</span>
     ));
