@@ -33,7 +33,6 @@ export const initialPosts = [
   },
 ];
 
-// Platform color configuration
 export const platformColors = {
   tiktok: "#000000",
   instagram: "#E4405F",
@@ -46,7 +45,6 @@ export const platformColors = {
   other: "#6B7280"
 };
 
-// Dynamic sidebar menu items
 export const sidebarItems = [
   { id: "calendar", icon: CalendarDays, label: "Calendar", color: "blue" },
   { id: "profile", icon: User, label: "Profile", color: "blue" },
@@ -61,7 +59,6 @@ export const sidebarItems = [
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
 ];
 
-// Utility function to get platform icons
 export const getPlatformIcon = (platform) => {
   switch (platform) {
     case "tiktok":
@@ -84,7 +81,6 @@ export const getPlatformIcon = (platform) => {
   }
 };
 
-// Utility function to get media type icons
 export const getMediaIcon = (mediaType) => {
   switch (mediaType) {
     case "image":

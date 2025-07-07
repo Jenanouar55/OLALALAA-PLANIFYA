@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Check, ArrowLeft, CreditCard, Lock, ShieldCheck } from 'lucide-react';
+import { Check, ShieldCheck } from 'lucide-react';
 
-// --- Data for the pricing plans ---
 const plans = [
     {
+        id: 'free',
         name: 'Free',
         price: '0 DH',
         priceSuffix: '/mo',
@@ -14,9 +14,10 @@ const plans = [
             'Basic Token Tracking',
             'Community Support',
         ],
-        isCurrent: false, // You could set this dynamically
+        isCurrent: false,
     },
     {
+        id: 'starter',
         name: 'Starter',
         price: '49 DH',
         priceSuffix: '/mo',
@@ -28,9 +29,10 @@ const plans = [
             'Email Support',
         ],
         isCurrent: false,
-        isRecommended: true, // Highlights this plan
+        isRecommended: true,
     },
     {
+        id: 'pro',
         name: 'Pro',
         price: '132 DH',
         priceSuffix: '/mo',
@@ -45,21 +47,49 @@ const plans = [
     }
 ];
 
-
-// --- Main Component ---
 const CheckoutPage = () => {
-    const [selectedPlan, setSelectedPlan] = useState(null);
+    const [loadingPlan, setLoadingPlan] = useState(null);
+    const [error, setError] = useState('');
 
-    if (selectedPlan) {
-        return <SubscriptionForm plan={selectedPlan} onBack={() => setSelectedPlan(null)} />;
-    }
+    const handleSubscribe = async (planId) => {
+        if (!planId || planId === 'free') return;
 
-    return <PricingTable onSelectPlan={setSelectedPlan} />;
-};
+        setLoadingPlan(planId);
+        setError('');
 
+        try {
+            const authToken = localStorage.getItem('token');
+            if (!authToken) {
+                throw new Error('Authentication token not found. Please log in.');
+            }
 
-// --- Step 1: Pricing Table View ---
-const PricingTable = ({ onSelectPlan }) => {
+            const response = await fetch('http://localhost:5000/api/stripe/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authToken}`,
+                },
+                body: JSON.stringify({ planId: planId }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'An error occurred during checkout.');
+            }
+
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                throw new Error('Could not retrieve the checkout URL.');
+            }
+
+        } catch (err) {
+            setError(err.message);
+            setLoadingPlan(null);
+        }
+    };
+
     return (
         <div className="bg-gray-900 text-white min-h-screen p-4 sm:p-8">
             <div className="text-center mb-12">
@@ -67,10 +97,16 @@ const PricingTable = ({ onSelectPlan }) => {
                 <p className="text-gray-400 mt-2">From casual creators to serious strategists — we've got you covered.</p>
             </div>
 
+            {error && (
+                <div className="max-w-md mx-auto bg-red-900/50 border border-red-500 text-red-300 px-4 py-3 rounded-lg mb-8 text-center">
+                    <p><strong>Error:</strong> {error}</p>
+                </div>
+            )}
+
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 {plans.map((plan) => (
                     <div
-                        key={plan.name}
+                        key={plan.id}
                         className={`bg-gray-800 rounded-lg shadow-lg p-6 flex flex-col border-2 ${plan.isRecommended ? 'border-blue-500' : 'border-gray-700'}`}
                     >
                         {plan.isRecommended && (
@@ -96,86 +132,29 @@ const PricingTable = ({ onSelectPlan }) => {
 
                         <div className="mt-auto">
                             <button
-                                onClick={() => onSelectPlan(plan)}
-                                disabled={plan.name === 'Free'}
-                                className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-medium disabled:bg-gray-600 disabled:cursor-not-allowed"
+                                onClick={() => handleSubscribe(plan.id)}
+                                disabled={plan.id === 'free' || loadingPlan === plan.id}
+                                className="w-full bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-medium disabled:bg-gray-600 disabled:cursor-not-allowed flex items-center justify-center"
                             >
-                                {plan.name === 'Free' ? 'Included' : 'Subscribe'}
+                                {loadingPlan === plan.id ? (
+                                    <>
+                                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Processing...
+                                    </>
+                                ) : (
+                                    plan.id === 'free' ? 'Included' : 'Subscribe'
+                                )}
                             </button>
                         </div>
                     </div>
                 ))}
             </div>
-        </div>
-    );
-};
-
-
-// --- Step 2: Subscription Form View ---
-const SubscriptionForm = ({ plan, onBack }) => {
-    const [formData, setFormData] = useState({
-        cardholderName: '',
-        cardNumber: '',
-        expiryDate: '',
-        cvc: '',
-        country: 'MA',
-    });
-
-    const handleInputChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        console.log('Subscribing to:', plan.name, 'with data:', formData);
-        alert(`Subscription to ${plan.name} successful!`);
-    };
-
-    return (
-        <div className="bg-gray-900 flex flex-col items-center justify-center p-4 min-h-screen">
-            <button onClick={onBack} className="flex items-center text-blue-400 hover:text-blue-300 mb-6 group">
-                <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
-                Back to plans
-            </button>
-            <div className="w-full max-w-md">
-                <form onSubmit={handleSubmit} className="bg-gray-800 border border-gray-700 p-8 rounded-lg shadow-lg">
-                    <div className="text-center mb-8">
-                        <ShieldCheck className="w-12 h-12 text-blue-500 mx-auto mb-2" />
-                        <h1 className="text-2xl font-bold text-white">Secure Checkout</h1>
-                        <p className="text-gray-400 mt-2">
-                            You are subscribing to the <span className="text-blue-400 font-semibold">{plan.name} Plan</span> for {plan.price}{plan.priceSuffix}.
-                        </p>
-                    </div>
-
-                    <div className="space-y-6">
-                        {/* Form fields are the same as the previous response */}
-                        <div>
-                            <label htmlFor="cardholderName" className="block text-sm font-medium text-gray-300 mb-2">Cardholder Name</label>
-                            <input type="text" id="cardholderName" name="cardholderName" onChange={handleInputChange} className="w-full px-3 py-2 rounded-md bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Full Name" required />
-                        </div>
-                        <div>
-                            <label htmlFor="cardNumber" className="block text-sm font-medium text-gray-300 mb-2">Card Number</label>
-                            <div className="relative"><CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" /><input type="text" id="cardNumber" name="cardNumber" onChange={handleInputChange} className="w-full pl-10 pr-3 py-2 rounded-md bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="0000 0000 0000 0000" required /></div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-6">
-                            <div>
-                                <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-300 mb-2">Expiry</label>
-                                <input type="text" id="expiryDate" name="expiryDate" onChange={handleInputChange} className="w-full px-3 py-2 rounded-md bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM / YY" required />
-                            </div>
-                            <div>
-                                <label htmlFor="cvc" className="block text-sm font-medium text-gray-300 mb-2">CVC</label>
-                                <div className="relative"><Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" /><input type="text" id="cvc" name="cvc" onChange={handleInputChange} className="w-full pl-10 pr-3 py-2 rounded-md bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="123" required /></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-8">
-                        <button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 transition-all px-5 py-3 rounded-md shadow-md text-sm font-semibold">
-                            Subscribe for {plan.price}
-                        </button>
-                    </div>
-                </form>
+            <div className="text-center mt-8 text-gray-500 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 mr-2" />
+                <span>Secure payments powered by Stripe</span>
             </div>
         </div>
     );

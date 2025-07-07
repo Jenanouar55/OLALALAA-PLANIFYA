@@ -18,7 +18,6 @@ const ChatBot = () => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Sidebar menu and edit state
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [editingChatId, setEditingChatId] = useState(null);
 
@@ -55,32 +54,6 @@ const ChatBot = () => {
     } finally {
       console.error(false);
     }
-    // const updated = conversations.map((chat) =>
-    //   chat.id === activeChatId
-    //     ? {
-    //       ...chat,
-    //       messages: [...chat.messages, { sender: 'user', text: input }],
-    //     }
-    //     : chat
-    // );
-    // setConversations(updated);
-
-
-    // setTimeout(() => {
-    //   setConversations((prev) =>
-    //     prev.map((chat) =>
-    //       chat.id === activeChatId
-    //         ? {
-    //           ...chat,
-    //           messages: [
-    //             ...chat.messages,
-    //             { sender: 'bot', text: `You said: "${input}"` },
-    //           ],
-    //         }
-    //         : chat
-    //     )
-    //   );
-    // }, 600);
   };
 
   const handleNewChat = () => {
@@ -94,32 +67,6 @@ const ChatBot = () => {
     setActiveChatId(newId);
   };
 
-  // const handleRename = (id, newName) => {
-  //   if (!newName.trim()) return;
-  //   setConversations(
-  //     conversations.map((chat) =>
-  //       chat.id === id ? { ...chat, name: newName } : chat
-  //     )
-  //   );
-  //   setEditingChatId(null);
-  // };
-
-  // const handleDelete = (id) => {
-  //   const filtered = conversations.filter((chat) => chat.id !== id);
-  //   setConversations(filtered);
-  //   setMenuOpenId(null);
-  //   if (id === activeChatId && filtered.length > 0) {
-  //     setActiveChatId(filtered[0].id);
-  //   } else if (filtered.length === 0) {
-  //     handleNewChat();
-  //   }
-  // };
-
-  // const handleShare = (id) => {
-  //   const chat = conversations.find((c) => c.id === id);
-  //   alert(`Sharing chat "${chat.name}" (mock action)`);
-  //   setMenuOpenId(null);
-  // };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

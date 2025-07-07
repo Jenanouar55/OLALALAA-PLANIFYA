@@ -70,13 +70,13 @@ export default function UserProfile() {
           ...defaultUser,
           firstName: profileData.firstName || "",
           lastName: profileData.lastName || "",
-          email: profileData.email || "", 
+          email: profileData.email || "",
           phoneNumber: profileData.phoneNumber || "",
           age: profileData.age || "",
           gender: profileData.gender || "",
           city: profileData.city || "",
           country: profileData.country || "",
-          bio: profileData.additionalInfo || "", 
+          bio: profileData.additionalInfo || "",
           platforms: profileData.platforms || [],
           mainPlatform: profileData.mainPlatform || "",
           contentTypes: profileData.contentTypes || [],
@@ -154,7 +154,7 @@ export default function UserProfile() {
         if (response.ok) {
           const result = await response.json();
           console.log("Profile updated successfully:", result);
-          
+
           const updatedUser = {
             ...formData,
             profilePic: formData.profilePic || user.profilePic,
@@ -176,32 +176,32 @@ export default function UserProfile() {
     setIsEditing(!isEditing);
   };
 
- const handleDeleteAccount = async () => {
-  const token = localStorage.getItem('token');
-  try {
-    const response = await axios.delete('/api/users/delete-account', {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      data: {
-        password: confirmPassword,
-      },
-    });
+  const handleDeleteAccount = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await axios.delete('/api/users/delete-account', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        data: {
+          password: confirmPassword,
+        },
+      });
 
-    alert(response.data.message);
-    setShowDeleteModal(false);
-    setUser(defaultUser);
-    setFormData(defaultUser);
-    setActiveTab("edit");
-    setIsEditing(false);
-    setConfirmPassword("");
-    localStorage.removeItem('token');
-    window.location.href = '/';
-  } catch (error) {
-    console.error('Delete account error:', error);
-    alert(error.response?.data?.message || "Something went wrong.");
-  }
-};
+      alert(response.data.message);
+      setShowDeleteModal(false);
+      setUser(defaultUser);
+      setFormData(defaultUser);
+      setActiveTab("edit");
+      setIsEditing(false);
+      setConfirmPassword("");
+      localStorage.removeItem('token');
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Delete account error:', error);
+      alert(error.response?.data?.message || "Something went wrong.");
+    }
+  };
 
   const displayPic = previewPic || user.profilePic || "/profile.jpg";
   const fullName = `${user.firstName} ${user.lastName}`.trim() || "User";
@@ -223,7 +223,7 @@ export default function UserProfile() {
       <div className="flex min-h-screen bg-gray-900 text-white items-center justify-center">
         <div className="text-center">
           <p className="text-red-400 mb-4">{error}</p>
-          <button 
+          <button
             onClick={fetchUserProfile}
             className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md"
           >
@@ -246,9 +246,8 @@ export default function UserProfile() {
           <button
             key={key}
             onClick={() => setActiveTab(key)}
-            className={`w-full text-left px-4 py-2 rounded-md transition ${
-              activeTab === key ? "bg-purple-600" : "hover:bg-gray-700"
-            }`}
+            className={`w-full text-left px-4 py-2 rounded-md transition ${activeTab === key ? "bg-purple-600" : "hover:bg-gray-700"
+              }`}
           >
             {label}
           </button>

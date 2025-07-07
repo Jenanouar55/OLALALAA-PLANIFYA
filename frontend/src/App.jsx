@@ -1,19 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// Existing imports
-
-// Existing imports
 import LoginForm from './components/Signup/LoginPage';
 import SignupForm from './components/Signup/SignupForm';
 import LandingPage from './Pages/LandingPage';
-
-// Dashboard page 
 import Dashboard from './Pages/Dashboard/Dashboard';
 import AdminLogin from './components/Signup/AdminLogin';
-// import ProtectedRoutes from './routes/ConnectedOnly';
-
-// user dashboard
 import UserDashboard from './Pages/Dashboarduser/dashboarduser';
 import ChatBot from './Pages/Dashboarduser/Chatbot';
 import {
@@ -25,13 +17,8 @@ import {
 } from './Pages/Dashboarduser/Constants';
 import { CalendarView, HistoryView, PostDetailsModal } from './Pages/Dashboarduser/CalenderandHistory';
 import { PostForm, HistoryFilterModal } from './Pages/Dashboarduser/form';
-
-
-//form after signup
 import ExForm from './Pages/exploringform';
 import Events from './Pages/Dashboard/Events';
-
-// payment pages
 import SuccessPage from './Pages/SuccessPage';
 import CancelPage from './Pages/CancelPage';
 import PricingPage from './Pages/PricingPage';
@@ -56,8 +43,8 @@ function App() {
           <Route path="/AdminLogin" element={<AdminLogin />} />
         </Route>
 
-        <Route path="/cancel" element={<SuccessPage />} />
-        <Route path="/sucess" element={<CancelPage />} />
+        <Route path="/cancel" element={<CancelPage />} />
+        <Route path="/sucess" element={<SuccessPage />} />
         <Route path="/Pricing" element={<PricingPage />} />
         <Route path="/b" element={<BillingPage />} />
         <Route path="/c" element={<BillingPage2 />} />
