@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import apiClient from "../../lib/axios";
 
 const Navbar = () => (
   <header className="bg-[#1e1e2f] shadow-md p-4 flex justify-between items-center border-b border-gray-700">
@@ -122,23 +123,21 @@ export default function AdminPanel() {
 
   const handleDeleteUser = async (id) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/admin/users/${id}`, {
-        method: "DELETE",
-        headers: {
-          'Content-Type': 'application/json',
-          authorization: 'Bearer ' + localStorage.getItem("token"),
-        },
-      });
+      const { data } = await apiClient.delete(
+        `/admin/users/${id}`,
+        { planId: planId },
+        {
+          headers: {
+            'Authorization': `Bearer ${authToken}`,
+          },
+        }
+      );
 
-      const data = await response.json();
+      // const data = await response.json();
 
-      if (response.ok) {
-        toast.success('Utilisateur supprimé avec succès');
-        setUsers(users.filter((u) => u._id !== id));
-        setToggle(false);
-      } else {
-        toast.error(data.message || 'Erreur lors de la suppression.');
-      }
+      toast.success('Utilisateur supprimé avec succès');
+      setUsers(users.filter((u) => u._id !== id));
+      setToggle(false);
     } catch (err) {
       toast.error('Erreur de réseau.');
     }
@@ -147,13 +146,14 @@ export default function AdminPanel() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/admin/users", {
-          method: "GET",
-          headers: {
-            'Content-Type': 'application/json',
-            authorization: 'Bearer ' + localStorage.getItem("token"),
-          },
-        });
+        const response = await apiClient.get(
+          '/admin/users',
+          {
+            headers: {
+              'Authorization': `Bearer ${authToken}`,
+            },
+          }
+        );
         const data = await response.json();
         if (response.ok) {
           setUsers(data);

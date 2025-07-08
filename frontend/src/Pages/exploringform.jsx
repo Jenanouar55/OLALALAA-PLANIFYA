@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import axios from "axios";
+// import axios from "axios";
+// import apiClient from "../lib/axios";
 
 
 const ExForm = () => {
@@ -133,7 +134,7 @@ const ExForm = () => {
         return;
       }
 
-      const response = await axios.post("http://localhost:5000/api/profile", profileData, {
+      const response = await apiClient.post("/profile", profileData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -169,18 +170,16 @@ const ExForm = () => {
                 {index + 1}
               </div>
               <span
-                className={`mt-2 text-sm ${
-                  step === index + 1 ? "text-white" : "text-gray-400"
-                }`}
+                className={`mt-2 text-sm ${step === index + 1 ? "text-white" : "text-gray-400"
+                  }`}
               >
                 {label}
               </span>
               {index < 2 && (
                 <div className="absolute top-5 left-1/2 w-full h-0.5 bg-gray-600 -z-10">
                   <div
-                    className={`h-full transition-all duration-300 ${
-                      step > index + 1 ? "bg-purple-600 w-full" : "w-0"
-                    }`}
+                    className={`h-full transition-all duration-300 ${step > index + 1 ? "bg-purple-600 w-full" : "w-0"
+                      }`}
                   />
                 </div>
               )}
@@ -302,11 +301,10 @@ const ExForm = () => {
                     type="button"
                     key={name}
                     onClick={() => togglePlatform(name)}
-                    className={`flex items-center gap-2 border px-4 py-2 rounded transition-colors ${
-                      visiblePlatforms.includes(name)
-                        ? "border-purple-600 bg-purple-700 text-white"
-                        : "border-gray-700 hover:border-gray-600"
-                    }`}
+                    className={`flex items-center gap-2 border px-4 py-2 rounded transition-colors ${visiblePlatforms.includes(name)
+                      ? "border-purple-600 bg-purple-700 text-white"
+                      : "border-gray-700 hover:border-gray-600"
+                      }`}
                   >
                     {icon} {name.charAt(0).toUpperCase() + name.slice(1)}
                   </button>
@@ -353,48 +351,48 @@ const ExForm = () => {
               <h3 className="mb-3 font-semibold text-lg">Content Types (select all that apply):</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {["photography", "creative writing", "video", "other"]
-                .map((type) => (
-                  <label key={type} className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="contentTypes"
-                      value={type.toLowerCase()}
-                      checked={formData.contentTypes.includes(type.toLowerCase())}
-                      onChange={handleChange}
-                      className="mr-2"
-                    />
-                    <span className="text-sm">{type}</span>
-                  </label>
-                ))}
+                  .map((type) => (
+                    <label key={type} className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="contentTypes"
+                        value={type.toLowerCase()}
+                        checked={formData.contentTypes.includes(type.toLowerCase())}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">{type}</span>
+                    </label>
+                  ))}
               </div>
               {formData.contentTypes.includes("other") && (
-              <input
-                type="text"
-                placeholder="Please specify other content types"
-                value={otherContent}
-                onChange={(e) => setOtherContent(e.target.value)}
-                className="mt-3 p-2 w-full bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
-              />
-            )}
+                <input
+                  type="text"
+                  placeholder="Please specify other content types"
+                  value={otherContent}
+                  onChange={(e) => setOtherContent(e.target.value)}
+                  className="mt-3 p-2 w-full bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
+                />
+              )}
             </div>
 
             <div>
               <h3 className="mb-3 font-semibold text-lg">Content Categories (select all that apply):</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {["art", "technology", "beauty and fashion", "gadgets", "events", "gaming", "other"]
-                .map((cat) => (
-                  <label key={cat} className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="contentCategories"
-                      value={cat.toLowerCase()}
-                      checked={formData.contentCategories.includes(cat.toLowerCase())}
-                      onChange={handleChange}
-                      className="mr-2"
-                    />
-                    <span className="text-sm">{cat}</span>
-                  </label>
-                ))}
+                  .map((cat) => (
+                    <label key={cat} className="flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        name="contentCategories"
+                        value={cat.toLowerCase()}
+                        checked={formData.contentCategories.includes(cat.toLowerCase())}
+                        onChange={handleChange}
+                        className="mr-2"
+                      />
+                      <span className="text-sm">{cat}</span>
+                    </label>
+                  ))}
               </div>
               {formData.contentCategories.includes("other") && (
                 <input
@@ -491,11 +489,10 @@ const ExForm = () => {
             type="button"
             onClick={handleBack}
             disabled={step === 1 || isSubmitting}
-            className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-              step === 1 || isSubmitting
-                ? "bg-gray-600 cursor-not-allowed text-gray-400"
-                : "bg-gray-700 hover:bg-gray-600 text-white"
-            }`}
+            className={`px-6 py-3 rounded-lg font-medium transition-colors ${step === 1 || isSubmitting
+              ? "bg-gray-600 cursor-not-allowed text-gray-400"
+              : "bg-gray-700 hover:bg-gray-600 text-white"
+              }`}
           >
             Back
           </button>
@@ -516,11 +513,10 @@ const ExForm = () => {
               type="button"
               onClick={handleSubmit}
               disabled={!isSubmitEnabled || isSubmitting}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                !isSubmitEnabled || isSubmitting
-                  ? "bg-gray-600 cursor-not-allowed text-gray-400"
-                  : "bg-purple-600 hover:bg-purple-700 text-white"
-              }`}
+              className={`px-6 py-3 rounded-lg font-medium transition-colors ${!isSubmitEnabled || isSubmitting
+                ? "bg-gray-600 cursor-not-allowed text-gray-400"
+                : "bg-purple-600 hover:bg-purple-700 text-white"
+                }`}
             >
               {isSubmitting ? "Submitting..." : "Submit"}
             </button>

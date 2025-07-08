@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Check, ShieldCheck } from 'lucide-react';
+import apiClient from '../lib/axios';
 
 const plans = [
     {
@@ -48,47 +49,20 @@ const plans = [
 ];
 
 const CheckoutPage = () => {
+    const dispatch = useDispatch();
+
     const [loadingPlan, setLoadingPlan] = useState(null);
     const [error, setError] = useState('');
 
-    const handleSubscribe = async (planId) => {
+    const handleSubscribe = (planId) => {
         if (!planId || planId === 'free') return;
-
-        setLoadingPlan(planId);
-        setError('');
-
-        try {
-            const authToken = localStorage.getItem('token');
-            if (!authToken) {
-                throw new Error('Authentication token not found. Please log in.');
-            }
-
-            const response = await fetch('http://localhost:5000/api/stripe/create-checkout-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authToken}`,
-                },
-                body: JSON.stringify({ planId: planId }),
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'An error occurred during checkout.');
-            }
-
-            if (data.url) {
-                window.location.href = data.url;
-            } else {
-                throw new Error('Could not retrieve the checkout URL.');
-            }
-
-        } catch (err) {
-            setError(err.message);
-            setLoadingPlan(null);
-        }
+        dispatch(createCheckoutSession({ planId }));
     };
+    useEffect(() => {
+        if (error) {
+            toast.error(error);
+        }
+    }, [error]);
 
     return (
         <div className="bg-gray-900 text-white min-h-screen p-4 sm:p-8">

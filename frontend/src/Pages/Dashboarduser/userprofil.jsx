@@ -2,14 +2,21 @@ import React, { useState, useEffect } from "react";
 import { FiCamera } from "react-icons/fi";
 import { FaSpinner } from "react-icons/fa";
 import axios from "axios";
-
+import apiClient from "../../lib/axios";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { createOrUpdateProfile, fetchMyProfile } from "../../features/profileSlice";
 export default function UserProfile() {
+
+  const dispatch = useDispatch();
+  const { data: profile, loading, error } = useSelector((state) => state.profile);
+
   const [activeTab, setActiveTab] = useState("edit");
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState("");
 
   const defaultUser = {
     firstName: "",
@@ -38,71 +45,84 @@ export default function UserProfile() {
   const [previewPic, setPreviewPic] = useState(null);
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
+    dispatch(fetchMyProfile());
+    setFormData(profile);
+    setUser(profile)
+  }, [dispatch]);
 
-  const fetchUserProfile = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError("No authentication token found");
-        setLoading(false);
-        return;
-      }
-      const response = await fetch('http://localhost:5000/api/profile/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const textResponse = await response.text();
-        console.error('Response is not JSON:', textResponse);
-        setError('Server returned invalid response format');
-        setLoading(false);
-        return;
-      }
+  // const fetchUserProfile = async () => {
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     if (!token) {
+  //       setError("No authentication token found");
+  //       setLoading(false);
+  //       return;
+  //     }
+  //     const response = await fetch('http://localhost:5000/api/profile/me', {
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+  //     const contentType = response.headers.get('content-type');
+  //     if (!contentType || !contentType.includes('application/json')) {
+  //       const textResponse = await response.text();
+  //       console.error('Response is not JSON:', textResponse);
+  //       setError('Server returned invalid response format');
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      if (response.ok) {
-        const profileData = await response.json();
-        const userData = {
-          ...defaultUser,
-          firstName: profileData.firstName || "",
-          lastName: profileData.lastName || "",
-          email: profileData.email || "",
-          phoneNumber: profileData.phoneNumber || "",
-          age: profileData.age || "",
-          gender: profileData.gender || "",
-          city: profileData.city || "",
-          country: profileData.country || "",
-          bio: profileData.additionalInfo || "",
-          platforms: profileData.platforms || [],
-          mainPlatform: profileData.mainPlatform || "",
-          contentTypes: profileData.contentTypes || [],
-          contentCategories: profileData.contentCategories || [],
-          monetizationMethod: profileData.monetizationMethod || "",
-          bestContentLinks: profileData.bestContentLinks || [],
-          additionalInfo: profileData.additionalInfo || "",
-          plan: profileData.plan || "free",
-          tokens: profileData.tokens || 15
-        };
+  //     if (response.ok) {
+  //       const profileData = await response.json();
+  //       const userData = {
+  //         ...defaultUser,
+  //         firstName: profileData.firstName || "",
+  //         lastName: profileData.lastName || "",
+  //         email: profileData.email || "",
+  //         phoneNumber: profileData.phoneNumber || "",
+  //         age: profileData.age || "",
+  //         gender: profileData.gender || "",
+  //         city: profileData.city || "",
+  //         country: profileData.country || "",
+  //         bio: profileData.additionalInfo || "",
+  //         platforms: profileData.platforms || [],
+  //         mainPlatform: profileData.mainPlatform || "",
+  //         contentTypes: profileData.contentTypes || [],
+  //         contentCategories: profileData.contentCategories || [],
+  //         monetizationMethod: profileData.monetizationMethod || "",
+  //         bestContentLinks: profileData.bestContentLinks || [],
+  //         additionalInfo: profileData.additionalInfo || "",
+  //         plan: profileData.plan || "free",
+  //         tokens: profileData.tokens || 15
+  //       };
 
-        setUser(userData);
-        setFormData(userData);
-      } else if (response.status === 404) {
-        setError("Profile not found");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || `Server error: ${response.status}`);
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-      setError("Network error");
-    } finally {
-      setLoading(false);
+  //       setUser(userData);
+  //       setFormData(userData);
+  //     } else if (response.status === 404) {
+  //       setError("Profile not found");
+  //     } else {
+  //       const errorData = await response.json();
+  //       setError(errorData.message || `Server error: ${response.status}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching profile:", error);
+  //     setError("Network error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  useEffect(() => {
+    if (profile) {
+      setFormData(profile);
     }
-  };
+  }, [profile]);
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -124,54 +144,7 @@ export default function UserProfile() {
 
   const toggleEdit = async () => {
     if (isEditing) {
-
-      try {
-        const token = localStorage.getItem('token');
-        const updateData = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phoneNumber: formData.phoneNumber,
-          age: formData.age ? parseInt(formData.age) : undefined,
-          gender: formData.gender,
-          city: formData.city,
-          country: formData.country,
-          additionalInfo: formData.bio,
-        };
-        Object.keys(updateData).forEach(key => {
-          if (updateData[key] === undefined || updateData[key] === "") {
-            delete updateData[key];
-          }
-        });
-        const response = await fetch('http://localhost:5000/api/profile/me', {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(updateData)
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          console.log("Profile updated successfully:", result);
-
-          const updatedUser = {
-            ...formData,
-            profilePic: formData.profilePic || user.profilePic,
-          };
-          setUser(updatedUser);
-          setPreviewPic(null);
-          setError("");
-        } else {
-          const result = await response.json();
-          setError(result.message || "Failed to update profile");
-        }
-      } catch (error) {
-        console.error("Error updating profile:", error);
-        setError("Network error.");
-      }
-    } else {
-      setFormData(user);
+      dispatch(createOrUpdateProfile(formData));
     }
     setIsEditing(!isEditing);
   };
@@ -179,7 +152,7 @@ export default function UserProfile() {
   const handleDeleteAccount = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await axios.delete('/api/users/delete-account', {
+      const response = await apiClient.delete('/users/delete-account', {
         headers: {
           Authorization: `Bearer ${token}`,
         },

@@ -6,6 +6,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import axios from "axios";
+import apiClient from '../../lib/axios';
 const ChatBot = () => {
   const [conversations, setConversations] = useState([
     {
@@ -28,7 +29,7 @@ const ChatBot = () => {
     conversations.push(input);
     setConversations(conversations);
     try {
-      const response = await axios.post("http://localhost:5000/api/ai/strategy-chat", {
+      const response = await apiClient.post("/ai/strategy-chat", {
         message: input
       }, {
         headers: {

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import apiClient from "../../lib/axios";
 
 const icons = {
   loading: (
@@ -92,7 +93,7 @@ export default function CalendarIdeas() {
 
     setLoading(true);
     try {
-      const response = await axios.post("http://localhost:5000/api/ai/calendar-ideas", {
+      const response = await apiClient.post("/ai/calendar-ideas", {
         platform,
         category,
         date,
@@ -245,12 +246,12 @@ export default function CalendarIdeas() {
             </p>
           )}
           {/* {ideas?.map(({ id, date, platform, category, idea, saved }) => ( */}
-          {ideas?.map((idea) => (
+          {ideas?.map((idea, i) => (
             <div
               // key={id}
               className="bg-[#334155] p-5 rounded-lg flex justify-between items-center"
             >
-              <div>
+              <div id={i}>
                 <p className="font-semibold text-lg">{idea.title}</p>
                 <p className="text-sm text-gray-300 mt-1">
                   {/* Date: {date} | Platform: {platform} | Category: {category} */}

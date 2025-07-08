@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import apiClient from '../../lib/axios';
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -19,23 +20,16 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
+      const { data } = await apiClient.post('/auth/login', formData);
 
-      const data = await response.json();
 
-      if (response.ok) {
-        console.log(data);
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('role', data.role);
-        toast.success('Connexion réussie !');
-        setTimeout(() => navigate('/userDashboard'), 2000);
-      } else {
-        toast.error(data.message || 'Erreur de connexion');
-      }
+      // const data = await response.json();
+
+      console.log(data);
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('role', data.role);
+      toast.success('Connexion réussie !');
+      setTimeout(() => navigate('/userDashboard'), 2000);
     } catch (err) {
       alert('Erreur de réseau.');
     }
@@ -46,7 +40,6 @@ const LoginForm = () => {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <div className="w-full max-w-md bg-white dark:bg-gray-800 dark:border dark:border-gray-700 rounded-lg shadow-lg p-6 sm:p-8 relative">
 
-        {/* Logo inside the card */}
         <div className="flex justify-center mb-4">
           <Link to="/Home" className="flex items-center">
             <img src="/Images/Planifya-v2.png" alt="Logo Planifya" className="h-10 object-contain" />
@@ -58,7 +51,6 @@ const LoginForm = () => {
         </h1>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Email */}
           <div>
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Adresse e-mail
@@ -79,7 +71,6 @@ const LoginForm = () => {
             />
           </div>
 
-          {/* Password */}
           <div className="relative">
             <label htmlFor="password" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
               Mot de passe
@@ -107,7 +98,6 @@ const LoginForm = () => {
             </button>
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="block w-40 mx-auto text-purple-700 hover:text-white border border-purple-700 
@@ -119,7 +109,6 @@ const LoginForm = () => {
             Se connecter
           </button>
 
-          {/* Sign up link */}
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
             Pas encore de compte ? <Link to="/signup" className="text-blue-600 dark:text-blue-400">Inscrivez-vous</Link>
           </p>

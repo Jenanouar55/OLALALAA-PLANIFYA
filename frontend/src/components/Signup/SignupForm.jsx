@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import apiClient from '../../lib/axios';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -40,25 +41,19 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      const payload = {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password,
+      };
 
-      const data = await response.json();
+      const { data } = await apiClient.post('auth/register', payload);
 
-      if (response.ok) {
-        toast.success('Inscription réussie. Redirection...');
-        localStorage.setItem("token", data.token);
-        setTimeout(() => navigate("/ex"), 2000);
-      } else {
-        toast.error(data.message || 'Erreur lors de l’inscription.');
-      }
+
+
+      toast.success('Inscription réussie. Redirection...');
+      localStorage.setItem("token", data.token);
+      setTimeout(() => navigate("/ex"), 2000);
     } catch (err) {
       toast.error('Erreur de réseau.');
     }
