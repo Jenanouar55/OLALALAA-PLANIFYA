@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useState } from "react";
 
 const icons = {
@@ -85,23 +86,44 @@ export default function CalendarIdeas() {
     return `Idea for ${category} on ${platform} scheduled for ${date} (#${randomSuffix})`;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!date) return;
 
     setLoading(true);
-    setTimeout(() => {
-      const newIdea = {
-        id: Date.now(),
-        date,
+    try {
+      const response = await axios.post("http://localhost:5000/api/ai/calendar-ideas", {
         platform,
         category,
-        idea: generateIdeaText(category, platform, date),
-        saved: false,
-      };
-      setIdeas((prev) => [newIdea, ...prev]);
+        date,
+      }, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        }
+      });
+      const ideasArray = response.data.result?.split('*')
+        .slice(1)
+      const cleanedArray = ideasArray.filter(item => item.trim() !== '');
+
+      const structuredIdeas = [];
+      for (let i = 0; i < cleanedArray.length; i += 2) {
+        if (cleanedArray[i + 1]) {
+          structuredIdeas.push({
+            title: cleanedArray[i].replace(':', '').trim(),
+            description: cleanedArray[i + 1].trim()
+          });
+        }
+      }
+      if (structuredIdeas && response.data.result) {
+        setIdeas(structuredIdeas);
+      } else {
+        console.log("Failed to generate script. The response was empty.");
+      }
+    } catch (err) {
+      console.error("Error fetching AI script:", err);
+    } finally {
       setLoading(false);
-    }, 1500);
+    }
   };
 
   const toggleSave = (id) => {
@@ -201,11 +223,10 @@ export default function CalendarIdeas() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded font-semibold text-lg transition-colors ${
-              loading
-                ? "bg-gray-600 cursor-not-allowed"
-                : "bg-purple-600 hover:bg-purple-700"
-            }`}
+            className={`w-full py-3 rounded font-semibold text-lg transition-colors ${loading
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-purple-600 hover:bg-purple-700"
+              }`}
           >
             {loading ? (
               <>
@@ -217,25 +238,28 @@ export default function CalendarIdeas() {
           </button>
         </form>
 
-        <div className="mt-8 space-y-5 max-h-[350px] overflow-auto">
+        <div className="mt-8 space-y-5 max-h-[350px] overflow-auto scrollbar-hide">
           {ideas.length === 0 && (
             <p className="text-gray-400 italic text-lg text-center">
               No ideas generated yet.
             </p>
           )}
-          {ideas.map(({ id, date, platform, category, idea, saved }) => (
+          {/* {ideas?.map(({ id, date, platform, category, idea, saved }) => ( */}
+          {ideas?.map((idea) => (
             <div
-              key={id}
+              // key={id}
               className="bg-[#334155] p-5 rounded-lg flex justify-between items-center"
             >
               <div>
-                <p className="font-semibold text-lg">{idea}</p>
+                <p className="font-semibold text-lg">{idea.title}</p>
                 <p className="text-sm text-gray-300 mt-1">
-                  Date: {date} | Platform: {platform} | Category: {category}
+                  {/* Date: {date} | Platform: {platform} | Category: {category} */}
+                  {/* title: {title} | description: {description} */}
+                  description: {idea.description}
                 </p>
               </div>
-              <div className="flex space-x-4 items-center">
-                
+              {/* <div className="flex space-x-4 items-center">
+
                 <span
                   onClick={() => toggleSave(id)}
                   role="button"
@@ -243,7 +267,7 @@ export default function CalendarIdeas() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") toggleSave(id);
                   }}
-                  aria-label={saved ? "Unsave idea" : "Save idea"}
+                // aria-label={saved ? "Unsave idea" : "Save idea"}
                 >
                   {icons.save}
                 </span>
@@ -259,7 +283,7 @@ export default function CalendarIdeas() {
                 >
                   {icons.trash}
                 </span>
-              </div>
+              </div> */}
             </div>
           ))}
         </div>

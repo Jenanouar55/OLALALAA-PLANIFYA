@@ -14,9 +14,9 @@ const SignupForm = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false); // For second field
+  const [showConfirm, setShowConfirm] = useState(false);
 
-  const navigate = useNavigate(); // ✅ lowercase
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

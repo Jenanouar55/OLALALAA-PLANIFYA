@@ -28,7 +28,9 @@ const LoginForm = () => {
       const data = await response.json();
 
       if (response.ok) {
+        console.log(data);
         localStorage.setItem('token', data.token);
+        localStorage.setItem('role', data.role);
         toast.success('Connexion réussie !');
         setTimeout(() => navigate('/userDashboard'), 2000);
       } else {

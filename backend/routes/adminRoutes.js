@@ -9,9 +9,9 @@ const adminMiddleware = require("../middlewares/adminMiddleware");
 router.use(authMiddleware);
 // router.use(adminMiddleware);
 
-router.get("/users", adminController.getAllUsers);
-router.get("/users/:id", adminController.getUserById);
-router.delete("/users/:id", adminController.deleteUser);
+router.get("/users", adminMiddleware, adminController.getAllUsers);
+router.get("/users/:id", adminMiddleware, adminController.getUserById);
+router.delete("/users/:id", adminMiddleware, adminController.deleteUser);
 // router.put('/users/:id/role', adminController.updateUserRole); Not for now maybe never
 
 // Event management

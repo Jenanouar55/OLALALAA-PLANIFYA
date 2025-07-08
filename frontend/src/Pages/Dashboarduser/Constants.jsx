@@ -16,17 +16,14 @@ import {
   Video,
   FileText,
   User,
-  Pencil,
-  CalendarCheck,
   Type,
-  Lightbulb
+  Lightbulb,
+  CalendarCheck,
+  Pencil
 } from "lucide-react";
-// import ChatBot from "./Chatbot";
 
-// Initial posts data
 export const initialPosts = [
   {
-    date: "2025-06-05",
     title: "Welcome Post",
     content: "Welcome to our social media journey!",
     platforms: "",
@@ -36,7 +33,6 @@ export const initialPosts = [
   },
 ];
 
-// Platform color configuration
 export const platformColors = {
   tiktok: "#000000",
   instagram: "#E4405F",
@@ -49,12 +45,11 @@ export const platformColors = {
   other: "#6B7280"
 };
 
-// Dynamic sidebar menu items
 export const sidebarItems = [
   { id: "calendar", icon: CalendarDays, label: "Calendar", color: "blue" },
   { id: "profile", icon: User, label: "Profile", color: "blue" },
   { id: "CalendarIdeas", icon: CalendarCheck, label: "Calendar Ideas", color: "blue" },
-  { id: "strategytips", icon: Lightbulb, label: "Strategy Tips", color: "blue" },
+  // { id: "strategytips", icon: Lightbulb, label: "Strategy Tips", color: "blue" },
   { id: "scriptgenerator", icon: Pencil, label: "Script", color: "blue" },
   { id: "captiongenerator", icon: Type, label: "Caption", color: "blue" },
   { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
@@ -64,7 +59,6 @@ export const sidebarItems = [
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
 ];
 
-// Utility function to get platform icons
 export const getPlatformIcon = (platform) => {
   switch (platform) {
     case "tiktok":
@@ -87,7 +81,6 @@ export const getPlatformIcon = (platform) => {
   }
 };
 
-// Utility function to get media type icons
 export const getMediaIcon = (mediaType) => {
   switch (mediaType) {
     case "image":
