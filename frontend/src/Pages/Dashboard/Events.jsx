@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import axios from "axios";
+import apiClient from "../../lib/axios";
 
 const Sidebar = () => (
     <aside className="bg-[#121826] md:w-64 p-6 h-screen flex flex-col justify-between shadow-md border-r border-gray-700">
@@ -137,84 +139,121 @@ function Events() {
         setIsDialogOpen(true);
     };
 
+    // const handleSaveEvent = async () => {
+    //     if (!form.name || !form.description || !form.date) {
+    //         alert("Please fill in all required fields");
+    //         return;
+    //     }
+    //     const method = selectedEventIndex == null ? 'POST' : "PUT";
+    //     const link = selectedEventIndex == null ? 'http://localhost:5000/api/admin/events/' : "http://localhost:5000/api/admin/events/" + form._id;
+
+    //     try {
+    //         const response = await fetch(link, {
+    //             method: method,
+    //             headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") },
+    //             body: JSON.stringify(form)
+    //         });
+    //         const data = await response.json();
+    //         if (response.ok) {
+    //             console.log("form created successfully");
+    //             toast.success('form created successfully');
+    //             setTimeout(() => Navigate('/dashboard'), 2000);
+    //         } else {
+    //             toast.error(data.message || 'Erreur lors de creation.');
+    //         }
+    //     } catch (err) {
+    //         toast.error('Erreur de réseau.');
+    //     }
+
+    //     const eventData = {
+    //         ...form,
+    //         color: form.platform === "other" ? form.color : platformColors[form.platform]
+    //     };
+    //     const updatedEvents = [...events];
+    //     if (selectedEventIndex !== null) {
+    //         updatedEvents[selectedEventIndex] = eventData;
+    //     } else {
+    //         updatedEvents.push(eventData);
+    //     }
+    //     setEvents(updatedEvents);
+    //     setForm({
+    //         date: "",
+    //         name: "",
+    //         description: ""
+    //     });
+    //     setIsDialogOpen(false);
+    //     setSelectedEventIndex(null);
+    // };
+
     const handleSaveEvent = async () => {
         if (!form.name || !form.description || !form.date) {
-            alert("Please fill in all required fields");
+            toast.error("Please fill in all required fields");
             return;
         }
-        const method = selectedEventIndex == null ? 'POST' : "PUT";
-        const link = selectedEventIndex == null ? 'http://localhost:5000/api/admin/events/' : "http://localhost:5000/api/admin/events/" + form._id;
+
+        const isEditing = !!editingEventId;
+        const url = isEditing
+            ? `/admin/events/${editingEventId}`
+            : '/admin/events/';
+        const method = isEditing ? 'put' : 'post';
 
         try {
-            const response = await fetch(link, {
-                method: method,
-                headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") },
-                body: JSON.stringify(form)
+            const token = localStorage.getItem("token");
+            await apiClient[method](url, form, {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
-            const data = await response.json();
-            if (response.ok) {
-                console.log("form created successfully");
-                toast.success('form created successfully');
-                setTimeout(() => Navigate('/dashboard'), 2000);
-            } else {
-                toast.error(data.message || 'Erreur lors de creation.');
-            }
-        } catch (err) {
-            toast.error('Erreur de réseau.');
-        }
 
-        const eventData = {
-            ...form,
-            color: form.platform === "other" ? form.color : platformColors[form.platform]
-        };
-        const updatedEvents = [...events];
-        if (selectedEventIndex !== null) {
-            updatedEvents[selectedEventIndex] = eventData;
-        } else {
-            updatedEvents.push(eventData);
+            toast.success(`Event ${isEditing ? 'updated' : 'created'} successfully!`);
+            handleCancel();
+            fetchEvents();
+        } catch (err) {
+            toast.error(err.response?.data?.message || `Error saving event.`);
         }
-        setEvents(updatedEvents);
-        setForm({
-            date: "",
-            name: "",
-            description: ""
-        });
-        setIsDialogOpen(false);
-        setSelectedEventIndex(null);
     };
+    // const handleDeleteEvent = async (index) => {
+    //     try {
+    //         const response = await fetch("http://localhost:5000/api/admin/events/" + index, {
+    //             method: "DELETE",
+    //             headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") }
+    //         });
 
-    const handleDeleteEvent = async (index) => {
+    //         const data = await response.json();
+
+    //         if (response.ok) {
+    //             toast.success('form deleted successfully');
+    //             setTimeout(() => Navigate('/dashboard'), 2000);
+    //         } else {
+    //             toast.error(data.message || 'Erreur lors de delete.');
+    //         }
+    //     } catch (err) {
+    //         toast.error('Erreur de réseau.');
+    //     }
+    //     const updatedEvents = events.filter((_, i) => i !== index);
+    //     setEvents(updatedEvents);
+    //     setShowEventDetails(null);
+    // };
+
+    const handleDeleteEvent = async (eventId) => {
+        if (!window.confirm("Are you sure you want to delete this event?")) return;
+
         try {
-            const response = await fetch("http://localhost:5000/api/admin/events/" + index, {
-                method: "DELETE",
-                headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") }
+            const token = localStorage.getItem("token");
+            await apiClient.delete(`/admin/events/${eventId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
             });
 
-            const data = await response.json();
-
-            if (response.ok) {
-                toast.success('form deleted successfully');
-                setTimeout(() => Navigate('/dashboard'), 2000);
-            } else {
-                toast.error(data.message || 'Erreur lors de delete.');
-            }
+            toast.success('Event deleted successfully');
+            fetchEvents();
         } catch (err) {
-            toast.error('Erreur de réseau.');
+            toast.error(err.response?.data?.message || 'Error deleting event.');
         }
-        const updatedEvents = events.filter((_, i) => i !== index);
-        setEvents(updatedEvents);
-        setShowEventDetails(null);
     };
 
     useEffect(() => {
         const fetchEvents = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/admin/events", {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "authorization": 'Bearer ' + localStorage.getItem("token")
-                    }
+                const response = await apiClient.get("/admin/events", {
+                    headers: { 'Authorization': `Bearer ${token}` }
                 });
 
                 const data = await response.json();

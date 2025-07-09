@@ -6,6 +6,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import axios from "axios";
+import apiClient from '../../lib/axios';
 const ChatBot = () => {
   const [conversations, setConversations] = useState([
     {
@@ -18,31 +19,19 @@ const ChatBot = () => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Sidebar
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [editingChatId, setEditingChatId] = useState(null);
 
   const activeChat = conversations.find((c) => c.id === activeChatId);
 
- const handleSend = async () => {
-  if (!input.trim()) return;
-
-  
-  const updatedUserMessage = conversations.map((chat) =>
-    chat.id === activeChatId
-      ? {
-          ...chat,
-          messages: [...chat.messages, { sender: 'user', text: input }],
-        }
-      : chat
-  );
-  setConversations(updatedUserMessage);
-
-  try {
-    const response = await axios.post(
-      "http://localhost:5000/api/ai/strategy-chat",
-      { message: input },
-      {
+  const handleSend = async () => {
+    if (!input.trim()) return;
+    conversations.push(input);
+    setConversations(conversations);
+    try {
+      const response = await apiClient.post("/ai/strategy-chat", {
+        message: input
+      }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -62,13 +51,7 @@ const ChatBot = () => {
     } else {
       console.log("Failed to generate script. The response was empty.");
     }
-  } catch (err) {
-    console.error("Error fetching AI script:", err);
-  } finally {
-    setInput('');
-  }
-};
-
+  };
 
   const handleNewChat = () => {
     const newId = Date.now();
@@ -81,32 +64,6 @@ const ChatBot = () => {
     setActiveChatId(newId);
   };
 
-  // const handleRename = (id, newName) => {
-  //   if (!newName.trim()) return;
-  //   setConversations(
-  //     conversations.map((chat) =>
-  //       chat.id === id ? { ...chat, name: newName } : chat
-  //     )
-  //   );
-  //   setEditingChatId(null);
-  // };
-
-  // const handleDelete = (id) => {
-  //   const filtered = conversations.filter((chat) => chat.id !== id);
-  //   setConversations(filtered);
-  //   setMenuOpenId(null);
-  //   if (id === activeChatId && filtered.length > 0) {
-  //     setActiveChatId(filtered[0].id);
-  //   } else if (filtered.length === 0) {
-  //     handleNewChat();
-  //   }
-  // };
-
-  // const handleShare = (id) => {
-  //   const chat = conversations.find((c) => c.id === id);
-  //   alert(`Sharing chat "${chat.name}" (mock action)`);
-  //   setMenuOpenId(null);
-  // };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -251,6 +208,7 @@ const ChatBot = () => {
       </main>
     </div>
   );
+};
 };
 
 export default ChatBot;

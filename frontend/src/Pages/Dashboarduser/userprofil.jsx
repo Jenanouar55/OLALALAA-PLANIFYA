@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from "react";
-import { FaSpinner, FaUser, FaKey, FaTrash, FaEdit, FaSave, FaTimes, FaUserCircle, FaLock, FaExclamationTriangle } from "react-icons/fa";
-
+import { FiCamera } from "react-icons/fi";
+import { FaSpinner } from "react-icons/fa";
+import axios from "axios";
+import apiClient from "../../lib/axios";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { createOrUpdateProfile, fetchMyProfile } from "../../features/profileSlice";
 export default function UserProfile() {
-  const [activeTab, setActiveTab] = useState("profile");
+
+  const dispatch = useDispatch();
+  const { data: profile, loading, error } = useSelector((state) => state.profile);
+
+  const [activeTab, setActiveTab] = useState("edit");
   const [isEditing, setIsEditing] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [saveStatus, setSaveStatus] = useState("");
+  // const [loading, setLoading] = useState(true);
+  // const [error, setError] = useState("");
 
   const defaultUser = {
     firstName: "",
@@ -26,63 +34,84 @@ export default function UserProfile() {
   const [formData, setFormData] = useState(defaultUser);
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
+    dispatch(fetchMyProfile());
+    setFormData(profile);
+    setUser(profile)
+  }, [dispatch]);
 
-  const fetchUserProfile = async () => {
-    setLoading(true);
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        setError("No authentication token found");
-        setLoading(false);
-        return;
-      }
-      const response = await fetch('http://localhost:5000/api/profile/me', {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        const textResponse = await response.text();
-        console.error('Response is not JSON:', textResponse);
-        setError('Server returned invalid response format');
-        setLoading(false);
-        return;
-      }
+  // const fetchUserProfile = async () => {
+  //   try {
+  //     const token = localStorage.getItem('token');
+  //     if (!token) {
+  //       setError("No authentication token found");
+  //       setLoading(false);
+  //       return;
+  //     }
+  //     const response = await fetch('http://localhost:5000/api/profile/me', {
+  //       headers: {
+  //         'Authorization': `Bearer ${token}`,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+  //     const contentType = response.headers.get('content-type');
+  //     if (!contentType || !contentType.includes('application/json')) {
+  //       const textResponse = await response.text();
+  //       console.error('Response is not JSON:', textResponse);
+  //       setError('Server returned invalid response format');
+  //       setLoading(false);
+  //       return;
+  //     }
 
-      if (response.ok) {
-        const profileData = await response.json();
-        const userData = {
-          ...defaultUser,
-          firstName: profileData.firstName || "",
-          lastName: profileData.lastName || "",
-          email: profileData.email || "", 
-          phoneNumber: profileData.phoneNumber || "",
-          age: profileData.age || "",
-          gender: profileData.gender || "",
-          city: profileData.city || "",
-          country: profileData.country || "",
-          bio: profileData.additionalInfo || ""
-        };
+  //     if (response.ok) {
+  //       const profileData = await response.json();
+  //       const userData = {
+  //         ...defaultUser,
+  //         firstName: profileData.firstName || "",
+  //         lastName: profileData.lastName || "",
+  //         email: profileData.email || "",
+  //         phoneNumber: profileData.phoneNumber || "",
+  //         age: profileData.age || "",
+  //         gender: profileData.gender || "",
+  //         city: profileData.city || "",
+  //         country: profileData.country || "",
+  //         bio: profileData.additionalInfo || "",
+  //         platforms: profileData.platforms || [],
+  //         mainPlatform: profileData.mainPlatform || "",
+  //         contentTypes: profileData.contentTypes || [],
+  //         contentCategories: profileData.contentCategories || [],
+  //         monetizationMethod: profileData.monetizationMethod || "",
+  //         bestContentLinks: profileData.bestContentLinks || [],
+  //         additionalInfo: profileData.additionalInfo || "",
+  //         plan: profileData.plan || "free",
+  //         tokens: profileData.tokens || 15
+  //       };
 
-        setUser(userData);
-        setFormData(userData);
-      } else if (response.status === 404) {
-        setError("Profile not found");
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || `Server error: ${response.status}`);
-      }
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-      setError("Network error");
-    } finally {
-      setLoading(false);
+  //       setUser(userData);
+  //       setFormData(userData);
+  //     } else if (response.status === 404) {
+  //       setError("Profile not found");
+  //     } else {
+  //       const errorData = await response.json();
+  //       setError(errorData.message || `Server error: ${response.status}`);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching profile:", error);
+  //     setError("Network error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  useEffect(() => {
+    if (profile) {
+      setFormData(profile);
     }
-  };
+  }, [profile]);
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -91,59 +120,7 @@ export default function UserProfile() {
 
   const toggleEdit = async () => {
     if (isEditing) {
-      setLoading(true);
-      setSaveStatus("saving");
-      try {
-        const token = localStorage.getItem('token');
-        const updateData = {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          phoneNumber: formData.phoneNumber,
-          age: formData.age ? parseInt(formData.age) : undefined,
-          gender: formData.gender,
-          city: formData.city,
-          country: formData.country,
-          additionalInfo: formData.bio,
-        };
-        Object.keys(updateData).forEach(key => {
-          if (updateData[key] === undefined || updateData[key] === "") {
-            delete updateData[key];
-          }
-        });
-        const response = await fetch('http://localhost:5000/api/profile/me', {
-          method: 'PUT',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(updateData)
-        });
-
-        if (response.ok) {
-          const result = await response.json();
-          console.log("Profile updated successfully:", result);
-          
-          const updatedUser = {
-            ...formData,
-          };
-          setUser(updatedUser);
-          setError("");
-          setSaveStatus("saved");
-          setTimeout(() => setSaveStatus(""), 3000);
-        } else {
-          const result = await response.json();
-          setError(result.message || "Failed to update profile");
-          setSaveStatus("error");
-        }
-      } catch (error) {
-        console.error("Error updating profile:", error);
-        setError("Network error.");
-        setSaveStatus("error");
-      } finally {
-        setLoading(false);
-      }
-    } else {
-      setFormData(user);
+      dispatch(createOrUpdateProfile(formData));
     }
     setIsEditing(!isEditing);
   };
@@ -151,23 +128,20 @@ export default function UserProfile() {
   const handleDeleteAccount = async () => {
     const token = localStorage.getItem('token');
     try {
-      const response = await fetch('/api/users/delete-account', {
-        method: 'DELETE',
+      const response = await apiClient.delete('/users/delete-account', {
         headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
+        data: {
           password: confirmPassword,
-        }),
+        },
       });
 
-      const data = await response.json();
-      alert(data.message);
+      alert(response.data.message);
       setShowDeleteModal(false);
       setUser(defaultUser);
       setFormData(defaultUser);
-      setActiveTab("profile");
+      setActiveTab("edit");
       setIsEditing(false);
       setConfirmPassword("");
       localStorage.removeItem('token');
@@ -194,14 +168,10 @@ export default function UserProfile() {
 
   if (error && !user.email) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900 flex items-center justify-center">
-        <div className="bg-gray-800/50 backdrop-blur-xl border border-red-500/20 rounded-3xl p-12 text-center max-w-md">
-          <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <FaExclamationTriangle className="text-red-400 text-2xl" />
-          </div>
-          <h2 className="text-2xl font-bold text-red-400 mb-4">Something went wrong</h2>
-          <p className="text-gray-300 mb-6">{error}</p>
-          <button 
+      <div className="flex min-h-screen bg-gray-900 text-white items-center justify-center">
+        <div className="text-center">
+          <p className="text-red-400 mb-4">{error}</p>
+          <button
             onClick={fetchUserProfile}
             className="bg-purple-600 hover:bg-purple-700 px-8 py-3 rounded-2xl font-medium transition-all duration-300 hover:scale-105 hover:shadow-lg hover:shadow-purple-500/25"
           >
@@ -213,45 +183,35 @@ export default function UserProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900/20 to-gray-900">
-      <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Header Section */}
-        <div className="relative mb-12">
-          <div className="bg-gray-800/30 backdrop-blur-xl border border-gray-700/50 rounded-3xl p-8">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-6">
-                <div className="relative">
-                  <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg shadow-purple-500/25">
-                    {initials}
-                  </div>
-                  <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-gray-900 flex items-center justify-center">
-                    <div className="w-2 h-2 bg-white rounded-full"></div>
-                  </div>
-                </div>
-                <div>
-                  <h1 className="text-4xl font-bold text-white mb-2">{fullName}</h1>
-                  <p className="text-purple-300 text-lg mb-1">{user.email}</p>
-                  <div className="flex items-center space-x-4 text-gray-400">
-                    {user.city && user.country && (
-                      <span className="flex items-center">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full mr-2"></div>
-                        {user.city}, {user.country}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-              {saveStatus && (
-                <div className={`px-4 py-2 rounded-xl text-sm font-medium ${
-                  saveStatus === 'saved' ? 'bg-green-500/20 text-green-400' :
-                  saveStatus === 'saving' ? 'bg-blue-500/20 text-blue-400' :
-                  'bg-red-500/20 text-red-400'
-                }`}>
-                  {saveStatus === 'saved' ? '✓ Saved' : 
-                   saveStatus === 'saving' ? '⏳ Saving...' : 
-                   '✗ Error'}
-                </div>
-              )}
+    <div className="flex min-h-screen bg-gray-900 text-white">
+      {/* Sidebar */}
+      <div className="w-64 bg-gray-800 p-6 space-y-4">
+        {[
+          { label: "Edit Profile", key: "edit" },
+          { label: "Update Password", key: "password" },
+          { label: "Delete Account", key: "delete" },
+        ].map(({ label, key }) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={`w-full text-left px-4 py-2 rounded-md transition ${activeTab === key ? "bg-purple-600" : "hover:bg-gray-700"
+              }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className="flex-1 p-10">
+        {activeTab === "edit" && (
+          <div className="max-w-3xl mx-auto bg-gray-800 p-6 rounded-2xl shadow-lg">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-bold">Edit Profile</h2>
+              <button
+                onClick={toggleEdit}
+                className="bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-md text-sm"
+              >
+                {isEditing ? "Save" : "Edit Profile"}
+              </button>
             </div>
           </div>
         </div>
@@ -544,7 +504,6 @@ export default function UserProfile() {
             </div>
           )}
         </div>
-      </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Check, ClipboardCopy, Loader2 } from "lucide-react";
 import axios from "axios";
+import apiClient from "../../lib/axios";
 
 export default function CaptionGenerator() {
   const [platform, setPlatform] = useState("Instagram");
@@ -20,7 +21,7 @@ export default function CaptionGenerator() {
     setLoading(true);
     setCopied(false);
     try {
-      const response = await axios.post("http://localhost:5000/api/ai/caption", {
+      const response = await apiClient.post("/ai/caption", {
         platform,
         tone,
         topic,

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { Bell, CheckCircle, X } from "lucide-react";
+import apiClient from "../../lib/axios";
 
 export default function NotificationsPage() {
   const [filter, setFilter] = useState("all");
@@ -9,7 +10,7 @@ export default function NotificationsPage() {
 
   const fetchNotifications = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/notifications", {
+      const res = await apiClient.get("/notifications", {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -34,7 +35,7 @@ export default function NotificationsPage() {
 
   const markAsRead = async (id) => {
     try {
-      await axios.patch(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+      await apiClient.patch(`/notifications/${id}/read`, {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setNotifications(prev =>
@@ -48,7 +49,7 @@ export default function NotificationsPage() {
 
   const markAllAsRead = async () => {
     try {
-      await axios.patch("http://localhost:5000/api/notifications/mark-all-read", {}, {
+      await apiClient.patch("/notifications/mark-all-read", {}, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setNotifications(prev =>
@@ -62,7 +63,7 @@ export default function NotificationsPage() {
 
   const deleteNotification = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/notifications/${id}`, {
+      await apiClient.delete(`/notifications/${id}`, {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       setNotifications(prev => prev.filter(n => n._id !== id));
@@ -93,8 +94,8 @@ export default function NotificationsPage() {
                 key={key}
                 onClick={() => setFilter(key)}
                 className={`px-4 py-1 text-sm font-medium rounded-full transition-all duration-200 ${filter === key
-                    ? "bg-blue-600 text-white shadow"
-                    : "text-gray-300 hover:text-white"
+                  ? "bg-blue-600 text-white shadow"
+                  : "text-gray-300 hover:text-white"
                   }`}
               >
                 {label}

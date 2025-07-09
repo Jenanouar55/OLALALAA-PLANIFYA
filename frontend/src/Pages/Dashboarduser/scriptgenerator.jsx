@@ -1,5 +1,8 @@
 import axios from "axios";
 import { useState } from "react";
+import apiClient from "../../lib/axios";
+import { useDispatch, useSelector } from "react-redux";
+import { clearGeneratedContent, generateScript } from "../../features/aiSlice";
 
 const icons = {
   delete: (
@@ -111,51 +114,54 @@ const icons = {
 };
 
 export default function ScriptGenerator() {
+  const dispatch = useDispatch();
+  const { generatedContent, loading, error } = useSelector((state) => state.ai);
+
   const [topic, setTopic] = useState("");
   const [type, setType] = useState("Short video");
   const [duration, setDuration] = useState("");
-  const [loading, setLoading] = useState(false);
   const [script, setScript] = useState("");
   const [copied, setCopied] = useState(false);
-  const [liked, setLiked] = useState(null); // null / true / false
+  const [liked, setLiked] = useState(null);
 
-  const generateScript = async () => {
-    setLoading(true);
-    setScript("");
-    setCopied(false);
-    setLiked(null);
+  // const generateScript = async () => {
+  //   setLoading(true);
+  //   setScript("");
+  //   setCopied(false);
+  //   setLiked(null);
 
-    try {
-      const response = await axios.post("http://localhost:5000/api/ai/script", {
-        topic,
-        type,
-        duration,
-      }, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        }
-      });
-      if (response.data && response.data.result) {
-        setScript(response.data.result);
-      } else {
-        console.log("Failed to generate script. The response was empty.");
-      }
-    } catch (err) {
-      console.error("Error fetching AI script:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  //   try {
+  //     const response = await apiClient.post("/ai/script", {
+  //       topic,
+  //       type,
+  //       duration,
+  //     }, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("token")}`,
+  //       }
+  //     });
+  //     if (response.data && response.data.result) {
+  //       setScript(response.data.result);
+  //     } else {
+  //       console.log("Failed to generate script. The response was empty.");
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching AI script:", err);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleGenerate = () => {
-    generateScript();
+    dispatch(clearGeneratedContent());
+    dispatch(generateScript({ topic, type, duration }));
   };
 
-  const handleRegenerate = () => {
-    if (!loading && topic) {
-      generateScript();
-    }
-  };
+  // const handleRegenerate = () => {
+  //   if (!loading && topic) {
+  //     generateScript();
+  //   }
+  // };
 
   const handleCopy = () => {
     if (!script) return;
@@ -167,8 +173,7 @@ export default function ScriptGenerator() {
 
   const handleDelete = () => {
     setScript("");
-    setLiked(null);
-    setCopied(false);
+    dispatch(clearGeneratedContent());
   };
 
   const handleShare = () => {
