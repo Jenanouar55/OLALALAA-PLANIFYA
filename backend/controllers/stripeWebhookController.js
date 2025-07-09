@@ -2,6 +2,7 @@ require('dotenv').config();
 const Stripe = require('stripe');
 const stripe = Stripe(process.env.STRIPE_SECRET_KEY);
 const Profile = require('../models/Profile');
+const { createNotification } = require('../utils/notificationService');
 
 const stripeWebhookHandler = async (req, res) => {
   const sig = req.headers['stripe-signature'];
@@ -55,6 +56,11 @@ const stripeWebhookHandler = async (req, res) => {
       profile.subscriptionStatus = 'active';
 
       await profile.save();
+      await createNotification(profile.user, {
+        title: 'Subscription Activated',
+        message: `Your ${profile.plan} plan is now active!`,
+        type: 'info'
+      });
       console.log(`Tokens reset for ${profile.user}`);
     } catch (err) {
       console.error('Failed to reset tokens:', err.message);
@@ -70,6 +76,11 @@ const stripeWebhookHandler = async (req, res) => {
 
       profile.subscriptionStatus = 'inactive';
       await profile.save();
+      await createNotification(profile.user, {
+        title: 'Payment Failed',
+        message: `We couldn't process your payment.`,
+        type: 'alert'
+      });
 
       console.log(`⚠️ Subscription marked inactive for ${profile.user}`);
     } catch (err) {

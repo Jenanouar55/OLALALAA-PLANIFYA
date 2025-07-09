@@ -22,4 +22,10 @@ router.put("/events/:id", eventController.updateEvent);
 router.delete("/events/:id", eventController.deleteEvent);
 router.post("/events/seed", eventController.seedFromCalendarific); // Calendarific seed
 
+//manual reminders
+router.post('/notify', adminController.sendManualNotification);
+
+//manual add tokens
+router.post("/users/:id/add-tokens", adminController.addTokens);
+
 module.exports = router;

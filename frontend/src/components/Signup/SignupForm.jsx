@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import 'react-toastify/dist/ReactToastify.css';
 
 const SignupForm = () => {
@@ -14,7 +15,7 @@ const SignupForm = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false); // For second field
+  const [showConfirm, setShowConfirm] = useState(false); 
 
   const navigate = useNavigate(); // ✅ lowercase
 
@@ -102,26 +103,29 @@ const SignupForm = () => {
           />
 
           {/* Password Field */}
-          <div className="relative">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              placeholder="Mot de passe"
-              required
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-3 text-sm text-gray-600 dark:text-gray-300"
-            >
-              {showPassword ? '🙈' : '👁️'}
-            </button>
-          </div>
+          {/* Password Field */}
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            placeholder="Mot de passe"
+            required
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300"
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
+
 
           {/* Confirm Password Field */}
+        
           <div className="relative">
             <input
               type={showConfirm ? 'text' : 'password'}
@@ -135,11 +139,12 @@ const SignupForm = () => {
             <button
               type="button"
               onClick={() => setShowConfirm((prev) => !prev)}
-              className="absolute right-3 top-3 text-sm text-gray-600 dark:text-gray-300"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300"
             >
-              {showConfirm ? '🙈' : '👁️'}
+              {showConfirm ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+
 
           <div className="flex items-start">
             <input

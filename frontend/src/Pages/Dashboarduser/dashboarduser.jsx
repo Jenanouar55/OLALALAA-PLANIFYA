@@ -71,9 +71,12 @@ export default function UserDashboard() {
         const res = await fetch("http://localhost:5000/api/profile/me", {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") },
         });
-        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-        const data = await res.json();
-        setTokenCount(data.tokens);
+        if (response.ok) {
+  const data = await response.json();
+  setMessages([...messages, { role: "assistant", content: data.result }]);
+  setTokenCount((prev) => prev - 1); // Deduct 1 token
+}
+
       } catch (err) {
         console.error("Error fetching tokens:", err);
       }

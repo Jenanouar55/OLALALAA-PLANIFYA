@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import 'react-toastify/dist/ReactToastify.css';
 
 const LoginForm = () => {
@@ -103,7 +104,7 @@ const LoginForm = () => {
               onClick={() => setShowPassword((prev) => !prev)}
               className="absolute right-3 top-[38px] text-lg text-gray-600 dark:text-gray-300"
             >
-              {showPassword ? '🙈' : '👁️'}
+              {showPassword ? <FaEye /> : <FaEyeSlash />}
             </button>
           </div>
 

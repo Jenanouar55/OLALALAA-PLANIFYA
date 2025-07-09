@@ -10,7 +10,7 @@ const ChatBot = () => {
   const [conversations, setConversations] = useState([
     {
       id: 1,
-      name: 'Welcome Habibi',
+      name: 'Welcome ',
       messages: [{ sender: 'bot', text: 'Hello! How can I help you today?' }],
     },
   ]);
@@ -18,70 +18,57 @@ const ChatBot = () => {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
 
-  // Sidebar menu and edit state
+  // Sidebar
   const [menuOpenId, setMenuOpenId] = useState(null);
   const [editingChatId, setEditingChatId] = useState(null);
 
   const activeChat = conversations.find((c) => c.id === activeChatId);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
-    conversations.push(input);
-    setConversations(conversations);
-    try {
-      const response = await axios.post("http://localhost:5000/api/ai/strategy-chat", {
-        message: input
-      }, {
+ const handleSend = async () => {
+  if (!input.trim()) return;
+
+  
+  const updatedUserMessage = conversations.map((chat) =>
+    chat.id === activeChatId
+      ? {
+          ...chat,
+          messages: [...chat.messages, { sender: 'user', text: input }],
+        }
+      : chat
+  );
+  setConversations(updatedUserMessage);
+
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/api/ai/strategy-chat",
+      { message: input },
+      {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-        }
-      });
-      if (response.data && response.data.result) {
-        const updated = conversations.map((chat) =>
-          chat.id === activeChatId
-            ? {
-              ...chat,
-              messages: [...chat.messages, { sender: 'user', text: response.data.result }],
-            }
-            : chat
-        );
-        setConversations(updated);
-        setInput('');
-      } else {
-        console.log("Failed to generate script. The response was empty.");
+        },
       }
-    } catch (err) {
-      console.error("Error fetching AI script:", err);
-    } finally {
-      console.error(false);
+    );
+
+    if (response.data && response.data.result) {
+      const updatedBotResponse = updatedUserMessage.map((chat) =>
+        chat.id === activeChatId
+          ? {
+              ...chat,
+              messages: [...chat.messages, { sender: 'bot', text: response.data.result }],
+            }
+          : chat
+      );
+      setConversations(updatedBotResponse);
+    } else {
+      console.log("Failed to generate script. The response was empty.");
     }
-    // const updated = conversations.map((chat) =>
-    //   chat.id === activeChatId
-    //     ? {
-    //       ...chat,
-    //       messages: [...chat.messages, { sender: 'user', text: input }],
-    //     }
-    //     : chat
-    // );
-    // setConversations(updated);
+  } catch (err) {
+    console.error("Error fetching AI script:", err);
+  } finally {
+    setInput('');
+  }
+};
 
-
-    // setTimeout(() => {
-    //   setConversations((prev) =>
-    //     prev.map((chat) =>
-    //       chat.id === activeChatId
-    //         ? {
-    //           ...chat,
-    //           messages: [
-    //             ...chat.messages,
-    //             { sender: 'bot', text: `You said: "${input}"` },
-    //           ],
-    //         }
-    //         : chat
-    //     )
-    //   );
-    // }, 600);
-  };
 
   const handleNewChat = () => {
     const newId = Date.now();

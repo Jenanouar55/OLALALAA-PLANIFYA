@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
-
 
 const ExForm = () => {
   const [step, setStep] = useState(1);
@@ -8,6 +6,7 @@ const ExForm = () => {
   const [otherContent, setOtherContent] = useState("");
   const [otherCategory, setOtherCategory] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -15,10 +14,9 @@ const ExForm = () => {
     email: "",
     phoneNumber: "",
     age: "",
-    gender: "",
+    gender: "", 
     city: "",
     country: "",
-
     instagram: { url: "", followers: "", remarks: "" },
     twitter: { url: "", followers: "", remarks: "" },
     tiktok: { url: "", followers: "", remarks: "" },
@@ -69,102 +67,148 @@ const ExForm = () => {
   };
 
   const handleNext = () => {
+    if (step === 1 && !isStep1Valid()) {
+      setSubmitError("Please fill in all required fields for Basic Info.");
+      return;
+    }
+    setSubmitError(""); 
     if (step < 3) setStep(step + 1);
   };
 
   const handleBack = () => {
+    setSubmitError("");
     if (step > 1) setStep(step - 1);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setSubmitError("");
 
     try {
+   
+      if (!isStep1Valid()) { 
+        throw new Error("Please fill in all required fields before submitting.");
+      }
+
+
+      let finalContentTypes = [...formData.contentTypes];
+      if (finalContentTypes.includes("other") && otherContent.trim()) {
+        finalContentTypes = finalContentTypes.filter((v) => v !== "other"); 
+        finalContentTypes.push("other"); 
+      } else if (finalContentTypes.includes("other") && !otherContent.trim()) {
+
+        finalContentTypes = finalContentTypes.filter((v) => v !== "other");
+        finalContentTypes.push("other");
+      }
+      let finalContentCategories = [...formData.contentCategories];
+      if (finalContentCategories.includes("other") && otherCategory.trim()) {
+        finalContentCategories = finalContentCategories.filter((v) => v !== "other");
+        finalContentCategories.push("other");
+      } else if (finalContentCategories.includes("other") && !otherCategory.trim()) {
+        finalContentCategories = finalContentCategories.filter((v) => v !== "other");
+        finalContentCategories.push("other");
+      }
+      const platformsData = visiblePlatforms.filter(platform =>
+        ["instagram", "twitter", "tiktok", "facebook", "youtube"].includes(platform)
+      );
+
+
+      const bestContentLinks = formData.bestContentLinks
+        .split("\n")
+        .map((link) => link.trim())
+        .filter((link) => link !== "");
+
       const profileData = {
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        phoneNumber: formData.phoneNumber,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim(),
+        phoneNumber: formData.phoneNumber.trim() || undefined,
         age: formData.age ? parseInt(formData.age) : undefined,
-        gender: formData.gender,
-        city: formData.city,
-        country: formData.country,
-
-        platforms: visiblePlatforms
-          .filter((platform) => formData[platform]?.url?.trim())
-          .map((platform) => ({
-            platform,
-            url: formData[platform].url,
-            followers: formData[platform].followers ? parseInt(formData[platform].followers) : undefined,
-            remarks: formData[platform].remarks,
-          })),
-
-        contentTypes:
-          formData.contentTypes.includes("other") && otherContent.trim()
-            ? [...formData.contentTypes.filter((v) => v !== "other"), otherContent.toLowerCase()]
-            : formData.contentTypes,
-
-        contentCategories:
-          formData.contentCategories.includes("other") && otherCategory.trim()
-            ? [...formData.contentCategories.filter((v) => v !== "other"), otherCategory.toLowerCase()]
-            : formData.contentCategories,
-
-        monetizationMethod: formData.monetizationMethod,
-        bestContentLinks: formData.bestContentLinks
-          .split("\n")
-          .map((link) => link.trim())
-          .filter((link) => link !== ""),
-        additionalInfo: formData.additionalInfo,
+        gender: formData.gender || undefined, 
+        city: formData.city.trim() || undefined,
+        country: formData.country.trim() || undefined,
+        platforms: platformsData.length > 0 ? platformsData : undefined,
+        contentTypes: finalContentTypes.length > 0 ? finalContentTypes : undefined,
+        contentCategories: finalContentCategories.length > 0 ? finalContentCategories : undefined,
+        monetizationMethod: formData.monetizationMethod || undefined,
+        mainPlatform: formData.mainPlatform || undefined,
+        bestContentLinks: bestContentLinks.length > 0 ? bestContentLinks : undefined,
+        additionalInfo: formData.additionalInfo.trim() || undefined,
       };
 
       Object.keys(profileData).forEach((key) => {
-        if (
-          profileData[key] === undefined ||
-          profileData[key] === "" ||
-          (Array.isArray(profileData[key]) && profileData[key].length === 0)
-        ) {
+        if (profileData[key] === undefined || profileData[key] === "") {
           delete profileData[key];
         }
       });
 
+      console.log("Submitting profile data:", profileData);
+
       const token = localStorage.getItem("token");
       if (!token) {
-        alert("Please log in.");
-        return;
+        throw new Error("Please log in to continue");
       }
 
-      const response = await axios.post("http://localhost:5000/api/profile", profileData, {
+      const response = await fetch("http://localhost:5000/api/profile", {
+        method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         },
+        body: JSON.stringify(profileData )
       });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Server error: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Profile creation response:", result);
       alert("Profile created successfully!");
+  
       window.location.href = "/userdashboard";
+      
     } catch (error) {
       console.error("Error submitting profile:", error);
-      alert(error.response?.data?.message || "Something went wrong. Please try again.");
+      
+      let errorMessage = "Something went wrong. Please try again.";
+      
+      if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setSubmitError(errorMessage);
+      alert(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const isSubmitEnabled =
-    formData.additionalInfo.trim() !== "" &&
-    (!formData.contentTypes.includes("other") || otherContent.trim() !== "") &&
-    (!formData.contentCategories.includes("other") || otherCategory.trim() !== "");
+  const isStep1Valid = () => {
+    return formData.firstName.trim() && formData.lastName.trim();
+  };
+
+  const isStep2Valid = () => {
+    return true; 
+  };
+
+  const isSubmitEnabled = () => {
+    return isStep1Valid(); 
+  };
 
   return (
     <div className="min-h-screen bg-slate-800 text-white p-6">
-      <div
-        className="max-w-3xl mx-auto p-6 bg-slate-900 rounded-lg space-y-6 shadow-lg"
-      >
+      <div className="max-w-3xl mx-auto p-6 bg-slate-900 rounded-lg space-y-6 shadow-lg">
+        {/* Progress Steps */}
         <div className="flex justify-between items-center mb-8">
           {["Basic Info", "Content Details", "Finish"].map((label, index) => (
             <div key={index} className="flex flex-col items-center flex-1 relative">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold z-10
-                ${step === index + 1 ? "bg-purple-600 text-white" : "bg-gray-700 text-gray-300"}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold z-10 ${
+                  step === index + 1 ? "bg-purple-600 text-white" : "bg-gray-700 text-gray-300"
+                }`}
               >
                 {index + 1}
               </div>
@@ -187,12 +231,21 @@ const ExForm = () => {
             </div>
           ))}
         </div>
+
+        {/* Error Display */}
+        {submitError && (
+          <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6">
+            <p className="text-red-200">{submitError}</p>
+          </div>
+        )}
+
+        {/* Step 1: Basic Info */}
         {step === 1 && (
           <div className="space-y-4">
             <input
               type="text"
               name="firstName"
-              placeholder="First Name"
+              placeholder="First Name *"
               required
               value={formData.firstName}
               onChange={handleChange}
@@ -201,7 +254,7 @@ const ExForm = () => {
             <input
               type="text"
               name="lastName"
-              placeholder="Last Name"
+              placeholder="Last Name *"
               required
               value={formData.lastName}
               onChange={handleChange}
@@ -211,7 +264,6 @@ const ExForm = () => {
               type="email"
               name="email"
               placeholder="Email"
-              required
               value={formData.email}
               onChange={handleChange}
               className="w-full p-3 bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
@@ -220,7 +272,6 @@ const ExForm = () => {
               type="tel"
               name="phoneNumber"
               placeholder="Phone Number"
-              required
               value={formData.phoneNumber}
               onChange={handleChange}
               className="w-full p-3 bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
@@ -255,18 +306,7 @@ const ExForm = () => {
                   className="mr-2"
                 />
                 Female
-              </label>
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="radio"
-                  name="gender"
-                  value="other"
-                  checked={formData.gender === "other"}
-                  onChange={handleChange}
-                  className="mr-2"
-                />
-                Other
-              </label>
+              </label> 
             </div>
             <input
               type="text"
@@ -286,6 +326,8 @@ const ExForm = () => {
             />
           </div>
         )}
+
+        {/* Step 2: Content Details */}
         {step === 2 && (
           <div className="space-y-6">
             <div>
@@ -313,47 +355,10 @@ const ExForm = () => {
                 ))}
               </div>
             </div>
-            {visiblePlatforms.length > 0 && (
-              <div className="space-y-4">
-                {visiblePlatforms.map((platform) => (
-                  <div key={platform} className="p-4 bg-slate-800 rounded-lg">
-                    <h4 className="mb-3 font-semibold capitalize text-purple-400">{platform}</h4>
-                    <div className="space-y-3">
-                      <input
-                        type="url"
-                        name={`${platform}.url`}
-                        placeholder={`${platform} URL`}
-                        value={formData[platform]?.url || ""}
-                        onChange={handleChange}
-                        className="w-full p-2 bg-slate-700 border border-gray-600 rounded focus:border-purple-500 focus:outline-none"
-                      />
-                      <input
-                        type="number"
-                        name={`${platform}.followers`}
-                        placeholder="Followers"
-                        value={formData[platform]?.followers || ""}
-                        onChange={handleChange}
-                        className="w-full p-2 bg-slate-700 border border-gray-600 rounded focus:border-purple-500 focus:outline-none"
-                      />
-                      <input
-                        type="text"
-                        name={`${platform}.remarks`}
-                        placeholder="Remarks"
-                        value={formData[platform]?.remarks || ""}
-                        onChange={handleChange}
-                        className="w-full p-2 bg-slate-700 border border-gray-600 rounded focus:border-purple-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
             <div>
               <h3 className="mb-3 font-semibold text-lg">Content Types (select all that apply):</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {["photography", "creative writing", "video", "other"]
-                .map((type) => (
+                {["photography", "creative writing", "video", "other"].map((type) => (
                   <label key={type} className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -368,21 +373,20 @@ const ExForm = () => {
                 ))}
               </div>
               {formData.contentTypes.includes("other") && (
-              <input
-                type="text"
-                placeholder="Please specify other content types"
-                value={otherContent}
-                onChange={(e) => setOtherContent(e.target.value)}
-                className="mt-3 p-2 w-full bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
-              />
-            )}
+                <input
+                  type="text"
+                  placeholder="Please specify other content types"
+                  value={otherContent}
+                  onChange={(e) => setOtherContent(e.target.value)}
+                  className="mt-3 p-2 w-full bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
+                />
+              )}
             </div>
 
             <div>
               <h3 className="mb-3 font-semibold text-lg">Content Categories (select all that apply):</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {["art", "technology", "beauty and fashion", "gadgets", "events", "gaming", "other"]
-                .map((cat) => (
+                {["art", "technology", "beauty and fashion", "gadgets", "events", "gaming", "other"].map((cat) => (
                   <label key={cat} className="flex items-center cursor-pointer">
                     <input
                       type="checkbox"
@@ -399,7 +403,7 @@ const ExForm = () => {
               {formData.contentCategories.includes("other") && (
                 <input
                   type="text"
-                  placeholder="Please specify other categories"
+                  placeholder="Please specify other categories "
                   value={otherCategory}
                   onChange={(e) => setOtherCategory(e.target.value)}
                   className="mt-3 p-2 w-full bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
@@ -417,7 +421,6 @@ const ExForm = () => {
                 value={formData.monetizationMethod}
                 onChange={handleChange}
                 className="w-full p-3 bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
-                required
               >
                 <option value="">Select a method</option>
                 <option value="brand sponsorships">Brand Sponsorships</option>
@@ -439,10 +442,9 @@ const ExForm = () => {
                 value={formData.mainPlatform}
                 onChange={handleChange}
                 className="w-full p-3 bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
-                required
               >
                 <option value="">Select main platform</option>
-                {visiblePlatforms.map((platform) => (
+                {["instagram", "twitter", "tiktok", "facebook", "youtube"].map((platform) => (
                   <option key={platform} value={platform}>
                     {platform.charAt(0).toUpperCase() + platform.slice(1)}
                   </option>
@@ -451,10 +453,7 @@ const ExForm = () => {
             </div>
 
             <div>
-              <label
-                htmlFor="bestContentLinks"
-                className="block mb-2 font-semibold"
-              >
+              <label htmlFor="bestContentLinks" className="block mb-2 font-semibold">
                 Best Content Links (one URL per line)
               </label>
               <textarea
@@ -469,6 +468,8 @@ const ExForm = () => {
             </div>
           </div>
         )}
+
+        {/* Step 3: Finish */}
         {step === 3 && (
           <div>
             <label htmlFor="additionalInfo" className="block mb-2 font-semibold text-lg">
@@ -482,10 +483,11 @@ const ExForm = () => {
               rows={6}
               placeholder="Write any additional info here..."
               className="w-full p-3 bg-slate-800 border border-gray-700 rounded focus:border-purple-500 focus:outline-none"
-              required
             />
           </div>
         )}
+
+        {/* Navigation Buttons */}
         <div className="flex justify-between mt-8">
           <button
             type="button"
@@ -504,8 +506,12 @@ const ExForm = () => {
             <button
               type="button"
               onClick={handleNext}
-              className="px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-700 text-white font-medium transition-colors"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isStep1Valid()} 
+              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+                isSubmitting || !isStep1Valid()
+                  ? "bg-gray-600 cursor-not-allowed text-gray-400"
+                  : "bg-purple-600 hover:bg-purple-700 text-white"
+              }`}
             >
               Next
             </button>
@@ -515,9 +521,9 @@ const ExForm = () => {
             <button
               type="button"
               onClick={handleSubmit}
-              disabled={!isSubmitEnabled || isSubmitting}
+              disabled={isSubmitting}
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                !isSubmitEnabled || isSubmitting
+                isSubmitting
                   ? "bg-gray-600 cursor-not-allowed text-gray-400"
                   : "bg-purple-600 hover:bg-purple-700 text-white"
               }`}
