@@ -37,7 +37,6 @@ const plans = [
 const PricingPage = () => {
     return (
         <div className="bg-gray-50 min-h-screen px-4 py-10">
-            {/* Hero Section */}
             <div className="text-center mb-12">
                 <h1 className="text-4xl font-bold text-gray-800">Choose the plan that fits your needs</h1>
                 <p className="text-gray-600 mt-2">
@@ -45,7 +44,6 @@ const PricingPage = () => {
                 </p>
             </div>
 
-            {/* Plans Section */}
             <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                 {plans.map((plan) => (
                     <div

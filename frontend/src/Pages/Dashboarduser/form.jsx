@@ -12,7 +12,6 @@ export const PostForm = ({
   handleSavePost,
 }) => {
   const handlePlatformToggle = (platform) => {
-    console.log(form);
     setForm((prev) => {
       const isAlreadySelected = prev.platform?.includes(platform);
       return {
@@ -45,59 +44,95 @@ export const PostForm = ({
   if (!isDialogOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-900 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-semibold text-white">
+            {selectedPostIndex !== null ? "Edit Post" : "Create New Post"}
+          </h2>
+          <button
+            onClick={handleCancel}
+            className="text-gray-400 hover:text-white transition"
+            aria-label="Close dialog"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
 
-      <div className="bg-gray-800 border border-gray-700 text-white p-6 rounded shadow-lg w-96 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-semibold mb-4">
-          {selectedPostIndex !== null ? "Edit Post" : "Create New Post"}
-        </h2>
-        <div className="space-y-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSavePost();
+          }}
+          className="space-y-5"
+        >
+          {/* Date */}
           <div>
-            <label className="block mb-1">Date *</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Date <span className="text-red-500">*</span>
+            </label>
             <input
               type="date"
-              value={form.date.split('T')[0]}
+              value={form.date?.split("T")[0] || ""}
               onChange={(e) => setForm({ ...form, date: e.target.value })}
-              className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
+              required
+              className="w-full rounded-md bg-gray-800 border border-gray-700 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* Title */}
           <div>
-            <label className="block mb-1">Post Title *</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Post Title <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
+              required
               placeholder="Enter post title"
+              className="w-full rounded-md bg-gray-800 border border-gray-700 text-white px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
+          {/* Content */}
           <div>
-            <label className="block mb-1">Content *</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Content <span className="text-red-500">*</span>
+            </label>
             <textarea
               value={form.content}
               onChange={(e) => setForm({ ...form, content: e.target.value })}
-              className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white h-24"
+              required
+              rows={4}
               placeholder="Write your post content here..."
+              className="w-full rounded-md bg-gray-800 border border-gray-700 text-white px-3 py-2 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
+          {/* Platforms */}
           <div>
-            <label className="block mb-2">Platform(s)</label>
-            <div className="grid grid-cols-3 gap-2 mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Platform(s)
+            </label>
+            <div className="grid grid-cols-3 gap-3 mb-4">
               {Object.keys(platformColors).map((platform) => {
                 const isSelected = form.platform?.includes(platform);
-
                 return (
                   <button
                     key={platform}
                     type="button"
                     onClick={() => handlePlatformToggle(platform)}
-                    className={`px-3 py-2 rounded text-xs font-medium capitalize transition flex items-center justify-center space-x-1 ${isSelected ? "ring-2 ring-blue-400" : "hover:bg-gray-600"
-                      }`}
+                    className={`flex items-center justify-center space-x-2 rounded-md px-3 py-2 text-xs font-semibold capitalize transition-shadow duration-200 ${
+                      isSelected
+                        ? "ring-2 ring-blue-500 shadow-lg"
+                        : "hover:brightness-90"
+                    }`}
                     style={{ backgroundColor: platformColors[platform] }}
+                    aria-pressed={isSelected}
                   >
                     {getPlatformIcon(platform)}
-                    <span className="text-white">
+                    <span className="text-white select-none">
                       {platform === "x" ? "X" : platform}
                     </span>
                   </button>
@@ -105,49 +140,51 @@ export const PostForm = ({
               })}
             </div>
 
+            {/* Custom Platform Input & Color */}
             {form.platform?.includes("other") && (
-              <>
+              <div className="space-y-4">
                 <input
                   type="text"
                   value={form.customPlatform}
                   onChange={(e) =>
                     setForm({ ...form, customPlatform: e.target.value })
                   }
-                  className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white mb-2"
                   placeholder="Enter custom platform name"
+                  className="w-full rounded-md bg-gray-800 border border-gray-700 text-white px-3 py-2 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <div>
-                  <label className="block text-sm font-medium mb-2">
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
                     Custom Color
                   </label>
                   <input
                     type="color"
                     value={form.color}
-                    onChange={(e) =>
-                      setForm({ ...form, color: e.target.value })
-                    }
-                    className="w-full h-10 rounded border-none p-1 bg-gray-700 cursor-pointer"
+                    onChange={(e) => setForm({ ...form, color: e.target.value })}
+                    className="w-full h-10 rounded cursor-pointer border-none p-0"
+                    aria-label="Select custom platform color"
                   />
                 </div>
-              </>
+              </div>
             )}
           </div>
-        </div>
 
-        <div className="mt-6 flex justify-end space-x-2">
-          <button
-            onClick={handleSavePost}
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-          >
-            {selectedPostIndex !== null ? "Update Post" : "Create Post"}
-          </button>
-          <button
-            onClick={handleCancel}
-            className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
-          >
-            Cancel
-          </button>
-        </div>
+          {/* Buttons */}
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+            <button
+              type="button"
+              onClick={handleCancel}
+              className="bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-md px-5 py-2 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md px-5 py-2 transition"
+            >
+              {selectedPostIndex !== null ? "Update Post" : "Create Post"}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
@@ -170,48 +207,64 @@ export const HistoryFilterModal = ({
   if (!isHistoryFilterOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[60]">
-      <div className="bg-gray-800 border border-gray-700 text-white p-6 rounded shadow-lg w-96">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Filter Posts</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-900 rounded-lg shadow-xl w-full max-w-md p-6">
+        <div className="flex justify-between items-center mb-5">
+          <h2 className="text-xl font-semibold text-white">Filter Posts</h2>
           <button
             onClick={() => setIsHistoryFilterOpen(false)}
-            className="text-gray-400 hover:text-white"
+            className="text-gray-400 hover:text-white transition"
+            aria-label="Close filter modal"
           >
-            <X className="w-5 h-5" />
+            <X className="w-6 h-6" />
           </button>
         </div>
-        <div className="space-y-4">
+
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setIsHistoryFilterOpen(false);
+          }}
+          className="space-y-5"
+        >
           <div>
-            <label className="block mb-1">Start Date</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Start Date
+            </label>
             <input
               type="date"
               value={filters.startDate}
               onChange={(e) =>
                 setFilters({ ...filters, startDate: e.target.value })
               }
-              className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
+              className="w-full rounded-md bg-gray-800 border border-gray-700 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
           <div>
-            <label className="block mb-1">End Date</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              End Date
+            </label>
             <input
               type="date"
               value={filters.endDate}
               onChange={(e) =>
                 setFilters({ ...filters, endDate: e.target.value })
               }
-              className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
+              className="w-full rounded-md bg-gray-800 border border-gray-700 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
+
           <div>
-            <label className="block mb-1">Platform</label>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Platform
+            </label>
             <select
               value={filters.platform}
               onChange={(e) =>
                 setFilters({ ...filters, platform: e.target.value })
               }
-              className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
+              className="w-full rounded-md bg-gray-800 border border-gray-700 text-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="all">All Platforms</option>
               {Object.keys(platformColors).map((platform) => (
@@ -223,21 +276,23 @@ export const HistoryFilterModal = ({
               ))}
             </select>
           </div>
-        </div>
-        <div className="mt-6 flex justify-end space-x-2">
-          <button
-            onClick={clearFilters}
-            className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
-          >
-            Clear Filters
-          </button>
-          <button
-            onClick={() => setIsHistoryFilterOpen(false)}
-            className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-          >
-            Apply Filters
-          </button>
-        </div>
+
+          <div className="flex justify-end space-x-3 pt-4 border-t border-gray-700">
+            <button
+              type="button"
+              onClick={clearFilters}
+              className="bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-md px-5 py-2 transition"
+            >
+              Clear Filters
+            </button>
+            <button
+              type="submit"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md px-5 py-2 transition"
+            >
+              Apply Filters
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -6,11 +6,12 @@ import {
 } from '@heroicons/react/24/solid';
 import { EllipsisVerticalIcon } from '@heroicons/react/24/outline';
 import axios from "axios";
+import apiClient from '../../lib/axios';
 const ChatBot = () => {
   const [conversations, setConversations] = useState([
     {
       id: 1,
-      name: 'Welcome Habibi',
+      name: 'Welcome ',
       messages: [{ sender: 'bot', text: 'Hello! How can I help you today?' }],
     },
   ]);
@@ -28,31 +29,27 @@ const ChatBot = () => {
     conversations.push(input);
     setConversations(conversations);
     try {
-      const response = await axios.post("http://localhost:5000/api/ai/strategy-chat", {
+      const response = await apiClient.post("/ai/strategy-chat", {
         message: input
       }, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
-        }
-      });
-      if (response.data && response.data.result) {
-        const updated = conversations.map((chat) =>
-          chat.id === activeChatId
-            ? {
-              ...chat,
-              messages: [...chat.messages, { sender: 'user', text: response.data.result }],
-            }
-            : chat
-        );
-        setConversations(updated);
-        setInput('');
-      } else {
-        console.log("Failed to generate script. The response was empty.");
+        },
       }
-    } catch (err) {
-      console.error("Error fetching AI script:", err);
-    } finally {
-      console.error(false);
+    );
+
+    if (response.data && response.data.result) {
+      const updatedBotResponse = updatedUserMessage.map((chat) =>
+        chat.id === activeChatId
+          ? {
+              ...chat,
+              messages: [...chat.messages, { sender: 'bot', text: response.data.result }],
+            }
+          : chat
+      );
+      setConversations(updatedBotResponse);
+    } else {
+      console.log("Failed to generate script. The response was empty.");
     }
   };
 
@@ -83,7 +80,7 @@ const ChatBot = () => {
   return (
     <div className="flex h-screen bg-slate-900 text-slate-300 font-sans overflow-hidden">
       {/* Sidebar */}
-      {/* <aside className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
+       <aside className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
         <button
           onClick={handleNewChat}
           className="flex items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-indigo-700 transition"
@@ -211,6 +208,7 @@ const ChatBot = () => {
       </main>
     </div>
   );
+};
 };
 
 export default ChatBot;

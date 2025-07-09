@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import 'react-toastify/dist/ReactToastify.css';
+import apiClient from '../../lib/axios';
 
 const SignupForm = () => {
   const [formData, setFormData] = useState({
@@ -14,7 +16,11 @@ const SignupForm = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+<<<<<<< HEAD
+  const [showConfirm, setShowConfirm] = useState(false); 
+=======
   const [showConfirm, setShowConfirm] = useState(false);
+>>>>>>> 4ae25061c40a57e6f589ac7a38f309ecf3e56dd4
 
   const navigate = useNavigate();
 
@@ -40,25 +46,19 @@ const SignupForm = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: `${formData.firstName} ${formData.lastName}`,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      const payload = {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        password: formData.password,
+      };
 
-      const data = await response.json();
+      const { data } = await apiClient.post('auth/register', payload);
 
-      if (response.ok) {
-        toast.success('Inscription réussie. Redirection...');
-        localStorage.setItem("token", data.token);
-        setTimeout(() => navigate("/ex"), 2000);
-      } else {
-        toast.error(data.message || 'Erreur lors de l’inscription.');
-      }
+
+
+      toast.success('Inscription réussie. Redirection...');
+      localStorage.setItem("token", data.token);
+      setTimeout(() => navigate("/ex"), 2000);
     } catch (err) {
       toast.error('Erreur de réseau.');
     }
@@ -102,26 +102,29 @@ const SignupForm = () => {
           />
 
           {/* Password Field */}
-          <div className="relative">
-            <input
-              type={showPassword ? 'text' : 'password'}
-              name="password"
-              placeholder="Mot de passe"
-              required
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white"
-            />
-            <button
-              type="button"
-              onClick={() => setShowPassword((prev) => !prev)}
-              className="absolute right-3 top-3 text-sm text-gray-600 dark:text-gray-300"
-            >
-              {showPassword ? '🙈' : '👁️'}
-            </button>
-          </div>
+          {/* Password Field */}
+        <div className="relative">
+          <input
+            type={showPassword ? 'text' : 'password'}
+            name="password"
+            placeholder="Mot de passe"
+            required
+            value={formData.password}
+            onChange={handleChange}
+            className="w-full p-3 border rounded-md dark:bg-gray-700 dark:text-white"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300"
+          >
+            {showPassword ? <FaEyeSlash /> : <FaEye />}
+          </button>
+        </div>
+
 
           {/* Confirm Password Field */}
+        
           <div className="relative">
             <input
               type={showConfirm ? 'text' : 'password'}
@@ -135,11 +138,12 @@ const SignupForm = () => {
             <button
               type="button"
               onClick={() => setShowConfirm((prev) => !prev)}
-              className="absolute right-3 top-3 text-sm text-gray-600 dark:text-gray-300"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 dark:text-gray-300"
             >
-              {showConfirm ? '🙈' : '👁️'}
+              {showConfirm ? <FaEyeSlash /> : <FaEye />}
             </button>
           </div>
+
 
           <div className="flex items-start">
             <input

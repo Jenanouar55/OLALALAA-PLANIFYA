@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from 'react-redux';
 import { Menu, Zap } from "lucide-react";
 import { sidebarItems } from "./Constants";
 import { CalendarView, HistoryView, PostDetailsModal } from './CalenderandHistory';
@@ -12,14 +13,20 @@ import CaptionGenerator from "./captiongenearor";
 import StrategyTips from "./Stips";
 import NotificationsPage from "./alerts";
 import UserProfile from "./userprofil";
-
+import { createPost, deletePost, fetchMyPosts, updatePost } from "../../features/postsSlice"
+import { fetchMyProfile } from "../../features/profileSlice"
+import { fetchAllEvents } from "../../features/adminSlice"
 export default function UserDashboard() {
   const today = new Date();
   const navigate = useNavigate();
+  const { list: posts, loading: postsLoading } = useSelector((state) => state.posts);
+  const { events, loading: eventsLoading } = useSelector((state) => state.admin);
+  const { data: profile } = useSelector((state) => state.profile);
+  const tokenCount = profile?.tokens || 0;
 
-  const [posts, setPosts] = useState([]);
-  const [events, setEvents] = useState([]);
-  const [tokenCount, setTokenCount] = useState(0);
+  // const [posts, setPosts] = useState([]);
+  // const [events, setEvents] = useState([]);
+  // const [tokenCount, setTokenCount] = useState(0);
   const [currentPage, setCurrentPage] = useState("calendar");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
@@ -27,7 +34,7 @@ export default function UserDashboard() {
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   const initialFormState = {
-    _id: null,
+    // _id: null,
     date: "",
     title: "",
     content: "",
@@ -37,7 +44,7 @@ export default function UserDashboard() {
   };
 
   const [form, setForm] = useState(initialFormState);
-
+  const dispatch = useDispatch();
   const [currentMonth, setCurrentMonth] = useState(today.getMonth());
   const [currentYear, setCurrentYear] = useState(today.getFullYear());
   const [showPostDetails, setShowPostDetails] = useState(null);
@@ -45,115 +52,26 @@ export default function UserDashboard() {
     startDate: "",
     platform: "all"
   });
-
   useEffect(() => {
-    const fetchData = async (url, setter, errorMessage) => {
-      try {
-        const response = await fetch(url, {
-          headers: {
-            'Content-Type': 'application/json',
-            "authorization": 'Bearer ' + localStorage.getItem("token")
-          }
-        });
-        const data = await response.json();
-        if (response.ok) setter(data);
-        else toast.error(data.message || errorMessage);
-      } catch (err) {
-        toast.error('Network error.');
-      }
-    };
-
-    fetchData("http://localhost:5000/api/posts", setPosts, 'Error fetching posts.');
-    fetchData("http://localhost:5000/api/admin/events", setEvents, 'Error fetching events.');
-
-    const fetchTokens = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/profile/me", {
-          headers: { Authorization: "Bearer " + localStorage.getItem("token") },
-        });
-        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-        const data = await res.json();
-        setTokenCount(data.tokens);
-      } catch (err) {
-        console.error("Error fetching tokens:", err);
-      }
-    };
-    fetchTokens();
-  }, []);
+    dispatch(fetchMyPosts());
+    dispatch(fetchAllEvents());
+    dispatch(fetchMyProfile());
+  }, [dispatch]);
 
   const handlePostDrop = async (postId, newDate) => {
     const postToUpdate = posts.find(p => p._id === postId);
     if (!postToUpdate) return;
-
     const updatedPost = { ...postToUpdate, date: newDate };
-
-    try {
-      const response = await fetch(`http://localhost:5000/api/posts/${postId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'authorization': 'Bearer ' + localStorage.getItem("token")
-        },
-        body: JSON.stringify(updatedPost)
-      });
-
-      if (response.ok) {
-        setPosts(currentPosts =>
-          currentPosts.map(p =>
-            p._id === postId ? updatedPost : p
-          )
-        );
-        toast.success("Post date updated successfully!");
-      } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Failed to update post date.");
-      }
-    } catch (err) {
-      toast.error("Network error while updating post.");
-    }
+    dispatch(updatePost({ id: postId, postData: updatedPost }));
   };
 
   const handleSavePost = async () => {
-    if (!form.title || !form.content || !form.date) {
-      toast.error("Please fill in all required fields");
-      return;
+    if (form._id) {
+      dispatch(updatePost({ id: form._id, postData: form }));
+    } else {
+      dispatch(createPost(form));
     }
-
-    const isEditing = !!form._id;
-    const method = isEditing ? 'PUT' : 'POST';
-    const endpoint = isEditing
-      ? `http://localhost:5000/api/posts/${form._id}`
-      : 'http://localhost:5000/api/posts';
-
-    try {
-      const response = await fetch(endpoint, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          "authorization": 'Bearer ' + localStorage.getItem("token")
-        },
-        body: JSON.stringify(form)
-      });
-
-      const savedPost = await response.json();
-
-      if (response.ok) {
-        toast.success(`Post ${isEditing ? 'updated' : 'created'} successfully!`);
-
-        if (isEditing) {
-          setPosts(currentPosts => currentPosts.map(p => (p._id === savedPost._id ? savedPost : p)));
-        } else {
-          setPosts(currentPosts => [...currentPosts, savedPost]);
-        }
-
-        setIsDialogOpen(false);
-        setForm(initialFormState);
-      } else {
-        toast.error(savedPost.message || `Error ${isEditing ? 'updating' : 'creating'} post.`);
-      }
-    } catch (err) {
-      toast.error('Network error.');
-    }
+    setIsDialogOpen(false);
   };
 
   const handleOpenCreateForm = () => {
@@ -186,27 +104,31 @@ export default function UserDashboard() {
     setIsDialogOpen(true);
   };
 
-  const handleDeletePost = async (postId) => {
-    try {
-      const response = await fetch("http://localhost:5000/api/posts/" + postId, {
-        method: "DELETE",
-        headers: {
-          'Content-Type': 'application/json',
-          "authorization": 'Bearer ' + localStorage.getItem("token")
-        }
-      });
-      if (response.ok) {
-        setPosts(posts.filter(p => p._id !== postId));
-        toast.success('Post deleted successfully');
-      } else {
-        const data = await response.json();
-        toast.error(data.message || 'Error during deletion.');
-      }
-    } catch (err) {
-      toast.error('Network error.');
-    }
-  };
+  // const handleDeletePost = async (postId) => {
+  //   try {
+  //     const response = await fetch("http://localhost:5000/api/posts/" + postId, {
+  //       method: "DELETE",
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         "authorization": 'Bearer ' + localStorage.getItem("token")
+  //       }
+  //     });
+  //     if (response.ok) {
+  //       setPosts(posts.filter(p => p._id !== postId));
+  //       toast.success('Post deleted successfully');
+  //     } else {
+  //       const data = await response.json();
+  //       toast.error(data.message || 'Error during deletion.');
+  //     }
+  //   } catch (err) {
+  //     toast.error('Network error.');
+  //   }
+  // };
 
+
+  const handleDeletePost = async (postId) => {
+    dispatch(deletePost(postId));
+  };
   const renderPlaceholderView = (pageName) => (
     <div className="bg-gray-800 rounded-lg p-6 text-center">
       <h2 className="text-2xl font-bold mb-4 capitalize">{pageName}</h2>

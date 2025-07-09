@@ -8,7 +8,7 @@ connectDB();
 const app = express();
 
 // cron job to reset tokens
-require("./cronJobs/tokenReset");
+require('./cronJobs/tokenReset');
 
 // cron job to send post reminders
 require('./cronJobs/postReminder');
