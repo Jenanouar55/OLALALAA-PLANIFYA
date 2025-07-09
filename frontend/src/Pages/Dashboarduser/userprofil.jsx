@@ -335,8 +335,6 @@ export default function UserProfile() {
                         <option value="">Select gender</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
-                        <option value="other">Other</option>
-                        <option value="prefer-not-to-say">Prefer not to say</option>
                       </select>
                     ) : (
                       <div className="p-4 bg-gray-700/30 rounded-2xl border border-gray-600/30">
@@ -355,7 +353,7 @@ export default function UserProfile() {
                         type="text"
                         value={formData.city}
                         onChange={handleChange}
-                        placeholder="New York"
+                        placeholder="ex: Rabat"
                         className="w-full p-4 bg-gray-700/50 backdrop-blur-xl border border-gray-600/50 rounded-2xl text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none transition-all duration-300 focus:shadow-lg focus:shadow-purple-500/10"
                       />
                     ) : (
@@ -375,7 +373,7 @@ export default function UserProfile() {
                         type="text"
                         value={formData.country}
                         onChange={handleChange}
-                        placeholder="United States"
+                        placeholder="ex: Morocco"
                         className="w-full p-4 bg-gray-700/50 backdrop-blur-xl border border-gray-600/50 rounded-2xl text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none transition-all duration-300 focus:shadow-lg focus:shadow-purple-500/10"
                       />
                     ) : (

@@ -80,7 +80,7 @@ const ChatBot = () => {
   return (
     <div className="flex h-screen bg-slate-900 text-slate-300 font-sans overflow-hidden">
       {/* Sidebar */}
-      {/* <aside className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
+       <aside className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
         <button
           onClick={handleNewChat}
           className="flex items-center gap-2 px-4 py-3 text-sm text-slate-300 hover:bg-indigo-700 transition"
