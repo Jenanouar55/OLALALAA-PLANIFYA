@@ -121,20 +121,48 @@ const generateScript = async (req, res) => {
   }
 };
 
-// Strategy Chat
+const ChatMessage = require('../models/ChatMessage');
+const ChatConversation = require('../models/ChatConversation');
+
 const chatStrategy = async (req, res) => {
   try {
-    const { message } = req.body;
-    const profile = await getUserProfile(req.user._id);
-    if (!profile)
-      return res.status(404).json({ error: "User profile not found" });
+    const { message, conversationId } = req.body;
+    const userId = req.user._id;
 
-    const prompt = formatUserContextPrompt(
-      profile,
-      `The user asked: "${message}". Answer as a helpful content strategist.`
-    );
-    const result = await callAI(prompt);
-    res.json({ result });
+    let conversation;
+
+    // create new conversation if new , else fetch it
+    if (conversationId) {
+      conversation = await ChatConversation.findById(conversationId);
+      if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
+    } else {
+      conversation = await ChatConversation.create({ user: userId });
+    }
+
+    // save users message
+    await ChatMessage.create({
+      user: userId,
+      conversation: conversation._id,
+      role: 'user',
+      message
+    });
+
+    const profile = await getUserProfile(userId);
+    if (!profile) return res.status(404).json({ error: 'User profile not found' });
+
+    const prompt = formatUserContextPrompt(profile, `The user asked: "${message}". Answer as a helpful content strategist.`);
+    const aiReply = await callAI(prompt);
+
+    // sve AI's message
+    await ChatMessage.create({
+      user: userId,
+      conversation: conversation._id,
+      role: 'assistant',
+      message: aiReply
+    });
+
+    res.json({ result: aiReply, conversationId: conversation._id });
+
   } catch (err) {
     console.error("Strategy chat error:", err.message);
     res.status(500).json({ error: "Failed to process strategy message" });
