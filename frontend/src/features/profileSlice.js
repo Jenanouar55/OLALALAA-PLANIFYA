@@ -43,7 +43,6 @@ export const createOrUpdateProfile = createAsyncThunk(
   }
 );
 
-// --- Slice Definition ---
 const profileSlice = createSlice({
   name: "profile",
   initialState: {
@@ -63,7 +62,7 @@ const profileSlice = createSlice({
       .addCase(fetchMyProfile.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload.message;
-        state.data = null; // Clear data on error
+        state.data = null;
       })
       .addCase(createOrUpdateProfile.pending, (state) => {
         state.loading = true;

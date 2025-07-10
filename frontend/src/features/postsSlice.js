@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../lib/axios";
 
-// --- Async Thunks ---
 export const fetchMyPosts = createAsyncThunk(
   "posts/fetchMyPosts",
   async (_, { rejectWithValue }) => {
@@ -65,8 +64,6 @@ export const deletePost = createAsyncThunk(
     }
   }
 );
-
-// --- Slice Definition ---
 const postsSlice = createSlice({
   name: "posts",
   initialState: {
@@ -76,7 +73,6 @@ const postsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // Fetch
       .addCase(fetchMyPosts.pending, (state) => {
         state.loading = true;
       })
@@ -88,18 +84,15 @@ const postsSlice = createSlice({
         state.loading = false;
         state.error = action.payload.error;
       })
-      // Create
       .addCase(createPost.fulfilled, (state, action) => {
         state.list.push(action.payload);
       })
-      // Update
       .addCase(updatePost.fulfilled, (state, action) => {
         const index = state.list.findIndex((p) => p._id === action.payload._id);
         if (index !== -1) {
           state.list[index] = action.payload;
         }
       })
-      // Delete
       .addCase(deletePost.fulfilled, (state, action) => {
         state.list = state.list.filter((p) => p._id !== action.payload);
       });

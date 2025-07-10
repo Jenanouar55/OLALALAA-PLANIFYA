@@ -24,9 +24,6 @@ export default function UserDashboard() {
   const { data: profile } = useSelector((state) => state.profile);
   const tokenCount = profile?.tokens || 0;
 
-  // const [posts, setPosts] = useState([]);
-  // const [events, setEvents] = useState([]);
-  // const [tokenCount, setTokenCount] = useState(0);
   const [currentPage, setCurrentPage] = useState("calendar");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isHistoryFilterOpen, setIsHistoryFilterOpen] = useState(false);
@@ -34,7 +31,6 @@ export default function UserDashboard() {
   const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
 
   const initialFormState = {
-    // _id: null,
     date: "",
     title: "",
     content: "",

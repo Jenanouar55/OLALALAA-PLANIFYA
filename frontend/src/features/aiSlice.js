@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../lib/axios";
 
-// --- Async Thunks ---
 export const generateCaption = createAsyncThunk(
   "ai/generateCaption",
   async (data, { rejectWithValue }) => {
@@ -66,7 +65,6 @@ export const chatStrategy = createAsyncThunk(
   }
 );
 
-// --- Slice Definition ---
 const aiSlice = createSlice({
   name: "ai",
   initialState: {

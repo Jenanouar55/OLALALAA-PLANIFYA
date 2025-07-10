@@ -6,9 +6,8 @@ import {
   Bell, LayoutDashboard, User, Settings, Mail,
   Users, FileText, Trash2, PartyPopper, Loader2
 } from "lucide-react";
-import { fetchAllUsers, deleteUser } from "../../features/adminSlice"; // Adjust path to your slice
+import { fetchAllUsers, deleteUser } from "../../features/adminSlice";
 
-// --- Child Components (can be in the same file or separate) ---
 
 const Navbar = () => (
   <header className="bg-[#1e1e2f] shadow-md p-4 flex justify-between items-center border-b border-gray-700">

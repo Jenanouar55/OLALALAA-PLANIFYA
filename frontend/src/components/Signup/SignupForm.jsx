@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
-import { registerUser } from '../../features/authSlice'; // Adjust path to your slice
+import { registerUser } from '../../features/authSlice';
 
 const SignupForm = () => {
   const dispatch = useDispatch();
@@ -43,7 +43,6 @@ const SignupForm = () => {
       return;
     }
 
-    // --- Prepare and dispatch Redux action ---
     const payload = {
       name: `${formData.firstName} ${formData.lastName}`,
       email: formData.email,
@@ -51,13 +50,12 @@ const SignupForm = () => {
     };
 
     dispatch(registerUser(payload))
-      .unwrap() // Use .unwrap() to handle promise state
+      .unwrap()
       .then((data) => {
         toast.success('Registration successful! Redirecting...');
-        setTimeout(() => navigate("/profile"), 2000); // Redirect to profile creation
+        setTimeout(() => navigate("/profile"), 2000);
       })
       .catch((err) => {
-        // Display the specific error message from the backend
         toast.error(err.message || 'Registration failed. Please try again.');
       });
   };

@@ -4,13 +4,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { FaEye, FaEyeSlash, FaSpinner } from 'react-icons/fa';
-import { loginUser } from '../../features/authSlice'; // Adjust path if needed
+import { loginUser } from '../../features/authSlice';
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // Select loading and error states from the Redux auth slice
   const { loading, error } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -30,9 +29,6 @@ const LoginForm = () => {
       .unwrap()
       .then((data) => {
         toast.success('Login successful! Redirecting...');
-        // Navigate to the correct dashboard based on role.
-        // Using window.location.href causes a full page reload,
-        // which is what you requested to ensure all state is fresh.
         if (data.role === 'admin') {
           window.location.href = '/dashboard';
         } else {
@@ -40,7 +36,6 @@ const LoginForm = () => {
         }
       })
       .catch((err) => {
-        // Display the specific error message from the backend
         toast.error(err.message || 'Login failed. Please check your credentials.');
       });
   };

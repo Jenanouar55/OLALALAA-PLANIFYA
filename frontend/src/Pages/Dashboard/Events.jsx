@@ -8,9 +8,7 @@ import {
 } from "lucide-react";
 import {
     fetchAllEvents, createEvent, updateEvent, deleteEvent, seedEventsFromCalendarific
-} from "../../features/adminSlice"; // Adjust path to your slice
-
-// --- Reusable Child Components ---
+} from "../../features/adminSlice";
 
 
 
@@ -38,7 +36,6 @@ const EventFormModal = ({ isOpen, onClose, onSave, eventToEdit, loading }) => {
 
     useEffect(() => {
         if (eventToEdit) {
-            // Format date correctly for the input[type=date]
             const dateForInput = eventToEdit.date ? new Date(eventToEdit.date).toISOString().split('T')[0] : '';
             setForm({ ...eventToEdit, date: dateForInput });
         } else {
@@ -90,7 +87,6 @@ const EventFormModal = ({ isOpen, onClose, onSave, eventToEdit, loading }) => {
 };
 
 
-// --- Main Events Page Component ---
 
 function EventsPage() {
     const dispatch = useDispatch();
@@ -145,7 +141,7 @@ function EventsPage() {
         if (window.confirm("This will add this year's public holidays for Morocco. Proceed?")) {
             dispatch(seedEventsFromCalendarific()).unwrap().then((response) => {
                 toast.success(`${response.count} events seeded successfully!`);
-                dispatch(fetchAllEvents()); // Refresh the list
+                dispatch(fetchAllEvents());
             }).catch((err) => {
                 toast.error(err.message || "Failed to seed events.");
             });
@@ -192,7 +188,6 @@ function EventsPage() {
             )}
             <div className="flex-1 flex flex-col">
                 <main className="flex-grow p-6">
-                    {/* Header */}
                     <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                         <div>
                             <h1 className="text-3xl font-bold text-white">Event Management</h1>
@@ -208,7 +203,6 @@ function EventsPage() {
                         </div>
                     </header>
 
-                    {/* Content */}
                     {loading && events.length === 0 ? (
                         <div className="flex justify-center items-center py-20">
                             <Loader2 className="w-10 h-10 animate-spin text-blue-500" />

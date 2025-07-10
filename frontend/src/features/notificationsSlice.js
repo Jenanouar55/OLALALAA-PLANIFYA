@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../lib/axios";
 
-// --- Async Thunks ---
 export const fetchNotifications = createAsyncThunk(
   "notifications/fetchNotifications",
   async (_, { rejectWithValue }) => {
@@ -41,14 +40,13 @@ export const markAllNotificationsAsRead = createAsyncThunk(
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      return true; // Indicates success
+      return true;
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
   }
 );
 
-// --- Slice Definition ---
 const notificationsSlice = createSlice({
   name: "notifications",
   initialState: {
