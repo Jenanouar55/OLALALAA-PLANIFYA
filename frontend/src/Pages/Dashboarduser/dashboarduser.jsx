@@ -66,18 +66,22 @@ export default function UserDashboard() {
   };
 
   const handleSavePost = async () => {
-    if (form._id) {
-      dispatch(updatePost({ id: form._id, postData: form }));
-    } else {
-      dispatch(createPost(form));
-    }
-    setIsDialogOpen(false);
-  };
+  if (form._id && form._id !== undefined) {
+    dispatch(updatePost({ id: form._id, postData: form }));
+  } else {
+    
+    const { _id, ...postData } = form;
+    dispatch(createPost(postData));
+  }
+  setIsDialogOpen(false);
+};
 
   const handleOpenCreateForm = () => {
-    setForm(initialFormState);
-    setIsDialogOpen(true);
-  };
+  const cleanForm = { ...initialFormState };
+  delete cleanForm._id; 
+  setForm(cleanForm);
+  setIsDialogOpen(true);
+};
 
   const handleSidebarItemClick = (itemId) => {
     if (itemId === "logout") {
@@ -107,12 +111,12 @@ export default function UserDashboard() {
   const handleDeletePost = async (postId) => {
     dispatch(deletePost(postId));
   };
-  const renderPlaceholderView = (pageName) => (
-    <div className="bg-gray-800 rounded-lg p-6 text-center">
-      <h2 className="text-2xl font-bold mb-4 capitalize">{pageName}</h2>
-      <p className="text-gray-400">This page is under construction. Coming soon!</p>
-    </div>
-  );
+  // const renderPlaceholderView = (pageName) => (
+  //   <div className="bg-gray-800 rounded-lg p-6 text-center">
+  //     <h2 className="text-2xl font-bold mb-4 capitalize">{pageName}</h2>
+  //     <p className="text-gray-400">This page is under construction. Coming soon!</p>
+  //   </div>
+  // );
 
   const renderCurrentPage = () => {
     switch (currentPage) {

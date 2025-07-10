@@ -7,8 +7,6 @@ export const PostForm = ({
   setIsDialogOpen,
   form,
   setForm,
-  selectedPostIndex,
-  setSelectedPostIndex,
   handleSavePost,
 }) => {
   const handlePlatformToggle = (platform) => {
@@ -37,9 +35,9 @@ export const PostForm = ({
 
   const handleCancel = () => {
     setIsDialogOpen(false);
-    setSelectedPostIndex(null);
     resetForm();
   };
+  const isEditing = form._id && form._id !== undefined && form._id !== null;
 
   if (!isDialogOpen) return null;
 
@@ -48,7 +46,7 @@ export const PostForm = ({
       <div className="bg-gray-900 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-white">
-            {selectedPostIndex !== null ? "Edit Post" : "Create New Post"}
+            {isEditing ? "Edit Post" : "Create New Post"}
           </h2>
           <button
             onClick={handleCancel}
@@ -181,7 +179,7 @@ export const PostForm = ({
               type="submit"
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md px-5 py-2 transition"
             >
-              {selectedPostIndex !== null ? "Update Post" : "Create Post"}
+              {isEditing ? "Update Post" : "Create Post"}
             </button>
           </div>
         </form>

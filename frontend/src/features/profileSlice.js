@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import apiClient from "../lib/axios";
 
-// --- Async Thunks ---
 export const fetchMyProfile = createAsyncThunk(
   "profile/fetchMyProfile",
   async (_, { rejectWithValue }) => {
