@@ -179,7 +179,7 @@ function EventsPage() {
                 </div>
             </aside>
             {isLogoutConfirmOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+                <div className="fixed inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm z-50">
                     <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">
                         <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
                         <p className="mb-6">Are you sure you want to log out?</p>

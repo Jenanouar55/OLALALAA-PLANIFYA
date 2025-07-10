@@ -55,7 +55,7 @@ export default function UserDashboard() {
   useEffect(() => {
     dispatch(fetchMyPosts());
     dispatch(fetchAllEvents());
-    dispatch(fetchMyProfile());
+    // dispatch(fetchMyProfile());
   }, [dispatch]);
 
   const handlePostDrop = async (postId, newDate) => {
@@ -66,22 +66,22 @@ export default function UserDashboard() {
   };
 
   const handleSavePost = async () => {
-  if (form._id && form._id !== undefined) {
-    dispatch(updatePost({ id: form._id, postData: form }));
-  } else {
-    
-    const { _id, ...postData } = form;
-    dispatch(createPost(postData));
-  }
-  setIsDialogOpen(false);
-};
+    if (form._id && form._id !== undefined) {
+      dispatch(updatePost({ id: form._id, postData: form }));
+    } else {
+
+      const { _id, ...postData } = form;
+      dispatch(createPost(postData));
+    }
+    setIsDialogOpen(false);
+  };
 
   const handleOpenCreateForm = () => {
-  const cleanForm = { ...initialFormState };
-  delete cleanForm._id; 
-  setForm(cleanForm);
-  setIsDialogOpen(true);
-};
+    const cleanForm = { ...initialFormState };
+    delete cleanForm._id;
+    setForm(cleanForm);
+    setIsDialogOpen(true);
+  };
 
   const handleSidebarItemClick = (itemId) => {
     if (itemId === "logout") {
@@ -206,7 +206,7 @@ export default function UserDashboard() {
         <PostForm isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen} form={form} setForm={setForm} handleSavePost={handleSavePost} />
         <HistoryFilterModal isHistoryFilterOpen={isHistoryFilterOpen} setIsHistoryFilterOpen={setIsHistoryFilterOpen} filters={filters} setFilters={setFilters} />
         {isLogoutConfirmOpen && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+          <div className="fixed inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm z-50">
             <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">
               <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
               <p className="mb-6">Are you sure you want to log out?</p>

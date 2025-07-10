@@ -11,10 +11,8 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 console.log("Gemini Key:", process.env.GEMINI_API_KEY);
 
-// AI Handler
 const callAI = async (prompt) => {
   try {
-    // Gemini first
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
@@ -25,7 +23,6 @@ const callAI = async (prompt) => {
   }
 
   try {
-    // Fallback: Cohere
     const response = await cohere.chat({
       model: "command-r",
       message: prompt,
@@ -36,7 +33,6 @@ const callAI = async (prompt) => {
   }
 
   try {
-    // Last fallback: OpenAI
     const res = await axios.post(
       "https://api.openai.com/v1/chat/completions",
       {
@@ -60,8 +56,6 @@ const callAI = async (prompt) => {
 const getUserProfile = async (userId) => {
   return await Profile.findOne({ user: userId });
 };
-
-// Caption Generator
 const generateCaption = async (req, res) => {
   try {
     const { topic, tone, platform } = req.body;
@@ -80,8 +74,6 @@ const generateCaption = async (req, res) => {
     res.status(500).json({ error: "Failed to generate caption" });
   }
 };
-
-// Content Calendar Ideas
 const generateContentIdeas = async (req, res) => {
   try {
     const { category, platform, date } = req.body;
@@ -100,8 +92,6 @@ const generateContentIdeas = async (req, res) => {
     res.status(500).json({ error: "Failed to generate content ideas" });
   }
 };
-
-// Script Generator
 const generateScript = async (req, res) => {
   try {
     const { topic, duration, type } = req.body;
@@ -121,9 +111,87 @@ const generateScript = async (req, res) => {
   }
 };
 
-const ChatMessage = require('../models/ChatMessage');
-const ChatConversation = require('../models/ChatConversation');
+const ChatMessage = require("../models/ChatMessage");
+const ChatConversation = require("../models/ChatConversation");
+const getAllConversations = async (req, res) => {
+  try {
+    const conversations = await ChatConversation.find({
+      user: req.user._id,
+    }).sort({ createdAt: -1 });
+    res.json(conversations);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Failed to fetch conversations" });
+  }
+};
+const getMessagesForConversation = async (req, res) => {
+  try {
+    const conversation = await ChatConversation.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+    if (!conversation) {
+      return res
+        .status(404)
+        .json({ message: "Conversation not found or access denied" });
+    }
+    const messages = await ChatMessage.find({
+      conversation: req.params.id,
+    }).sort({ createdAt: 1 });
+    res.json(messages);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Failed to fetch messages" });
+  }
+};
+const renameConversation = async (req, res) => {
+  const { title } = req.body;
+  if (!title) {
+    return res.status(400).json({ message: "Title is required" });
+  }
 
+  try {
+    const conversation = await ChatConversation.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      { title: title },
+      { new: true }
+    );
+
+    if (!conversation) {
+      return res
+        .status(404)
+        .json({ message: "Conversation not found or access denied" });
+    }
+    res.json(conversation);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Failed to update conversation" });
+  }
+};
+const deleteConversation = async (req, res) => {
+  try {
+    const conversation = await ChatConversation.findOne({
+      _id: req.params.id,
+      user: req.user._id,
+    });
+
+    if (!conversation) {
+      return res
+        .status(404)
+        .json({ message: "Conversation not found or access denied" });
+    }
+
+    await ChatMessage.deleteMany({ conversation: req.params.id });
+    await ChatConversation.findByIdAndDelete(req.params.id);
+
+    res.json({
+      message: "Conversation and all its messages deleted successfully",
+    });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Failed to delete conversation" });
+  }
+};
 const chatStrategy = async (req, res) => {
   try {
     const { message, conversationId } = req.body;
@@ -131,45 +199,54 @@ const chatStrategy = async (req, res) => {
 
     let conversation;
 
-    // create new conversation if new , else fetch it
     if (conversationId) {
       conversation = await ChatConversation.findById(conversationId);
-      if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
+      if (!conversation)
+        return res.status(404).json({ error: "Conversation not found" });
     } else {
-      conversation = await ChatConversation.create({ user: userId });
+      const firstMessageTitle =
+        message.substring(0, 40) + (message.length > 40 ? "..." : "");
+      conversation = await ChatConversation.create({
+        user: userId,
+        title: firstMessageTitle,
+      });
     }
 
-    // save users message
     await ChatMessage.create({
       user: userId,
       conversation: conversation._id,
-      role: 'user',
-      message
+      role: "user",
+      message,
     });
 
     const profile = await getUserProfile(userId);
-    if (!profile) return res.status(404).json({ error: 'User profile not found' });
+    if (!profile)
+      return res.status(404).json({ error: "User profile not found" });
 
-    const prompt = formatUserContextPrompt(profile, `The user asked: "${message}". Answer as a helpful content strategist.`);
+    const prompt = formatUserContextPrompt(
+      profile,
+      `The user asked: "${message}". Answer as a helpful content strategist.`
+    );
     const aiReply = await callAI(prompt);
 
-    // sve AI's message
     await ChatMessage.create({
       user: userId,
       conversation: conversation._id,
-      role: 'assistant',
-      message: aiReply
+      role: "assistant",
+      message: aiReply,
     });
 
     res.json({ result: aiReply, conversationId: conversation._id });
-
   } catch (err) {
     console.error("Strategy chat error:", err.message);
     res.status(500).json({ error: "Failed to process strategy message" });
   }
 };
-
 module.exports = {
+  getAllConversations,
+  getMessagesForConversation,
+  renameConversation,
+  deleteConversation,
   generateCaption,
   generateContentIdeas,
   generateScript,

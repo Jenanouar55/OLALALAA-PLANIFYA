@@ -54,7 +54,7 @@ const SignupForm = () => {
       .unwrap() // Use .unwrap() to handle promise state
       .then((data) => {
         toast.success('Registration successful! Redirecting...');
-        setTimeout(() => navigate("/login"), 2000); // Redirect to profile creation
+        setTimeout(() => navigate("/profile"), 2000); // Redirect to profile creation
       })
       .catch((err) => {
         // Display the specific error message from the backend

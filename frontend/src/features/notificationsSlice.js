@@ -6,7 +6,11 @@ export const fetchNotifications = createAsyncThunk(
   "notifications/fetchNotifications",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await apiClient.get("/notifications");
+      const response = await apiClient.get("/notifications", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -32,7 +36,11 @@ export const markAllNotificationsAsRead = createAsyncThunk(
   "notifications/markAllAsRead",
   async (_, { rejectWithValue }) => {
     try {
-      await apiClient.patch("/notifications/mark-all-read");
+      await apiClient.patch("/notifications/mark-all-read", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
       return true; // Indicates success
     } catch (error) {
       return rejectWithValue(error.response.data);

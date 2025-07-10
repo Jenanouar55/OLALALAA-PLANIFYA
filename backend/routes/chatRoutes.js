@@ -1,19 +1,28 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const ChatMessage = require('../models/ChatMessage');
-const ChatConversation = require('../models/ChatConversation');
-const authMiddleware = require('../middlewares/authMiddleware');
+const authMiddleware = require("../middlewares/authMiddleware");
+const {
+  getAllConversations,
+  getMessagesForConversation,
+  renameConversation,
+  deleteConversation,
+} = require("../controllers/aiController");
+
+// Apply auth middleware to all routes in this file
+router.use(authMiddleware);
+
+// --- Conversation Routes ---
 
 // Get all conversations for a user
-router.get('/conversations', authMiddleware, async (req, res) => {
-  const conversations = await ChatConversation.find({ user: req.user._id }).sort({ createdAt: -1 });
-  res.json(conversations);
-});
+router.get("/conversations", getAllConversations);
 
-// Get all messages for a  conversation
-router.get('/conversations/:id', authMiddleware, async (req, res) => {
-  const messages = await ChatMessage.find({ conversation: req.params.id }).sort({ timestamp: 1 });
-  res.json(messages);
-});
+// Get all messages for a specific conversation
+router.get("/conversations/:id", getMessagesForConversation);
+
+// Rename a conversation
+router.put("/conversations/:id", renameConversation);
+
+// Delete a conversation
+router.delete("/conversations/:id", deleteConversation);
 
 module.exports = router;

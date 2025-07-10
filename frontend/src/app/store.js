@@ -7,6 +7,7 @@ import adminReducer from "../features/adminSlice";
 import aiReducer from "../features/aiSlice";
 import stripeReducer from "../features/stripeSlice";
 import notificationsReducer from "../features/notificationsSlice";
+import chatReducer from "../features/chatSlice";
 
 export const store = configureStore({
   reducer: {
@@ -17,5 +18,6 @@ export const store = configureStore({
     ai: aiReducer,
     stripe: stripeReducer,
     notifications: notificationsReducer,
+    chat: chatReducer,
   },
 });

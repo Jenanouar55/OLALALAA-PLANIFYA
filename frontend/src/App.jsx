@@ -51,10 +51,11 @@ function App() {
         <Route path="/c" element={<BillingPage2 />} />
 
         <Route element={<ConnectedOnly />}>
+          <Route path="/profile" element={<ExForm />} />
           <Route element={<UserOnly />}>
-            {/* <Route element={<ProfileRequired />}> */}
-            <Route path="/userDashboard" element={<UserDashboard />} />
-            {/* </Route> */}
+            <Route element={<ProfileRequired />}>
+              <Route path="/userDashboard" element={<UserDashboard />} />
+            </Route>
           </Route>
           <Route element={<AdminOnly />}>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -68,7 +69,6 @@ function App() {
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
-        <Route path="/profile" element={<ExForm />} />
         {/* {sidebarItems.map((item, index) => (
           <Route key={index} path={item.path} element={<item.component />} />
         ))} */}
