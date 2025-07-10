@@ -8,6 +8,7 @@ export const registerUser = createAsyncThunk(
     try {
       const response = await apiClient.post("/auth/register", userData);
       localStorage.setItem("token", response.data.token);
+      localStorage.setItem("role", "user");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

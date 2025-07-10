@@ -104,28 +104,6 @@ export default function UserDashboard() {
     setIsDialogOpen(true);
   };
 
-  // const handleDeletePost = async (postId) => {
-  //   try {
-  //     const response = await fetch("http://localhost:5000/api/posts/" + postId, {
-  //       method: "DELETE",
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         "authorization": 'Bearer ' + localStorage.getItem("token")
-  //       }
-  //     });
-  //     if (response.ok) {
-  //       setPosts(posts.filter(p => p._id !== postId));
-  //       toast.success('Post deleted successfully');
-  //     } else {
-  //       const data = await response.json();
-  //       toast.error(data.message || 'Error during deletion.');
-  //     }
-  //   } catch (err) {
-  //     toast.error('Network error.');
-  //   }
-  // };
-
-
   const handleDeletePost = async (postId) => {
     dispatch(deletePost(postId));
   };
@@ -160,7 +138,7 @@ export default function UserDashboard() {
           handleDeletePost={handleDeletePost}
         />;
       case "alerts": return <NotificationsPage />;
-      case "settings": return renderPlaceholderView("settings");
+      // case "settings": return renderPlaceholderView("settings");
       case "profile": return <UserProfile />;
       case "chatbot": return <ChatBot />;
       case "scriptgenerator": return <ScriptGenerator />;

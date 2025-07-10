@@ -1,343 +1,245 @@
 import React, { useEffect, useState } from "react";
-import {
-    Bell,
-    LayoutDashboard,
-    User,
-    Settings,
-    Mail,
-    Users,
-    FileText,
-    Pencil,
-    Trash2,
-    Trash,
-} from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from "axios";
-import apiClient from "../../lib/axios";
+import {
+    LayoutDashboard, Users, Settings, Mail, PartyPopper,
+    Plus, Calendar, Pencil, Trash, X, Loader2, Wand2
+} from "lucide-react";
+import {
+    fetchAllEvents, createEvent, updateEvent, deleteEvent, seedEventsFromCalendarific
+} from "../../features/adminSlice"; // Adjust path to your slice
 
-const Sidebar = () => (
-    <aside className="bg-[#121826] md:w-64 p-6 h-screen flex flex-col justify-between shadow-md border-r border-gray-700">
-        <nav className="space-y-5 text-gray-300 font-medium">
-            <Link to="/dashboard" className="flex items-center gap-3 hover:text-blue-400">
-                <LayoutDashboard className="w-5 h-5" />
-                Dashboard
-            </Link>
-            <Link to="/users" className="flex items-center gap-3 hover:text-blue-400">
-                <Users className="w-5 h-5" />
-                Utilisateurs
-            </Link>
-            <Link to="/settings" className="flex items-center gap-3 hover:text-blue-400">
-                <Settings className="w-5 h-5" />
-                Paramètres
-            </Link>
-            <Link to="/contact" className="flex items-center gap-3 hover:text-blue-400">
-                <Mail className="w-5 h-5" />
-                Contact
-            </Link>
-            <Link to="/events" className="flex items-center gap-3 hover:text-blue-400">
-                <Mail className="w-5 h-5" />
-                events
-            </Link>
-        </nav>
-    </aside>
+// --- Reusable Child Components ---
+
+
+
+const EventCard = ({ event, onEdit, onDelete }) => (
+    <div className="bg-[#121826] border border-gray-700/50 rounded-lg p-5 flex flex-col justify-between shadow-lg hover:border-blue-600/50 transition-all duration-300">
+        <div>
+            <div className="flex justify-between items-start">
+                <h3 className="font-bold text-lg text-white mb-2">{event.name}</h3>
+                <div className="flex items-center gap-2">
+                    <button onClick={() => onEdit(event)} className="p-1.5 text-gray-400 hover:text-blue-400"><Pencil className="w-4 h-4" /></button>
+                    <button onClick={() => onDelete(event._id)} className="p-1.5 text-gray-400 hover:text-red-400"><Trash className="w-4 h-4" /></button>
+                </div>
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
+                <Calendar className="w-4 h-4" />
+                <span>{new Date(event.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+            </div>
+            <p className="text-gray-300 text-sm leading-relaxed">{event.description}</p>
+        </div>
+    </div>
 );
 
-const EventForm = ({
-    form,
-    setForm,
-    selectedEventIndex,
-    handleSaveEvent,
-    handleCancel
-}) => {
-    return (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-gray-800 border border-gray-700 text-white p-6 rounded shadow-lg w-96 max-h-[90vh] overflow-y-auto">
-                <h2 className="text-lg font-semibold mb-4">
-                    {selectedEventIndex !== null ? "Edit Event" : "Create New Event"}
-                </h2>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block mb-1">Date *</label>
-                        <input
-                            type="date"
-                            value={form.date}
-                            onChange={(e) => setForm({ ...form, date: e.target.value })}
-                            className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-1">event name *</label>
-                        <input
-                            type="text"
-                            value={form.name}
-                            onChange={(e) => setForm({ ...form, name: e.target.value })}
-                            className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white"
-                            placeholder="Enter event name"
-                        />
-                    </div>
-                    <div>
-                        <label className="block mb-1">description *</label>
-                        <textarea
-                            value={form.description}
-                            onChange={(e) => setForm({ ...form, description: e.target.value })}
-                            className="w-full px-3 py-2 rounded bg-gray-700 border border-gray-600 text-white h-24"
-                            placeholder="Write your event description here..."
-                        />
-                    </div>
-                </div>
+const EventFormModal = ({ isOpen, onClose, onSave, eventToEdit, loading }) => {
+    const [form, setForm] = useState({ date: '', name: '', description: '' });
 
-                <div className="mt-6 flex justify-end space-x-2">
-                    <button
-                        onClick={handleSaveEvent}
-                        className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded"
-                    >
-                        {selectedEventIndex !== null ? "Update Event" : "Create Event"}
-                    </button>
-                    <button
-                        onClick={handleCancel}
-                        className="bg-gray-600 hover:bg-gray-700 px-4 py-2 rounded"
-                    >
-                        Cancel
-                    </button>
+    useEffect(() => {
+        if (eventToEdit) {
+            // Format date correctly for the input[type=date]
+            const dateForInput = eventToEdit.date ? new Date(eventToEdit.date).toISOString().split('T')[0] : '';
+            setForm({ ...eventToEdit, date: dateForInput });
+        } else {
+            setForm({ date: '', name: '', description: '' });
+        }
+    }, [eventToEdit, isOpen]);
+
+    if (!isOpen) return null;
+
+    const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onSave(form);
+    };
+
+
+    return (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
+            <div className="bg-[#1e1e2f] border border-gray-700 text-white p-6 rounded-lg shadow-2xl w-full max-w-md">
+                <div className="flex justify-between items-center mb-4">
+                    <h2 className="text-xl font-semibold">{eventToEdit ? "Edit Event" : "Create New Event"}</h2>
+                    <button onClick={onClose} className="p-1 rounded-full hover:bg-gray-700"><X className="w-5 h-5" /></button>
                 </div>
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Event Name *</label>
+                        <input type="text" name="name" value={form.name} onChange={handleChange} className="w-full px-3 py-2 rounded bg-gray-800 border border-gray-600 focus:border-blue-500 focus:outline-none" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Date *</label>
+                        <input type="date" name="date" value={form.date} onChange={handleChange} className="w-full px-3 py-2 rounded bg-gray-800 border border-gray-600 focus:border-blue-500 focus:outline-none" required />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-400 mb-1">Description *</label>
+                        <textarea name="description" value={form.description} onChange={handleChange} rows="4" className="w-full px-3 py-2 rounded bg-gray-800 border border-gray-600 focus:border-blue-500 focus:outline-none" required />
+                    </div>
+                    <div className="flex justify-end gap-3 pt-4">
+                        <button type="button" onClick={onClose} className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 font-semibold text-sm">Cancel</button>
+                        <button type="submit" disabled={loading} className="px-4 py-2 rounded bg-blue-600 hover:bg-blue-700 font-semibold text-sm flex items-center gap-2 disabled:bg-blue-800">
+                            {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
+                            {loading ? 'Saving...' : (eventToEdit ? 'Update Event' : 'Create Event')}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );
 };
 
-function Events() {
-    const resetForm = () => {
-        setForm({
-            date: "",
-            name: "",
-            description: ""
+
+// --- Main Events Page Component ---
+
+function EventsPage() {
+    const dispatch = useDispatch();
+    const { events, loading, error } = useSelector((state) => state.admin);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [eventToEdit, setEventToEdit] = useState(null);
+    const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+
+    useEffect(() => {
+        dispatch(fetchAllEvents());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (error) toast.error(error);
+    }, [error]);
+
+    const handleOpenModal = (event = null) => {
+        setEventToEdit(event);
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setEventToEdit(null);
+        setIsModalOpen(false);
+    };
+
+    const handleSave = (formData) => {
+        const action = formData._id
+            ? updateEvent({ id: formData._id, eventData: formData })
+            : createEvent(formData);
+
+        dispatch(action).unwrap().then(() => {
+            toast.success(`Event ${formData._id ? 'updated' : 'created'} successfully!`);
+            handleCloseModal();
+        }).catch((err) => {
+            toast.error(err.message || "Failed to save event.");
         });
     };
 
-    const handleCancel = () => {
-        setIsDialogOpen(false);
-        setSelectedEventIndex(null);
-        resetForm();
-    };
-
-    const today = new Date();
-    const [events, setEvents] = useState([]);
-    const Navigate = useNavigate();
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [form, setForm] = useState({
-        date: "",
-        name: "",
-        description: ""
-    });
-    const [selectedEventIndex, setSelectedEventIndex] = useState(null);
-    const [showEventDetails, setShowEventDetails] = useState(null);
-
-    const handleEditEvent = (index) => {
-        setForm(events[index]);
-        setSelectedEventIndex(index);
-        setIsDialogOpen(true);
-    };
-
-    // const handleSaveEvent = async () => {
-    //     if (!form.name || !form.description || !form.date) {
-    //         alert("Please fill in all required fields");
-    //         return;
-    //     }
-    //     const method = selectedEventIndex == null ? 'POST' : "PUT";
-    //     const link = selectedEventIndex == null ? 'http://localhost:5000/api/admin/events/' : "http://localhost:5000/api/admin/events/" + form._id;
-
-    //     try {
-    //         const response = await fetch(link, {
-    //             method: method,
-    //             headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") },
-    //             body: JSON.stringify(form)
-    //         });
-    //         const data = await response.json();
-    //         if (response.ok) {
-    //             console.log("form created successfully");
-    //             toast.success('form created successfully');
-    //             setTimeout(() => Navigate('/dashboard'), 2000);
-    //         } else {
-    //             toast.error(data.message || 'Erreur lors de creation.');
-    //         }
-    //     } catch (err) {
-    //         toast.error('Erreur de réseau.');
-    //     }
-
-    //     const eventData = {
-    //         ...form,
-    //         color: form.platform === "other" ? form.color : platformColors[form.platform]
-    //     };
-    //     const updatedEvents = [...events];
-    //     if (selectedEventIndex !== null) {
-    //         updatedEvents[selectedEventIndex] = eventData;
-    //     } else {
-    //         updatedEvents.push(eventData);
-    //     }
-    //     setEvents(updatedEvents);
-    //     setForm({
-    //         date: "",
-    //         name: "",
-    //         description: ""
-    //     });
-    //     setIsDialogOpen(false);
-    //     setSelectedEventIndex(null);
-    // };
-
-    const handleSaveEvent = async () => {
-        if (!form.name || !form.description || !form.date) {
-            toast.error("Please fill in all required fields");
-            return;
-        }
-
-        const isEditing = !!editingEventId;
-        const url = isEditing
-            ? `/admin/events/${editingEventId}`
-            : '/admin/events/';
-        const method = isEditing ? 'put' : 'post';
-
-        try {
-            const token = localStorage.getItem("token");
-            await apiClient[method](url, form, {
-                headers: { 'Authorization': `Bearer ${token}` }
+    const handleDelete = (eventId) => {
+        if (window.confirm("Are you sure you want to delete this event?")) {
+            dispatch(deleteEvent(eventId)).unwrap().then(() => {
+                toast.success("Event deleted successfully.");
+            }).catch((err) => {
+                toast.error(err.message || "Failed to delete event.");
             });
-
-            toast.success(`Event ${isEditing ? 'updated' : 'created'} successfully!`);
-            handleCancel();
-            fetchEvents();
-        } catch (err) {
-            toast.error(err.response?.data?.message || `Error saving event.`);
         }
     };
-    // const handleDeleteEvent = async (index) => {
-    //     try {
-    //         const response = await fetch("http://localhost:5000/api/admin/events/" + index, {
-    //             method: "DELETE",
-    //             headers: { 'Content-Type': 'application/json', "authorization": 'Bearer ' + localStorage.getItem("token") }
-    //         });
 
-    //         const data = await response.json();
-
-    //         if (response.ok) {
-    //             toast.success('form deleted successfully');
-    //             setTimeout(() => Navigate('/dashboard'), 2000);
-    //         } else {
-    //             toast.error(data.message || 'Erreur lors de delete.');
-    //         }
-    //     } catch (err) {
-    //         toast.error('Erreur de réseau.');
-    //     }
-    //     const updatedEvents = events.filter((_, i) => i !== index);
-    //     setEvents(updatedEvents);
-    //     setShowEventDetails(null);
-    // };
-
-    const handleDeleteEvent = async (eventId) => {
-        if (!window.confirm("Are you sure you want to delete this event?")) return;
-
-        try {
-            const token = localStorage.getItem("token");
-            await apiClient.delete(`/admin/events/${eventId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+    const handleSeed = () => {
+        if (window.confirm("This will add this year's public holidays for Morocco. Proceed?")) {
+            dispatch(seedEventsFromCalendarific()).unwrap().then((response) => {
+                toast.success(`${response.count} events seeded successfully!`);
+                dispatch(fetchAllEvents()); // Refresh the list
+            }).catch((err) => {
+                toast.error(err.message || "Failed to seed events.");
             });
-
-            toast.success('Event deleted successfully');
-            fetchEvents();
-        } catch (err) {
-            toast.error(err.response?.data?.message || 'Error deleting event.');
         }
     };
-
-    useEffect(() => {
-        const fetchEvents = async () => {
-            try {
-                const response = await apiClient.get("/admin/events", {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    setEvents(data);
-                } else {
-                    toast.error(data.message || 'Erreur de fetch.');
-                }
-            } catch (err) {
-                toast.error('Erreur de réseau.');
-            }
-        };
-
-        fetchEvents();
-    }, []);
-
+    const handleLogoutCancel = () => {
+        setIsLogoutConfirmOpen(false);
+    };
+    const handleLogoutConfirm = () => {
+        setIsLogoutConfirmOpen(false);
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        navigate("/login");
+    };
     return (
-        <>
-            {isDialogOpen && (
-                <EventForm
-                    form={form}
-                    setForm={setForm}
-                    selectedEventIndex={selectedEventIndex}
-                    handleSaveEvent={handleSaveEvent}
-                    handleCancel={handleCancel}
-                />
-            )}
-            <div className="min-h-screen flex flex-col bg-[#1e1e2f]">
-                <header className="bg-[#1e1e2f] shadow-md p-4 flex justify-between items-center border-b border-gray-700">
-                    <img src="/Images/Planifya-v2.png" alt="Logo" className="h-15" />
-                    <div className="flex">
-                        <button className="text-gray-300 hover:text-blue-400">
-                            <Bell className="w-6 h-6" />
-                        </button>
-                        <button className="mx-3 bg-blue-600 hover:bg-blue-700 transition-all duration-200 px-5 py-2.5 rounded-full shadow-md hover:shadow-lg text-sm font-medium"
-                            onClick={() => setIsDialogOpen(true)}>create event</button>
-                    </div>
-                </header>
-                <div className="flex flex-1">
-                    <Sidebar />
-                    <div className="flex-grow">
-                        <main className="flex justify-center items-start py-10 px-4 bg-[#1e1e2f] min-h-screen">
-                            <div className="w-full max-w-6xl flex flex-col gap-8">
-                                <div className="space-y-4">
-                                    {events.length == 0 ? "no events" : events.map((event, index) => (
-                                        <div key={index} className="bg-gray-700 rounded-lg p-4 flex justify-between items-start">
-                                            <div className="flex-1">
-                                                <div className="flex items-start justify-between mb-3">
-                                                    <h3 className="font-semibold text-lg">{event.name}</h3>
-                                                    <div className="flex space-x-2 ml-4">
-                                                        <button
-                                                            onClick={() => handleEditEvent(events.findIndex(p => p == event))}
-                                                            className="text-blue-400 hover:text-blue-300"
-                                                        >
-                                                            <Pencil className="w-4 h-4" />
-                                                        </button>
-                                                        <button
-                                                            onClick={() => handleDeleteEvent(event._id)}
-                                                            className="text-red-400 hover:text-red-300"
-                                                        >
-                                                            <Trash className="w-4 h-4" />
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                                <p className="text-sm text-gray-300 mb-2">
-                                                    {new Date(event.date).toLocaleDateString('en-US', {
-                                                        year: 'numeric',
-                                                        month: 'long',
-                                                        day: 'numeric'
-                                                    })}
-                                                </p>
-                                                <p className="text-sm text-gray-100">{event.description}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </main>
+        <div className="min-h-screen flex bg-[#1e1e2f] text-white">
+            <aside className="bg-[#121826] w-64 p-6 h-screen flex flex-col justify-between shadow-lg border-r border-gray-700/50">
+                <nav className="space-y-4 text-gray-400 font-medium">
+                    <h2 className="px-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Menu</h2>
+                    <Link to="/dashboard" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
+                        <LayoutDashboard className="w-5 h-5" /> Dashboard
+                    </Link>
+                    <Link to="/events" className="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-600/20 text-blue-300">
+                        <PartyPopper className="w-5 h-5" /> Events
+                    </Link>
+                </nav>
+                <div className="border-t border-gray-700/50 pt-4">
+                    <Link onClick={() => setIsLogoutConfirmOpen(true)} className="flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-colors">
+                        <Mail className="w-5 h-5" /> Logout
+                    </Link>
+                </div>
+            </aside>
+            {isLogoutConfirmOpen && (
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+                    <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">
+                        <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
+                        <p className="mb-6">Are you sure you want to log out?</p>
+                        <div className="flex justify-center space-x-4">
+                            <button onClick={handleLogoutCancel} className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition-colors">Cancel</button>
+                            <button onClick={handleLogoutConfirm} className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition-colors text-white">Logout</button>
+                        </div>
                     </div>
                 </div>
+            )}
+            <div className="flex-1 flex flex-col">
+                <main className="flex-grow p-6">
+                    {/* Header */}
+                    <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                        <div>
+                            <h1 className="text-3xl font-bold text-white">Event Management</h1>
+                            <p className="text-gray-400 mt-1">Create, edit, and manage global events for all users.</p>
+                        </div>
+                        <div className="flex gap-3">
+                            <button onClick={handleSeed} className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                                <Wand2 className="w-5 h-5" /> Seed Holidays
+                            </button>
+                            <button onClick={() => handleOpenModal()} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                                <Plus className="w-5 h-5" /> Create Event
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* Content */}
+                    {loading && events.length === 0 ? (
+                        <div className="flex justify-center items-center py-20">
+                            <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+                        </div>
+                    ) : !loading && events.length === 0 ? (
+                        <div className="text-center py-20 bg-[#121826] rounded-lg border-2 border-dashed border-gray-700">
+                            <PartyPopper className="mx-auto h-12 w-12 text-gray-500" />
+                            <h3 className="mt-2 text-xl font-semibold text-white">No Events Found</h3>
+                            <p className="mt-1 text-sm text-gray-400">Get started by creating a new event or seeding holidays.</p>
+                            <button onClick={() => handleOpenModal()} className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors mx-auto">
+                                <Plus className="w-5 h-5" /> Create Event
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {events.map((event) => (
+                                <EventCard key={event._id} event={event} onEdit={handleOpenModal} onDelete={handleDelete} />
+                            ))}
+                        </div>
+                    )}
+                </main>
             </div>
-        </>
+            <EventFormModal
+                isOpen={isModalOpen}
+                onClose={handleCloseModal}
+                onSave={handleSave}
+                eventToEdit={eventToEdit}
+                loading={loading}
+            />
+        </div>
     );
 }
 
-export default Events;
+export default EventsPage;

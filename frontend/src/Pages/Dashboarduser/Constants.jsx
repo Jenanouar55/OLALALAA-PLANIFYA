@@ -55,7 +55,7 @@ export const sidebarItems = [
   { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
   { id: "history", icon: History, label: "History", color: "green" },
   { id: "alerts", icon: Bell, label: "Notifications", color: "blue" },
-  { id: "settings", icon: Settings, label: "Settings", color: "blue" },
+  // { id: "settings", icon: Settings, label: "Settings", color: "blue" },
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
 ];
 

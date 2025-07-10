@@ -1,18 +1,23 @@
-import React, { useState } from "react";
-<<<<<<< HEAD
-=======
+import React, { useEffect, useState } from "react";
+import { createOrUpdateProfile } from "../features/profileSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 // import axios from "axios";
 // import apiClient from "../lib/axios";
 
->>>>>>> 4ae25061c40a57e6f589ac7a38f309ecf3e56dd4
 
 const ExForm = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { loading: isSubmitting, error: submitError } = useSelector((state) => state.profile);
+
   const [step, setStep] = useState(1);
   const [visiblePlatforms, setVisiblePlatforms] = useState([]);
   const [otherContent, setOtherContent] = useState("");
   const [otherCategory, setOtherCategory] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState("");
+  // const [isSubmitting, setIsSubmitting] = useState(false);
+  // const [submitError, setSubmitError] = useState("");
 
   const [formData, setFormData] = useState({
     firstName: "",
@@ -20,7 +25,7 @@ const ExForm = () => {
     email: "",
     phoneNumber: "",
     age: "",
-    gender: "", 
+    gender: "",
     city: "",
     country: "",
     instagram: { url: "", followers: "", remarks: "" },
@@ -39,17 +44,7 @@ const ExForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const [social, field] = name.split(".");
-
-    if (["instagram", "twitter", "tiktok", "facebook", "youtube"].includes(social) && field) {
-      setFormData((prev) => ({
-        ...prev,
-        [social]: {
-          ...prev[social],
-          [field]: value,
-        },
-      }));
-    } else if (name === "contentTypes") {
+    if (name === "contentTypes") {
       const updated = checked
         ? [...formData.contentTypes, value]
         : formData.contentTypes.filter((v) => v !== value);
@@ -64,6 +59,11 @@ const ExForm = () => {
     }
   };
 
+  useEffect(() => {
+    if (!isSubmitting && submitError) {
+      toast.error(submitError);
+    }
+  }, [isSubmitting, submitError]);
   const togglePlatform = (platform) => {
     setVisiblePlatforms((prev) =>
       prev.includes(platform)
@@ -77,123 +77,25 @@ const ExForm = () => {
       setSubmitError("Please fill in all required fields for Basic Info.");
       return;
     }
-    setSubmitError(""); 
+    // setSubmitError("");
     if (step < 3) setStep(step + 1);
   };
 
   const handleBack = () => {
-    setSubmitError("");
+    // setSubmitError("");
     if (step > 1) setStep(step - 1);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
-    setSubmitError("");
-
-    try {
-   
-      if (!isStep1Valid()) { 
-        throw new Error("Please fill in all required fields before submitting.");
-      }
-
-
-      let finalContentTypes = [...formData.contentTypes];
-      if (finalContentTypes.includes("other") && otherContent.trim()) {
-        finalContentTypes = finalContentTypes.filter((v) => v !== "other"); 
-        finalContentTypes.push("other"); 
-      } else if (finalContentTypes.includes("other") && !otherContent.trim()) {
-
-        finalContentTypes = finalContentTypes.filter((v) => v !== "other");
-        finalContentTypes.push("other");
-      }
-      let finalContentCategories = [...formData.contentCategories];
-      if (finalContentCategories.includes("other") && otherCategory.trim()) {
-        finalContentCategories = finalContentCategories.filter((v) => v !== "other");
-        finalContentCategories.push("other");
-      } else if (finalContentCategories.includes("other") && !otherCategory.trim()) {
-        finalContentCategories = finalContentCategories.filter((v) => v !== "other");
-        finalContentCategories.push("other");
-      }
-      const platformsData = visiblePlatforms.filter(platform =>
-        ["instagram", "twitter", "tiktok", "facebook", "youtube"].includes(platform)
-      );
-
-
-      const bestContentLinks = formData.bestContentLinks
-        .split("\n")
-        .map((link) => link.trim())
-        .filter((link) => link !== "");
-
-      const profileData = {
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        email: formData.email.trim(),
-        phoneNumber: formData.phoneNumber.trim() || undefined,
-        age: formData.age ? parseInt(formData.age) : undefined,
-        gender: formData.gender || undefined, 
-        city: formData.city.trim() || undefined,
-        country: formData.country.trim() || undefined,
-        platforms: platformsData.length > 0 ? platformsData : undefined,
-        contentTypes: finalContentTypes.length > 0 ? finalContentTypes : undefined,
-        contentCategories: finalContentCategories.length > 0 ? finalContentCategories : undefined,
-        monetizationMethod: formData.monetizationMethod || undefined,
-        mainPlatform: formData.mainPlatform || undefined,
-        bestContentLinks: bestContentLinks.length > 0 ? bestContentLinks : undefined,
-        additionalInfo: formData.additionalInfo.trim() || undefined,
-      };
-
-      Object.keys(profileData).forEach((key) => {
-        if (profileData[key] === undefined || profileData[key] === "") {
-          delete profileData[key];
-        }
+    await dispatch(createOrUpdateProfile(formData))
+      .unwrap().then(() => {
+        toast.success("Profile created successfully!");
+        navigate("/userdashboard");
+      })
+      .catch((err) => {
+        console.error("Failed to create profile:", err);
       });
-
-      console.log("Submitting profile data:", profileData);
-
-      const token = localStorage.getItem("token");
-      if (!token) {
-        throw new Error("Please log in to continue");
-      }
-
-<<<<<<< HEAD
-      const response = await fetch("http://localhost:5000/api/profile", {
-        method: 'POST',
-=======
-      const response = await apiClient.post("/profile", profileData, {
->>>>>>> 4ae25061c40a57e6f589ac7a38f309ecf3e56dd4
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(profileData )
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Server error: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Profile creation response:", result);
-      alert("Profile created successfully!");
-  
-      window.location.href = "/userdashboard";
-      
-    } catch (error) {
-      console.error("Error submitting profile:", error);
-      
-      let errorMessage = "Something went wrong. Please try again.";
-      
-      if (error.message) {
-        errorMessage = error.message;
-      }
-      
-      setSubmitError(errorMessage);
-      alert(errorMessage);
-    } finally {
-      setIsSubmitting(false);
-    }
   };
 
   const isStep1Valid = () => {
@@ -201,11 +103,11 @@ const ExForm = () => {
   };
 
   const isStep2Valid = () => {
-    return true; 
+    return true;
   };
 
   const isSubmitEnabled = () => {
-    return isStep1Valid(); 
+    return isStep1Valid();
   };
 
   return (
@@ -216,9 +118,8 @@ const ExForm = () => {
           {["Basic Info", "Content Details", "Finish"].map((label, index) => (
             <div key={index} className="flex flex-col items-center flex-1 relative">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold z-10 ${
-                  step === index + 1 ? "bg-purple-600 text-white" : "bg-gray-700 text-gray-300"
-                }`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold z-10 ${step === index + 1 ? "bg-purple-600 text-white" : "bg-gray-700 text-gray-300"
+                  }`}
               >
                 {index + 1}
               </div>
@@ -314,7 +215,7 @@ const ExForm = () => {
                   className="mr-2"
                 />
                 Female
-              </label> 
+              </label>
             </div>
             <input
               type="text"
@@ -365,21 +266,6 @@ const ExForm = () => {
             <div>
               <h3 className="mb-3 font-semibold text-lg">Content Types (select all that apply):</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-<<<<<<< HEAD
-                {["photography", "creative writing", "video", "other"].map((type) => (
-                  <label key={type} className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="contentTypes"
-                      value={type.toLowerCase()}
-                      checked={formData.contentTypes.includes(type.toLowerCase())}
-                      onChange={handleChange}
-                      className="mr-2"
-                    />
-                    <span className="text-sm">{type}</span>
-                  </label>
-                ))}
-=======
                 {["photography", "creative writing", "video", "other"]
                   .map((type) => (
                     <label key={type} className="flex items-center cursor-pointer">
@@ -394,7 +280,6 @@ const ExForm = () => {
                       <span className="text-sm">{type}</span>
                     </label>
                   ))}
->>>>>>> 4ae25061c40a57e6f589ac7a38f309ecf3e56dd4
               </div>
               {formData.contentTypes.includes("other") && (
                 <input
@@ -410,21 +295,6 @@ const ExForm = () => {
             <div>
               <h3 className="mb-3 font-semibold text-lg">Content Categories (select all that apply):</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-<<<<<<< HEAD
-                {["art", "technology", "beauty and fashion", "gadgets", "events", "gaming", "other"].map((cat) => (
-                  <label key={cat} className="flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      name="contentCategories"
-                      value={cat.toLowerCase()}
-                      checked={formData.contentCategories.includes(cat.toLowerCase())}
-                      onChange={handleChange}
-                      className="mr-2"
-                    />
-                    <span className="text-sm">{cat}</span>
-                  </label>
-                ))}
-=======
                 {["art", "technology", "beauty and fashion", "gadgets", "events", "gaming", "other"]
                   .map((cat) => (
                     <label key={cat} className="flex items-center cursor-pointer">
@@ -439,7 +309,6 @@ const ExForm = () => {
                       <span className="text-sm">{cat}</span>
                     </label>
                   ))}
->>>>>>> 4ae25061c40a57e6f589ac7a38f309ecf3e56dd4
               </div>
               {formData.contentCategories.includes("other") && (
                 <input
@@ -546,12 +415,11 @@ const ExForm = () => {
             <button
               type="button"
               onClick={handleNext}
-              disabled={isSubmitting || !isStep1Valid()} 
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                isSubmitting || !isStep1Valid()
-                  ? "bg-gray-600 cursor-not-allowed text-gray-400"
-                  : "bg-purple-600 hover:bg-purple-700 text-white"
-              }`}
+              disabled={isSubmitting || !isStep1Valid()}
+              className={`px-6 py-3 rounded-lg font-medium transition-colors ${isSubmitting || !isStep1Valid()
+                ? "bg-gray-600 cursor-not-allowed text-gray-400"
+                : "bg-purple-600 hover:bg-purple-700 text-white"
+                }`}
             >
               Next
             </button>
@@ -561,20 +429,11 @@ const ExForm = () => {
             <button
               type="button"
               onClick={handleSubmit}
-<<<<<<< HEAD
-              disabled={isSubmitting}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                isSubmitting
-                  ? "bg-gray-600 cursor-not-allowed text-gray-400"
-                  : "bg-purple-600 hover:bg-purple-700 text-white"
-              }`}
-=======
               disabled={!isSubmitEnabled || isSubmitting}
               className={`px-6 py-3 rounded-lg font-medium transition-colors ${!isSubmitEnabled || isSubmitting
                 ? "bg-gray-600 cursor-not-allowed text-gray-400"
                 : "bg-purple-600 hover:bg-purple-700 text-white"
                 }`}
->>>>>>> 4ae25061c40a57e6f589ac7a38f309ecf3e56dd4
             >
               {isSubmitting ? "Submitting..." : "Submit"}
             </button>

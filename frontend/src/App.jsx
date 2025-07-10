@@ -29,6 +29,7 @@ import ConnectedOnly from './routes/ConnectedOnly';
 import UserOnly from './routes/UserOnly';
 import AlreadyConnected from './routes/AlreadyConnected';
 import BillingPage2 from './Pages/BillingPage2';
+import ProfileRequired from './routes/ProfileRequired';
 
 
 function App() {
@@ -51,7 +52,9 @@ function App() {
 
         <Route element={<ConnectedOnly />}>
           <Route element={<UserOnly />}>
+            {/* <Route element={<ProfileRequired />}> */}
             <Route path="/userDashboard" element={<UserDashboard />} />
+            {/* </Route> */}
           </Route>
           <Route element={<AdminOnly />}>
             <Route path="/dashboard" element={<Dashboard />} />
@@ -65,7 +68,7 @@ function App() {
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
-        <Route path="/ex" element={<ExForm />} />
+        <Route path="/profile" element={<ExForm />} />
         {/* {sidebarItems.map((item, index) => (
           <Route key={index} path={item.path} element={<item.component />} />
         ))} */}
