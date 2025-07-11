@@ -30,9 +30,9 @@ const LoginForm = () => {
       .then((data) => {
         toast.success('Login successful! Redirecting...');
         if (data.role === 'admin') {
-          window.location.href = '/dashboard';
+          navigate('/dashboard');
         } else {
-          window.location.href = '/userDashboard';
+          navigate('/userDashboard');
         }
       })
       .catch((err) => {
