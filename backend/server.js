@@ -16,12 +16,19 @@ require('./cronJobs/postReminder');
 // cron job to send event reminders
 require('./cronJobs/eventReminders');
 
-// Stripe webhook (uses raw body) must come befroe express.json()
+// Stripe webhook (uses raw body) must come before express.json()
 const stripeWebhookRoutes = require("./routes/stripeWebhookRoutes");
 app.use("/api", stripeWebhookRoutes);
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: [
+    'https://olalalaa-planifya.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // API routes
