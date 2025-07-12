@@ -142,7 +142,7 @@ export const addTokensToUser = createAsyncThunk(
   "admin/addTokensToUser",
   async ({ userId, tokens }, { rejectWithValue }) => {
     try {
-      const response = await apiClient.post(
+      const response = await apiClient.patch(
         `/admin/users/${userId}/add-tokens`,
         { tokens }, // Request body
         {
