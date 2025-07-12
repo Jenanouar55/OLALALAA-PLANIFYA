@@ -26,6 +26,6 @@ router.post("/events/seed", eventController.seedFromCalendarific); // Calendarif
 router.post('/notify', adminController.sendManualNotification);
 
 //manual add tokens
-router.post("/users/:id/add-tokens", adminController.addTokens);
+router.patch('/users/:id/tokens', adminController.addTokens);
 
 module.exports = router;

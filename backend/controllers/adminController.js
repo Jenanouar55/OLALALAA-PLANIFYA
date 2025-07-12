@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Profile = require('../models/Profile');
 const { createNotification } = require('../utils/notificationService');
 
 // Get all users
