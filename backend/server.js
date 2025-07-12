@@ -27,7 +27,7 @@ app.use(
       "https://olalalaa-planifya.vercel.app",
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://www.planifya.site/",
+      "https://www.planifya.site",
     ],
     credentials: true,
   })
