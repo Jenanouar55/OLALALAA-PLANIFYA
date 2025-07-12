@@ -24,7 +24,7 @@ app.use("/api", stripeWebhookRoutes);
 app.use(
   cors({
     origin: [
-      "https://olalalaa-planifya.vercel.app",
+      // "https://olalalaa-planifya.vercel.app",
       "http://localhost:3000",
       "http://localhost:5173",
       "https://www.planifya.site",

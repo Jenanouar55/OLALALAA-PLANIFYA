@@ -47,17 +47,17 @@ function App() {
           <Route path="/AdminLogin" element={<AdminLogin />} />
         </Route>
 
-        <Route path="/cancel" element={<CancelPage />} />
-        <Route path="/sucess" element={<SuccessPage />} />
         {/* <Route path="/Pricing" element={<PricingPage />} /> */}
-        <Route path="/Pricing" element={<CheckoutPage />} />
-        <Route path="/b" element={<BillingPage />} />
-        <Route path="/c" element={<BillingPage2 />} />
+        {/* <Route path="/b" element={<BillingPage />} /> */}
+        {/* <Route path="/c" element={<BillingPage2 />} /> */}
 
         <Route element={<ConnectedOnly />}>
           <Route path="/profile" element={<ExForm />} />
           <Route element={<UserOnly />}>
             <Route element={<ProfileRequired />}>
+              <Route path="/cancel" element={<CancelPage />} />
+              <Route path="/sucess" element={<SuccessPage />} />
+              <Route path="/Pricing" element={<CheckoutPage />} />
               <Route path="/userDashboard" element={<UserDashboard />} />
             </Route>
           </Route>
