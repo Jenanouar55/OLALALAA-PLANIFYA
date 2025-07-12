@@ -8,27 +8,30 @@ connectDB();
 const app = express();
 
 // cron job to reset tokens
-require('./cronJobs/tokenReset');
+require("./cronJobs/tokenReset");
 
 // cron job to send post reminders
-require('./cronJobs/postReminder');
+require("./cronJobs/postReminder");
 
 // cron job to send event reminders
-require('./cronJobs/eventReminders');
+require("./cronJobs/eventReminders");
 
 // Stripe webhook (uses raw body) must come before express.json()
 const stripeWebhookRoutes = require("./routes/stripeWebhookRoutes");
 app.use("/api", stripeWebhookRoutes);
 
 // Middlewares
-app.use(cors({
-  origin: [
-    // 'https://olalalaa-planifya.vercel.app',
-    'http://localhost:3000',
-    'http://localhost:5173'
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      // "https://olalalaa-planifya.vercel.app",
+      "https://www.planifya.site",
+      "http://localhost:3000",
+      "http://localhost:5173",
+    ],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // API routes
@@ -48,7 +51,7 @@ app.use("/api/profile", profileRoutes);
 app.use("/api/ai", aiRoutes);
 app.use("/api/stripe", stripeRoutes);
 app.use("/api/notifications", notificationRoutes);
-app.use('/api/chat', chatRoutes);
+app.use("/api/chat", chatRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
