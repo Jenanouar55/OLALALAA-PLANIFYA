@@ -136,7 +136,7 @@ const NotificationsPage = () => {
                                         <option value="info">Info (Blue)</option>
                                         <option value="success">Success (Green)</option>
                                         <option value="warning">Warning (Yellow)</option>
-                                        {/* <option value="error">Error (Red)</option> */}
+                                        <option value="error">Error (Red)</option>
                                     </select>
                                 </div>
                                 <div className="flex justify-end pt-2">
