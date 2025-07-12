@@ -19,7 +19,8 @@ import {
   Type,
   Lightbulb,
   CalendarCheck,
-  Pencil
+  Pencil,
+  CreditCard
 } from "lucide-react";
 
 export const initialPosts = [
@@ -49,13 +50,11 @@ export const sidebarItems = [
   { id: "calendar", icon: CalendarDays, label: "Calendar", color: "blue" },
   { id: "profile", icon: User, label: "Profile", color: "blue" },
   { id: "CalendarIdeas", icon: CalendarCheck, label: "Calendar Ideas", color: "blue" },
-  // { id: "strategytips", icon: Lightbulb, label: "Strategy Tips", color: "blue" },
-  { id: "scriptgenerator", icon: Pencil, label: "Script", color: "blue" },
   { id: "captiongenerator", icon: Type, label: "Caption", color: "blue" },
   { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
   { id: "history", icon: History, label: "History", color: "green" },
   { id: "alerts", icon: Bell, label: "Notifications", color: "blue" },
-  // { id: "settings", icon: Settings, label: "Settings", color: "blue" },
+  { id: "upgrade", icon: CreditCard, label: "Upgrade", color: "purple", badge: "PRO" },
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
 ];
 

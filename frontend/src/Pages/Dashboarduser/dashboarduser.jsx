@@ -13,6 +13,7 @@ import CaptionGenerator from "./captiongenearor";
 import StrategyTips from "./Stips";
 import NotificationsPage from "./alerts";
 import UserProfile from "./userprofil";
+import CheckoutPage from "../BillingPage2";
 import { createPost, deletePost, fetchMyPosts, updatePost } from "../../features/postsSlice"
 import { fetchMyProfile } from "../../features/profileSlice"
 import { fetchAllEvents } from "../../features/adminSlice"
@@ -145,6 +146,7 @@ export default function UserDashboard() {
       case "CalendarIdeas": return <CalendarIdeas />;
       case "captiongenerator": return <CaptionGenerator />;
       case "strategytips": return <StrategyTips />;
+      case "upgrade": return <CheckoutPage />; 
       default: return <div>Page not found</div>;
     }
   };
