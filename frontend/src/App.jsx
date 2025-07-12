@@ -30,6 +30,8 @@ import UserOnly from './routes/UserOnly';
 import AlreadyConnected from './routes/AlreadyConnected';
 import BillingPage2 from './Pages/BillingPage2';
 import ProfileRequired from './routes/ProfileRequired';
+import NotificationsPage from './Pages/Dashboard/NotificationsPage';
+import TokensPage from './Pages/Dashboard/TokensPage';
 
 
 function App() {
@@ -59,6 +61,8 @@ function App() {
           </Route>
           <Route element={<AdminOnly />}>
             <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
+            <Route path="/Tokens" element={<TokensPage />} />
             <Route path="/events" element={<Events />} />
             <Route path="/chatbot" element={<ChatBot />} />
             <Route path="/calendar" element={<CalendarView />} />

@@ -7,6 +7,7 @@ import {
   Users, FileText, Trash2, PartyPopper, Loader2
 } from "lucide-react";
 import { fetchAllUsers, deleteUser } from "../../features/adminSlice";
+import SideBar from "./SideBar";
 
 
 const Navbar = () => (
@@ -18,46 +19,6 @@ const Navbar = () => (
   </header>
 );
 
-// const Sidebar = () => (
-//   <aside className="bg-[#121826] w-64 p-6 h-screen flex flex-col justify-between shadow-lg border-r border-gray-700/50">
-//     <nav className="space-y-4 text-gray-400 font-medium">
-//       <h2 className="px-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Menu</h2>
-//       <Link to="/dashboard" className="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-600/20 text-blue-300">
-//         <LayoutDashboard className="w-5 h-5" /> Dashboard
-//       </Link>
-//       <Link to="/users" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-//         <Users className="w-5 h-5" /> Utilisateurs
-//       </Link>
-//       <Link to="/events" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-//         <PartyPopper className="w-5 h-5" /> Events
-//       </Link>
-//       <h2 className="px-4 pt-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Support</h2>
-//       <Link to="/settings" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-//         <Settings className="w-5 h-5" /> Paramètres
-//       </Link>
-//       <Link to="/contact" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-//         <Mail className="w-5 h-5" /> Contact
-//       </Link>
-//     </nav>
-//     <div className="border-t border-gray-700/50 pt-4">
-//       <Link to="/login" className="flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-colors">
-//         <Mail className="w-5 h-5" /> Logout
-//       </Link>
-//     </div>
-//     {isLogoutConfirmOpen && (
-//       <div className="fixed inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm z-50">
-//         <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">
-//           <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
-//           <p className="mb-6">Are you sure you want to log out?</p>
-//           <div className="flex justify-center space-x-4">
-//             <button onClick={handleLogoutCancel} className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition-colors">Cancel</button>
-//             <button onClick={handleLogoutConfirm} className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition-colors text-white">Logout</button>
-//           </div>
-//         </div>
-//       </div>
-//     )}
-//   </aside>
-// );
 
 const StatCard = ({ title, value, icon: Icon }) => (
   <div className="bg-[#2a2f45] shadow rounded-lg p-4 flex items-center gap-4">
@@ -75,8 +36,6 @@ const DashboardContent = ({ users, loading, onUserDelete }) => (
       <h2 className="text-2xl font-semibold text-white">Bienvenue Admin 👋</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         <StatCard title="Utilisateurs" value={users.length} icon={User} />
-        <StatCard title="Candidatures" value="48" icon={FileText} />
-        <StatCard title="Nouveaux messages" value="5" icon={Mail} />
       </div>
       <div className="bg-[#2a2f45] rounded-xl shadow-sm p-5 border border-gray-700">
         <h3 className="text-lg font-bold text-white mb-4">Gestion des utilisateurs</h3>
@@ -172,44 +131,9 @@ export default function AdminPanel() {
     <div className="min-h-screen flex flex-col bg-[#1e1e2f] text-white">
       <Navbar />
       <div className="flex flex-1">
-        <aside className="bg-[#121826] w-64 p-6 h-screen flex flex-col justify-between shadow-lg border-r border-gray-700/50">
-          <nav className="space-y-4 text-gray-400 font-medium">
-            <h2 className="px-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Menu</h2>
-            <Link to="/dashboard" className="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-600/20 text-blue-300">
-              <LayoutDashboard className="w-5 h-5" /> Dashboard
-            </Link>
-            {/* <Link to="/users" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-              <Users className="w-5 h-5" /> Utilisateurs
-            </Link> */}
-            <Link to="/events" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-              <PartyPopper className="w-5 h-5" /> Events
-            </Link>
-            {/* <h2 className="px-4 pt-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Support</h2>
-            <Link to="/settings" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-              <Settings className="w-5 h-5" /> Paramètres
-            </Link>
-            <Link to="/contact" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-              <Mail className="w-5 h-5" /> Contact
-            </Link> */}
-          </nav>
-          <div className="border-t border-gray-700/50 pt-4">
-            <Link onClick={() => setIsLogoutConfirmOpen(true)} className="flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-colors">
-              <Mail className="w-5 h-5" /> Logout
-            </Link>
-          </div>
-          {isLogoutConfirmOpen && (
-            <div className="fixed inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm z-50">
-              <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">
-                <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
-                <p className="mb-6">Are you sure you want to log out?</p>
-                <div className="flex justify-center space-x-4">
-                  <button onClick={handleLogoutCancel} className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition-colors">Cancel</button>
-                  <button onClick={handleLogoutConfirm} className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition-colors text-white">Logout</button>
-                </div>
-              </div>
-            </div>
-          )}
-        </aside>
+        <SideBar activePage="dashboard" />
+
+
         <DashboardContent
           users={users}
           loading={loading}
