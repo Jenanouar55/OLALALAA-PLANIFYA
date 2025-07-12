@@ -54,7 +54,7 @@ export const sidebarItems = [
   { id: "chatbot", icon: MessageSquare, label: "ChatBot", color: "blue" },
   { id: "history", icon: History, label: "History", color: "green" },
   { id: "alerts", icon: Bell, label: "Notifications", color: "blue" },
-  { id: "pricing", icon: CreditCard, label: "Pricing", color: "purple", badge: "PRO" },
+  { id: "upgrade", icon: CreditCard, label: "Upgrade", color: "purple", badge: "PRO" },
   { id: "logout", icon: LogOut, label: "Logout", color: "red" }
 ];
 
