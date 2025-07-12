@@ -5,9 +5,17 @@ export const createCheckoutSession = createAsyncThunk(
   "stripe/createCheckoutSession",
   async ({ planId }, { rejectWithValue }) => {
     try {
-      const response = await apiClient.post("/stripe/create-checkout-session", {
-        planId,
-      });
+      const response = await apiClient.post(
+        "/stripe/create-checkout-session",
+        {
+          planId,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
       return response.data.url;
     } catch (error) {
       return rejectWithValue(error.response.data);

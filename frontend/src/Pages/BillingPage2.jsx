@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Check, ShieldCheck } from 'lucide-react';
 import apiClient from '../lib/axios';
-
+import { useDispatch } from 'react-redux';
+import { createCheckoutSession } from "../features/stripeSlice"
 const plans = [
     {
         id: 'free',

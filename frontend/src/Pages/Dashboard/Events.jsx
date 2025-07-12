@@ -3,16 +3,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
-    LayoutDashboard, Users, Settings, Mail, PartyPopper,
+    LayoutDashboard, PartyPopper,
     Plus, Calendar, Pencil, Trash, X, Loader2, Wand2,
-    Bell
+    Bell, ChevronLeft, ChevronRight
 } from "lucide-react";
 import {
     fetchAllEvents, createEvent, updateEvent, deleteEvent, seedEventsFromCalendarific
 } from "../../features/adminSlice";
 import SideBar from "./SideBar";
-
-
 
 const EventCard = ({ event, onEdit, onDelete }) => (
     <div className="bg-[#121826] border border-gray-700/50 rounded-lg p-5 flex flex-col justify-between shadow-lg hover:border-blue-600/50 transition-all duration-300">
@@ -88,6 +86,46 @@ const EventFormModal = ({ isOpen, onClose, onSave, eventToEdit, loading }) => {
     );
 };
 
+const Pagination = ({ currentPage, totalPages, onPageChange }) => {
+    if (totalPages <= 1) return null;
+
+    const pageNumbers = [];
+    for (let i = 1; i <= totalPages; i++) {
+        pageNumbers.push(i);
+    }
+
+    return (
+        <div className="flex items-center justify-center gap-2 mt-4">
+            <button
+                onClick={() => onPageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors"
+            >
+                <ChevronLeft className="w-5 h-5" />
+            </button>
+            {pageNumbers.map(number => (
+                <button
+                    key={number}
+                    onClick={() => onPageChange(number)}
+                    className={`w-8 h-8 rounded-md transition-colors ${currentPage === number
+                        ? 'bg-blue-600 text-white font-bold'
+                        : 'bg-gray-700 hover:bg-gray-600'
+                        }`}
+                >
+                    {number}
+                </button>
+            ))}
+            <button
+                onClick={() => onPageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="flex items-center justify-center w-8 h-8 rounded-md bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors"
+            >
+                <ChevronRight className="w-5 h-5" />
+            </button>
+        </div>
+    );
+};
+
 
 const Navbar = () => (
     <header className="bg-[#1e1e2f] shadow-md p-4 flex justify-between items-center border-b border-gray-700">
@@ -101,10 +139,13 @@ const Navbar = () => (
 function EventsPage() {
     const dispatch = useDispatch();
     const { events, loading, error } = useSelector((state) => state.admin);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [eventToEdit, setEventToEdit] = useState(null);
     const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
+    const [currentPage, setCurrentPage] = useState(1);
+    const EVENTS_PER_PAGE = 5;
 
     useEffect(() => {
         dispatch(fetchAllEvents());
@@ -157,15 +198,24 @@ function EventsPage() {
             });
         }
     };
+
     const handleLogoutCancel = () => {
         setIsLogoutConfirmOpen(false);
     };
+
     const handleLogoutConfirm = () => {
         setIsLogoutConfirmOpen(false);
         localStorage.removeItem("token");
         localStorage.removeItem("role");
         navigate("/login");
     };
+
+    // Pagination Logic
+    const indexOfLastEvent = currentPage * EVENTS_PER_PAGE;
+    const indexOfFirstEvent = indexOfLastEvent - EVENTS_PER_PAGE;
+    const currentEvents = events.slice(indexOfFirstEvent, indexOfLastEvent);
+    const totalPages = Math.ceil(events.length / EVENTS_PER_PAGE);
+
     return (
         <>
             <Navbar />
@@ -186,7 +236,6 @@ function EventsPage() {
                     </div>
                 )}
                 <div className="flex-1 flex flex-col">
-
                     <main className="flex-grow p-6">
                         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
                             <div>
@@ -217,11 +266,20 @@ function EventsPage() {
                                 </button>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                {events.map((event) => (
-                                    <EventCard key={event._id} event={event} onEdit={handleOpenModal} onDelete={handleDelete} />
-                                ))}
-                            </div>
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {currentEvents.map((event) => (
+                                        <EventCard key={event._id} event={event} onEdit={handleOpenModal} onDelete={handleDelete} />
+                                    ))}
+                                </div>
+                                <div className="mt-8">
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalPages={totalPages}
+                                        onPageChange={(page) => setCurrentPage(page)}
+                                    />
+                                </div>
+                            </>
                         )}
                     </main>
                 </div>

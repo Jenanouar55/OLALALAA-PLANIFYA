@@ -32,6 +32,7 @@ import BillingPage2 from './Pages/BillingPage2';
 import ProfileRequired from './routes/ProfileRequired';
 import NotificationsPage from './Pages/Dashboard/NotificationsPage';
 import TokensPage from './Pages/Dashboard/TokensPage';
+import CheckoutPage from './Pages/BillingPage2';
 
 
 function App() {
@@ -48,7 +49,8 @@ function App() {
 
         <Route path="/cancel" element={<CancelPage />} />
         <Route path="/sucess" element={<SuccessPage />} />
-        <Route path="/Pricing" element={<PricingPage />} />
+        {/* <Route path="/Pricing" element={<PricingPage />} /> */}
+        <Route path="/Pricing" element={<CheckoutPage />} />
         <Route path="/b" element={<BillingPage />} />
         <Route path="/c" element={<BillingPage2 />} />
 
