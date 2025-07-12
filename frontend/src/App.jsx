@@ -55,8 +55,6 @@ function App() {
           <Route path="/profile" element={<ExForm />} />
           <Route element={<UserOnly />}>
             <Route element={<ProfileRequired />}>
-              <Route path="/cancel" element={<CancelPage />} />
-              <Route path="/sucess" element={<SuccessPage />} />
               <Route path="/Pricing" element={<CheckoutPage />} />
               <Route path="/userDashboard" element={<UserDashboard />} />
             </Route>
@@ -74,6 +72,8 @@ function App() {
             <Route path="/history-filter" element={<HistoryFilterModal />} />
           </Route>
         </Route>
+        <Route path="/cancel" element={<CancelPage />} />
+        <Route path="/sucess" element={<SuccessPage />} />
         <Route path="*" element={<NotFound />} />
         {/* {sidebarItems.map((item, index) => (
           <Route key={index} path={item.path} element={<item.component />} />
