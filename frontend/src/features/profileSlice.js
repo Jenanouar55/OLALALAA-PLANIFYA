@@ -22,7 +22,7 @@ export const createOrUpdateProfile = createAsyncThunk(
   async (profileData, { getState, rejectWithValue }) => {
     try {
       const { profile } = getState();
-      if (profile.data) {
+      if (profile.data._id) {
         const response = await apiClient.put("/profile/me", profileData, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
     LayoutDashboard, Users, Settings, Mail, PartyPopper,
-    Plus, Calendar, Pencil, Trash, X, Loader2, Wand2
+    Plus, Calendar, Pencil, Trash, X, Loader2, Wand2,
+    Bell
 } from "lucide-react";
 import {
     fetchAllEvents, createEvent, updateEvent, deleteEvent, seedEventsFromCalendarific
 } from "../../features/adminSlice";
+import SideBar from "./SideBar";
 
 
 
@@ -87,11 +89,19 @@ const EventFormModal = ({ isOpen, onClose, onSave, eventToEdit, loading }) => {
 };
 
 
+const Navbar = () => (
+    <header className="bg-[#1e1e2f] shadow-md p-4 flex justify-between items-center border-b border-gray-700">
+        <img src="/Images/Planifya-v2.png" alt="Logo" className="h-10" />
+        <button className="text-gray-300 hover:text-blue-400">
+            <Bell className="w-6 h-6" />
+        </button>
+    </header>
+);
 
 function EventsPage() {
     const dispatch = useDispatch();
     const { events, loading, error } = useSelector((state) => state.admin);
-
+    const navigate = useNavigate()
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [eventToEdit, setEventToEdit] = useState(null);
     const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] = useState(false);
@@ -157,82 +167,73 @@ function EventsPage() {
         navigate("/login");
     };
     return (
-        <div className="min-h-screen flex bg-[#1e1e2f] text-white">
-            <aside className="bg-[#121826] w-64 p-6 h-screen flex flex-col justify-between shadow-lg border-r border-gray-700/50">
-                <nav className="space-y-4 text-gray-400 font-medium">
-                    <h2 className="px-4 text-sm font-semibold text-gray-500 uppercase tracking-wider">Menu</h2>
-                    <Link to="/dashboard" className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-blue-600/20 hover:text-blue-300 transition-colors">
-                        <LayoutDashboard className="w-5 h-5" /> Dashboard
-                    </Link>
-                    <Link to="/events" className="flex items-center gap-3 px-4 py-2 rounded-lg bg-blue-600/20 text-blue-300">
-                        <PartyPopper className="w-5 h-5" /> Events
-                    </Link>
-                </nav>
-                <div className="border-t border-gray-700/50 pt-4">
-                    <Link onClick={() => setIsLogoutConfirmOpen(true)} className="flex items-center gap-3 px-4 py-2 rounded-lg text-red-400 hover:bg-red-600/20 hover:text-red-300 transition-colors">
-                        <Mail className="w-5 h-5" /> Logout
-                    </Link>
-                </div>
-            </aside>
-            {isLogoutConfirmOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm z-50">
-                    <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">
-                        <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
-                        <p className="mb-6">Are you sure you want to log out?</p>
-                        <div className="flex justify-center space-x-4">
-                            <button onClick={handleLogoutCancel} className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition-colors">Cancel</button>
-                            <button onClick={handleLogoutConfirm} className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition-colors text-white">Logout</button>
+        <>
+            <Navbar />
+
+            <div className="min-h-screen flex bg-[#1e1e2f] text-white">
+                <SideBar activePage="events" />
+
+                {isLogoutConfirmOpen && (
+                    <div className="fixed inset-0 flex items-center justify-center bg-slate-900/80 backdrop-blur-sm z-50">
+                        <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-80 max-w-full text-center">
+                            <h2 className="text-xl font-semibold mb-4">Confirm Logout</h2>
+                            <p className="mb-6">Are you sure you want to log out?</p>
+                            <div className="flex justify-center space-x-4">
+                                <button onClick={handleLogoutCancel} className="px-4 py-2 rounded bg-gray-600 hover:bg-gray-700 transition-colors">Cancel</button>
+                                <button onClick={handleLogoutConfirm} className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 transition-colors text-white">Logout</button>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
-            <div className="flex-1 flex flex-col">
-                <main className="flex-grow p-6">
-                    <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                        <div>
-                            <h1 className="text-3xl font-bold text-white">Event Management</h1>
-                            <p className="text-gray-400 mt-1">Create, edit, and manage global events for all users.</p>
-                        </div>
-                        <div className="flex gap-3">
-                            <button onClick={handleSeed} className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                                <Wand2 className="w-5 h-5" /> Seed Holidays
-                            </button>
-                            <button onClick={() => handleOpenModal()} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
-                                <Plus className="w-5 h-5" /> Create Event
-                            </button>
-                        </div>
-                    </header>
+                )}
+                <div className="flex-1 flex flex-col">
 
-                    {loading && events.length === 0 ? (
-                        <div className="flex justify-center items-center py-20">
-                            <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
-                        </div>
-                    ) : !loading && events.length === 0 ? (
-                        <div className="text-center py-20 bg-[#121826] rounded-lg border-2 border-dashed border-gray-700">
-                            <PartyPopper className="mx-auto h-12 w-12 text-gray-500" />
-                            <h3 className="mt-2 text-xl font-semibold text-white">No Events Found</h3>
-                            <p className="mt-1 text-sm text-gray-400">Get started by creating a new event or seeding holidays.</p>
-                            <button onClick={() => handleOpenModal()} className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors mx-auto">
-                                <Plus className="w-5 h-5" /> Create Event
-                            </button>
-                        </div>
-                    ) : (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {events.map((event) => (
-                                <EventCard key={event._id} event={event} onEdit={handleOpenModal} onDelete={handleDelete} />
-                            ))}
-                        </div>
-                    )}
-                </main>
+                    <main className="flex-grow p-6">
+                        <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                            <div>
+                                <h1 className="text-3xl font-bold text-white">Event Management</h1>
+                                <p className="text-gray-400 mt-1">Create, edit, and manage global events for all users.</p>
+                            </div>
+                            <div className="flex gap-3">
+                                <button onClick={handleSeed} className="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                                    <Wand2 className="w-5 h-5" /> Seed Holidays
+                                </button>
+                                <button onClick={() => handleOpenModal()} className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+                                    <Plus className="w-5 h-5" /> Create Event
+                                </button>
+                            </div>
+                        </header>
+
+                        {loading && events.length === 0 ? (
+                            <div className="flex justify-center items-center py-20">
+                                <Loader2 className="w-10 h-10 animate-spin text-blue-500" />
+                            </div>
+                        ) : !loading && events.length === 0 ? (
+                            <div className="text-center py-20 bg-[#121826] rounded-lg border-2 border-dashed border-gray-700">
+                                <PartyPopper className="mx-auto h-12 w-12 text-gray-500" />
+                                <h3 className="mt-2 text-xl font-semibold text-white">No Events Found</h3>
+                                <p className="mt-1 text-sm text-gray-400">Get started by creating a new event or seeding holidays.</p>
+                                <button onClick={() => handleOpenModal()} className="mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors mx-auto">
+                                    <Plus className="w-5 h-5" /> Create Event
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {events.map((event) => (
+                                    <EventCard key={event._id} event={event} onEdit={handleOpenModal} onDelete={handleDelete} />
+                                ))}
+                            </div>
+                        )}
+                    </main>
+                </div>
+                <EventFormModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    onSave={handleSave}
+                    eventToEdit={eventToEdit}
+                    loading={loading}
+                />
             </div>
-            <EventFormModal
-                isOpen={isModalOpen}
-                onClose={handleCloseModal}
-                onSave={handleSave}
-                eventToEdit={eventToEdit}
-                loading={loading}
-            />
-        </div>
+        </>
     );
 }
 
