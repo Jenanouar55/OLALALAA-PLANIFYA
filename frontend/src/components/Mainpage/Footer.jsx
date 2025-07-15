@@ -18,16 +18,16 @@ const Footer = () => {
           </span>
         </Link>
         <p className="text-sm text-gray-400 max-w-lg mb-6">
-          Plateforme tout-en-un pour les créateurs et agences, Planifyaa simplifie la planification de contenu avec style et intelligence.
+          Plateforme tout-en-un pour les créateurs et agences, Planifya simplifie la planification de contenu avec style et intelligence.
         </p>
         <div className="flex gap-6 mb-6">
-          <a href="#" className="p-2 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur transition">
+          <a href="https://www.linkedin.com/school/groupesupmti/posts/?feedView=all" className="p-2 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur transition">
             <FaLinkedin className="text-xl text-white hover:text-blue-400" />
           </a>
-          <a href="#" className="p-2 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur transition">
+          <a href="https://x.com/SupMTI1" className="p-2 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur transition">
             <FaXTwitter className="text-xl text-white hover:text-sky-400" />
           </a>
-          <a href="#" className="p-2 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur transition">
+          <a href="https://www.instagram.com/supmtiofficiel/" className="p-2 rounded-full bg-white/5 hover:bg-white/10 backdrop-blur transition">
             <FaInstagram className="text-xl text-white hover:text-pink-400" />
           </a>
         </div>
@@ -36,7 +36,7 @@ const Footer = () => {
           <a href="#" className="hover:text-white transition">Terms & Conditions</a>
         </div>
         <p className="text-xs text-gray-500">
-          © {new Date().getFullYear()} Planifyaa. Tous droits réservés.
+          © {new Date().getFullYear()} Planifya. Tous droits réservés.
         </p>
       </div>
       <div className="absolute -bottom-32 left-1/2 w-[400px] h-[400px] bg-indigo-700 opacity-20 blur-[120px] rounded-full -translate-x-1/2 pointer-events-none" />

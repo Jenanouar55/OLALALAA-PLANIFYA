@@ -65,7 +65,9 @@ const SignupForm = () => {
       <ToastContainer theme="colored" />
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8">
         <div className="flex justify-center mb-4">
+          <Link to="/">
           <img src="/Images/Planifya-v2.png" alt="Logo" className="h-12" />
+          </Link>
         </div>
         <h1 className="text-xl font-bold text-center mb-6 dark:text-white">Create Your Account</h1>
         <form className="space-y-4" onSubmit={handleSubmit}>
