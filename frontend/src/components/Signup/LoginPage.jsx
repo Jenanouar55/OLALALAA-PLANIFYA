@@ -45,8 +45,11 @@ const LoginForm = () => {
       <ToastContainer theme="colored" position="top-right" autoClose={3000} />
       <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 sm:p-8">
         <div className="flex justify-center mb-4">
-          <img src="/Images/Planifya-v2.png" alt="Logo" className="h-12" />
+          <Link to="/">
+            <img src="/Images/Planifya-v2.png" alt="Logo" className="h-12 hover:opacity-80 transition" />
+          </Link>
         </div>
+
         <h1 className="text-xl font-bold text-center text-gray-900 dark:text-white mb-6">
           Login to Your Account
         </h1>
