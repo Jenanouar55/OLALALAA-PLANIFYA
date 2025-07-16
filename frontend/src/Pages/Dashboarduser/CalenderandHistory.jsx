@@ -130,15 +130,11 @@ export const CalendarView = ({
                       onDragStart={(e) => handleDragStart(e, item._id)}
                       onDragEnd={handleDragEnd}
                       onClick={() => setShowPostDetails(item)}
-                      className="absolute left-0 right-0 text-xs px-2 py-1 rounded bg-gray-800 text-gray-200 flex justify-between items-center cursor-grab hover:opacity-80 group"
+                      className="absolute left-0 right-0 text-xs px-2 py-1 rounded bg-gray-800 text-gray-200 flex justify-between items-center cursor-grab hover:opacity-80"
                       style={{ top: `${topPosition}rem` }}
                     >
                       <span className="flex items-center">
                         <span>{item.title.length > 15 ? `${item.title.slice(0, 13)}…` : item.title}</span>
-                      </span>
-                      <span className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(item); }} />
-                        <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(item._id); }} />
                       </span>
                     </div>
                   );
