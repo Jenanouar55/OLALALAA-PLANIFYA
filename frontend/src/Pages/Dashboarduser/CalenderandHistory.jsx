@@ -125,22 +125,22 @@ export const CalendarView = ({
                 if (item.type === 'post') {
                   return (
                     <div
-                  key={`post-${item._id}`}
-                  draggable="true"
-                  onDragStart={(e) => handleDragStart(e, item._id)}
-                  onDragEnd={handleDragEnd}
-                  onClick={() => setShowPostDetails(item)}
-                  className="absolute left-0 right-0 px-2 py-1 text-xs text-white rounded bg-black cursor-pointer truncate"
-                  style={{ top: `${topPosition}rem` }}
-                >
-                  <span className="flex justify-between items-center w-full">
-                    <span className="truncate">{item.title}</span>
-                    <span className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
-                      <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(item); }} />
-                      <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(item._id); }} />
-                    </span>
-                  </span>
-                </div>
+                      key={`post-${item._id}`}
+                      draggable="true"
+                      onDragStart={(e) => handleDragStart(e, item._id)}
+                      onDragEnd={handleDragEnd}
+                      onClick={() => setShowPostDetails(item)}
+                      className="absolute left-0 right-0 text-xs px-2 py-1 rounded bg-gray-800 text-gray-200 flex justify-between items-center cursor-grab hover:opacity-80 group"
+                      style={{ top: `${topPosition}rem` }}
+                    >
+                      <span className="flex items-center">
+                        <span>{item.title.length > 15 ? `${item.title.slice(0, 13)}…` : item.title}</span>
+                      </span>
+                      <span className="flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(item); }} />
+                        <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(item._id); }} />
+                      </span>
+                    </div>
                   );
                 }
 
@@ -149,11 +149,10 @@ export const CalendarView = ({
                     <div
                       key={`event-${item._id}`}
                       onClick={() => setShowPostDetails(item)}
-                      className="text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-default"
+                      className="absolute left-0 right-0 text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-default"
                       style={{ top: `${topPosition}rem` }}
                     >
                       <span className="flex items-center">
-                        {/* <Star className="w-3 h-3 mr-1.5 flex-shrink-0" /> */}
                         <span>{item.name}</span>
                       </span>
                     </div>
