@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from 'react-redux';
-import { Menu, Zap } from "lucide-react";
+import { Menu, Zap, Crown } from "lucide-react";
 import { sidebarItems } from "./Constants";
 import { CalendarView, HistoryView, PostDetailsModal } from './CalenderandHistory';
 import { PostForm, HistoryFilterModal } from './form';
@@ -17,6 +17,7 @@ import CheckoutPage from "../BillingPage2";
 import { createPost, deletePost, fetchMyPosts, updatePost } from "../../features/postsSlice"
 import { fetchMyProfile } from "../../features/profileSlice"
 import { fetchAllEvents } from "../../features/adminSlice"
+
 export default function UserDashboard() {
   const today = new Date();
   const navigate = useNavigate();
@@ -49,6 +50,7 @@ export default function UserDashboard() {
     startDate: "",
     platform: "all"
   });
+  
   useEffect(() => {
     dispatch(fetchMyPosts());
     dispatch(fetchAllEvents());
@@ -66,7 +68,6 @@ export default function UserDashboard() {
     if (form._id && form._id !== undefined) {
       dispatch(updatePost({ id: form._id, postData: form }));
     } else {
-
       const { _id, ...postData } = form;
       dispatch(createPost(postData));
     }
@@ -108,12 +109,6 @@ export default function UserDashboard() {
   const handleDeletePost = async (postId) => {
     dispatch(deletePost(postId));
   };
-  // const renderPlaceholderView = (pageName) => (
-  //   <div className="bg-gray-800 rounded-lg p-6 text-center">
-  //     <h2 className="text-2xl font-bold mb-4 capitalize">{pageName}</h2>
-  //     <p className="text-gray-400">This page is under construction. Coming soon!</p>
-  //   </div>
-  // );
 
   const renderCurrentPage = () => {
     switch (currentPage) {
@@ -139,7 +134,6 @@ export default function UserDashboard() {
           handleDeletePost={handleDeletePost}
         />;
       case "alerts": return <NotificationsPage />;
-      // case "settings": return renderPlaceholderView("settings");
       case "profile": return <UserProfile />;
       case "chatbot": return <ChatBot />;
       case "scriptgenerator": return <ScriptGenerator />;
@@ -161,15 +155,28 @@ export default function UserDashboard() {
           {sidebarItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentPage === item.id;
+            const isUpgrade = item.id === "upgrade";
+            
             return (
               <button
                 key={item.id}
                 onClick={() => handleSidebarItemClick(item.id)}
-                className={`flex items-center ${isSidebarExpanded ? "justify-start px-4" : "justify-center"} w-full p-3 rounded-lg transition-colors duration-200 ${isActive ? "bg-gray-700 text-blue-400" : "text-white hover:bg-gray-700 hover:text-blue-300"}`}
+                className={`flex items-center ${isSidebarExpanded ? "justify-start px-4" : "justify-center"} w-full p-3 rounded-lg transition-all duration-200 ${
+                  isUpgrade 
+                    ? "bg-gradient-to-r from-yellow-500 to-yellow-400 text-black hover:from-yellow-400 hover:to-yellow-300 shadow-lg hover:shadow-xl transform hover:scale-105" 
+                    : isActive 
+                    ? "bg-gray-700 text-blue-400" 
+                    : "text-white hover:bg-gray-700 hover:text-blue-300"
+                }`}
               >
-                <Icon className="w-5 h-5" />
+                <Icon className={`w-5 h-5 ${isUpgrade ? "text-black" : ""}`} />
                 {isSidebarExpanded && (
-                  <span className="ml-3 text-sm font-medium">{item.label}</span>
+                  <span className={`ml-3 text-sm font-medium ${isUpgrade ? "text-black font-bold" : ""}`}>
+                    {item.label}
+                  </span>
+                )}
+                {isUpgrade && (
+                  <Crown className="w-4 h-4 ml-auto text-black" />
                 )}
               </button>
             );
@@ -193,7 +200,6 @@ export default function UserDashboard() {
         <header className="flex items-center justify-between mb-6">
           <img src="/Images/Planifya-v2.png" alt="logo" className="h-10 w-auto" />
           <div className="flex items-center space-x-4">
-            <input type="text" placeholder="Search posts..." className="w-96 px-4 py-2 rounded-full bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
             <button onClick={handleOpenCreateForm} className="bg-blue-600 hover:bg-blue-700 transition-all duration-200 px-5 py-2.5 rounded-full shadow-md hover:shadow-lg text-sm font-medium">
               + Create Post
             </button>
