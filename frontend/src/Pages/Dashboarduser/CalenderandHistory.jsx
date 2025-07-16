@@ -130,12 +130,14 @@ export const CalendarView = ({
                       onDragStart={(e) => handleDragStart(e, item._id)}
                       onDragEnd={handleDragEnd}
                       onClick={() => setShowPostDetails(item)}
-                      className="absolute left-0 right-0 text-xs px-2 py-1 rounded bg-gray-800 text-gray-200 flex justify-between items-center cursor-grab hover:opacity-80"
-                      style={{ top: `${topPosition}rem` }}
+                      className="absolute left-0 right-0 text-xs h-6 px-2 py-1 rounded text-white flex items-center justify-center cursor-grab hover:opacity-80 group"
+                      style={{ backgroundColor: '#000000', top: `${topPosition}rem` }}
                     >
-                      <span className="flex items-center">
-                        <span>{item.title.length > 15 ? `${item.title.slice(0, 13)}…` : item.title}</span>
+                      <span className="absolute left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(item); }} />
+                        <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(item._id); }} />
                       </span>
+                      <span className="text-center">{item.title.length > 15 ? `${item.title.slice(0, 13)}…` : item.title}</span>
                     </div>
                   );
                 }
@@ -145,10 +147,11 @@ export const CalendarView = ({
                     <div
                       key={`event-${item._id}`}
                       onClick={() => setShowPostDetails(item)}
-                      className="absolute left-0 right-0 text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-default"
+                      className="text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-default"
                       style={{ top: `${topPosition}rem` }}
                     >
                       <span className="flex items-center">
+                        {/* <Star className="w-3 h-3 mr-1.5 flex-shrink-0" /> */}
                         <span>{item.name}</span>
                       </span>
                     </div>
