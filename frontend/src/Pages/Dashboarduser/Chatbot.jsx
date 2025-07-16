@@ -17,8 +17,8 @@ const ChatBot = () => {
   const conversations = useSelector((state) => state.chat.conversations);
   const activeConversationId = useSelector((state) => state.chat.activeConversationId);
   const activeConversationMessages = useSelector(
-    (state) => state.chat.activeConversationMessages
-  );
+    (state) => state.chat.activeConversationMessages);
+  const chatError = useSelector((state) => state.chat.error);
 
 
   const {
