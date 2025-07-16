@@ -14,13 +14,12 @@ import {
 const ChatBot = () => {
   const dispatch = useDispatch();
 
-  const {
-    conversations,
-    activeConversationMessages,
-    activeConversationId,
-    loading: chatLoading,
-    error: chatError
-  } = useSelector((state) => state.chat);
+  const conversations = useSelector((state) => state.chat.conversations);
+  const activeConversationId = useSelector((state) => state.chat.activeConversationId);
+  const activeConversationMessages = useSelector(
+    (state) => state.chat.activeConversationMessages
+  );
+
 
   const {
     loading: messageSending,
@@ -68,10 +67,20 @@ const ChatBot = () => {
   };
 
   const handleSend = () => {
-    if (!input.trim() || messageSending) return;
-    dispatch(chatStrategy({ message: input, conversationId: activeConversationId }));
-    setInput('');
-  };
+  if (!input.trim() || messageSending) return;
+
+  dispatch(chatStrategy({ message: input, conversationId: activeConversationId }))
+    .unwrap()
+    .then(() => {
+      console.log("Message sent and assistant replied");
+    })
+    .catch((err) => {
+      console.error("Chat strategy failed", err);
+    });
+
+  setInput('');
+};
+
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this chat?')) {
