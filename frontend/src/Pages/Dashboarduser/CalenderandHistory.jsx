@@ -130,7 +130,7 @@ export const CalendarView = ({
                 onDragStart={(e) => handleDragStart(e, item._id)}
                 onDragEnd={handleDragEnd}
                 onClick={() => setShowPostDetails(item)}
-                className="absolute left-1/2 transform -translate-x-1/2 text-xs h-6 px-2 py-1 rounded bg-green-800 text-green-200 flex items-center justify-center cursor-grab hover:opacity-80 group w-fit"
+                className="mt-1 text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex items-center justify-between cursor-grab hover:opacity-80 group"
                 style={{ top: `${topPosition}rem` }}
               >
                 <span className="absolute left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
