@@ -147,13 +147,10 @@ export const CalendarView = ({
                     <div
                       key={`event-${item._id}`}
                       onClick={() => setShowPostDetails(item)}
-                      className="text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-default"
+                      className="absolute left-0 right-0 text-xs px-2 py-1 rounded bg-black text-white flex justify-center items-center cursor-default"
                       style={{ top: `${topPosition}rem` }}
                     >
-                      <span className="flex items-center">
-                        {/* <Star className="w-3 h-3 mr-1.5 flex-shrink-0" /> */}
-                        <span>{item.name}</span>
-                      </span>
+                      <span className="text-center">{item.name}</span>
                     </div>
                   );
                 }
