@@ -14,17 +14,25 @@ import {
 const ChatBot = () => {
   const dispatch = useDispatch();
 
-  const conversations = useSelector((state) => state.chat.conversations);
-  const activeConversationId = useSelector((state) => state.chat.activeConversationId);
+  const conversations = useSelector((state) => state.chat?.conversations || []);
+  const activeConversationId = useSelector((state) => state.chat?.activeConversationId);
   const activeConversationMessages = useSelector(
-    (state) => state.chat.activeConversationMessages);
-  const chatError = useSelector((state) => state.chat.error);
-  const chatLoading = useSelector((state) => state.chat.loading); // Added missing chatLoading selector
+    (state) => state.chat?.activeConversationMessages || []);
+  const chatError = useSelector((state) => state.chat?.error);
+  const chatLoading = useSelector((state) => state.chat?.loading || {});
 
   const {
     loading: messageSending,
     error: aiError
-  } = useSelector((state) => state.ai);
+  } = useSelector((state) => state.ai || {});
+
+  // Debug logging
+  console.log('Redux state debug:', {
+    chatError,
+    aiError,
+    chatLoading,
+    conversations: conversations?.length
+  });
 
   const [input, setInput] = useState('');
   const [menuOpenId, setMenuOpenId] = useState(null);
@@ -43,6 +51,7 @@ const ChatBot = () => {
   useEffect(() => {
     const anyError = chatError || aiError;
     if (anyError) {
+      console.log('Error detected:', { chatError, aiError });
       toast.error(`Error: ${anyError}`);
     }
   }, [chatError, aiError]);
