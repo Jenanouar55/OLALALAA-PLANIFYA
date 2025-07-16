@@ -14,25 +14,18 @@ import {
 const ChatBot = () => {
   const dispatch = useDispatch();
 
-  const conversations = useSelector((state) => state.chat?.conversations || []);
-  const activeConversationId = useSelector((state) => state.chat?.activeConversationId);
-  const activeConversationMessages = useSelector(
-    (state) => state.chat?.activeConversationMessages || []);
-  const chatError = useSelector((state) => state.chat?.error);
-  const chatLoading = useSelector((state) => state.chat?.loading || {});
+  const {
+    conversations,
+    activeConversationMessages,
+    activeConversationId,
+    loading: chatLoading,
+    error: chatError
+  } = useSelector((state) => state.chat);
 
   const {
     loading: messageSending,
     error: aiError
-  } = useSelector((state) => state.ai || {});
-
-  // Debug logging
-  console.log('Redux state debug:', {
-    chatError,
-    aiError,
-    chatLoading,
-    conversations: conversations?.length
-  });
+  } = useSelector((state) => state.ai);
 
   const [input, setInput] = useState('');
   const [menuOpenId, setMenuOpenId] = useState(null);
@@ -51,7 +44,6 @@ const ChatBot = () => {
   useEffect(() => {
     const anyError = chatError || aiError;
     if (anyError) {
-      console.log('Error detected:', { chatError, aiError });
       toast.error(`Error: ${anyError}`);
     }
   }, [chatError, aiError]);
@@ -77,16 +69,7 @@ const ChatBot = () => {
 
   const handleSend = () => {
     if (!input.trim() || messageSending) return;
-
-    dispatch(chatStrategy({ message: input, conversationId: activeConversationId }))
-      .unwrap()
-      .then(() => {
-        console.log("Message sent and assistant replied");
-      })
-      .catch((err) => {
-        console.error("Chat strategy failed", err);
-      });
-
+    dispatch(chatStrategy({ message: input, conversationId: activeConversationId }));
     setInput('');
   };
 
@@ -156,7 +139,7 @@ const ChatBot = () => {
           <Plus className="w-5 h-5 text-indigo-400" /> New Chat
         </button>
         <div className="flex-1 overflow-y-auto mt-2 space-y-1 px-2">
-          {chatLoading?.conversations ? (
+          {chatLoading.conversations ? (
             <div className="flex justify-center p-4"><Loader2 className="animate-spin" /></div>
           ) : (
             conversations.map((conv) => (
@@ -192,7 +175,7 @@ const ChatBot = () => {
           </h1>
         </header>
         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-          {chatLoading?.messages ? (
+          {chatLoading.messages ? (
             <div className="flex justify-center items-center h-full"><Loader2 className="animate-spin w-8 h-8 text-indigo-400" /></div>
           ) : (
             activeConversationMessages.map((msg, i) => (
