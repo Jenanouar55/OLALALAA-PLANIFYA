@@ -19,7 +19,7 @@ const ChatBot = () => {
   const activeConversationMessages = useSelector(
     (state) => state.chat.activeConversationMessages);
   const chatError = useSelector((state) => state.chat.error);
-
+  const chatLoading = useSelector((state) => state.chat.loading); // Added missing chatLoading selector
 
   const {
     loading: messageSending,
@@ -67,20 +67,19 @@ const ChatBot = () => {
   };
 
   const handleSend = () => {
-  if (!input.trim() || messageSending) return;
+    if (!input.trim() || messageSending) return;
 
-  dispatch(chatStrategy({ message: input, conversationId: activeConversationId }))
-    .unwrap()
-    .then(() => {
-      console.log("Message sent and assistant replied");
-    })
-    .catch((err) => {
-      console.error("Chat strategy failed", err);
-    });
+    dispatch(chatStrategy({ message: input, conversationId: activeConversationId }))
+      .unwrap()
+      .then(() => {
+        console.log("Message sent and assistant replied");
+      })
+      .catch((err) => {
+        console.error("Chat strategy failed", err);
+      });
 
-  setInput('');
-};
-
+    setInput('');
+  };
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this chat?')) {
@@ -148,7 +147,7 @@ const ChatBot = () => {
           <Plus className="w-5 h-5 text-indigo-400" /> New Chat
         </button>
         <div className="flex-1 overflow-y-auto mt-2 space-y-1 px-2">
-          {chatLoading.conversations ? (
+          {chatLoading?.conversations ? (
             <div className="flex justify-center p-4"><Loader2 className="animate-spin" /></div>
           ) : (
             conversations.map((conv) => (
@@ -184,7 +183,7 @@ const ChatBot = () => {
           </h1>
         </header>
         <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-          {chatLoading.messages ? (
+          {chatLoading?.messages ? (
             <div className="flex justify-center items-center h-full"><Loader2 className="animate-spin w-8 h-8 text-indigo-400" /></div>
           ) : (
             activeConversationMessages.map((msg, i) => (
