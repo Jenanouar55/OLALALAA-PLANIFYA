@@ -38,7 +38,7 @@ export default function UserDashboard() {
     content: "",
     platforms: [],
     customPlatform: "",
-    color: "#E4405F",
+    color: "#000000",
   };
 
   const [form, setForm] = useState(initialFormState);
