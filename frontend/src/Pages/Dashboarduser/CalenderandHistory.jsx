@@ -171,7 +171,6 @@ export const CalendarView = ({
     </>
   );
 };
-
 export const HistoryView = ({ posts, filters, setIsHistoryFilterOpen, handleEditPost, handleDeletePost }) => {
   const getFilteredPosts = () => {
     return posts.filter(post => {
