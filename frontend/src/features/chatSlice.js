@@ -164,35 +164,41 @@ const chatSlice = createSlice({
         state.error = action.payload?.message;
       })
       .addCase(chatStrategy.fulfilled, (state, action) => {
-        const { result, conversationId } = action.payload;
-        const userMessage = action.meta.arg.message;
+  const { result, conversationId } = action.payload;
+  const userMessage = action.meta.arg.message;
 
-        state.activeConversationMessages.push({
-          role: "user",
-          message: userMessage,
-          createdAt: new Date().toISOString(),
-        });
-        state.activeConversationMessages.push({
-          role: "assistant",
-          message: result,
-          createdAt: new Date().toISOString(),
-        });
+  const userMsgObj = {
+    role: "user",
+    message: userMessage,
+    createdAt: new Date().toISOString(),
+  };
+  const assistantMsgObj = {
+    role: "assistant",
+    message: result,
+    createdAt: new Date().toISOString(),
+  };
 
-        const isNew = !state.conversations.some(
-          (c) => c._id === conversationId
-        );
-        if (isNew) {
-          const newConversationTitle =
-            userMessage.substring(0, 30) +
-            (userMessage.length > 30 ? "..." : "");
-          state.conversations.unshift({
-            _id: conversationId,
-            title: newConversationTitle,
-            createdAt: new Date().toISOString(),
-          });
-          state.activeConversationId = conversationId;
-        }
-      });
+  // 🔥 IMMUTABLY replace the messages array
+  state.activeConversationMessages = [
+    ...state.activeConversationMessages,
+    userMsgObj,
+    assistantMsgObj,
+  ];
+
+  // Set active conversation if it's new
+  const isNew = !state.conversations.some((c) => c._id === conversationId);
+  if (isNew) {
+    const newConversationTitle =
+      userMessage.substring(0, 30) + (userMessage.length > 30 ? "..." : "");
+    state.conversations.unshift({
+      _id: conversationId,
+      title: newConversationTitle,
+      createdAt: new Date().toISOString(),
+    });
+    state.activeConversationId = conversationId;
+  }
+});
+
   },
 });
 
