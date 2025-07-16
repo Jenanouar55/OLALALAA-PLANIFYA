@@ -152,31 +152,18 @@ export default function UserDashboard() {
           <button onClick={() => setIsSidebarExpanded(!isSidebarExpanded)} className="text-white hover:text-blue-400 p-2 rounded transition-colors">
             <Menu className="w-6 h-6" />
           </button>
-          {sidebarItems.map((item) => {
+          {sidebarItems.filter(item => item.id !== "upgrade").map((item) => {
             const Icon = item.icon;
             const isActive = currentPage === item.id;
-            const isUpgrade = item.id === "upgrade";
-            
             return (
               <button
                 key={item.id}
                 onClick={() => handleSidebarItemClick(item.id)}
-                className={`flex items-center ${isSidebarExpanded ? "justify-start px-4" : "justify-center"} w-full p-3 rounded-lg transition-all duration-200 ${
-                  isUpgrade 
-                    ? "bg-gradient-to-r from-yellow-500 to-yellow-400 text-black hover:from-yellow-400 hover:to-yellow-300 shadow-lg hover:shadow-xl transform hover:scale-105" 
-                    : isActive 
-                    ? "bg-gray-700 text-blue-400" 
-                    : "text-white hover:bg-gray-700 hover:text-blue-300"
-                }`}
+                className={`flex items-center ${isSidebarExpanded ? "justify-start px-4" : "justify-center"} w-full p-3 rounded-lg transition-colors duration-200 ${isActive ? "bg-gray-700 text-blue-400" : "text-white hover:bg-gray-700 hover:text-blue-300"}`}
               >
-                <Icon className={`w-5 h-5 ${isUpgrade ? "text-black" : ""}`} />
+                <Icon className="w-5 h-5" />
                 {isSidebarExpanded && (
-                  <span className={`ml-3 text-sm font-medium ${isUpgrade ? "text-black font-bold" : ""}`}>
-                    {item.label}
-                  </span>
-                )}
-                {isUpgrade && (
-                  <Crown className="w-4 h-4 ml-auto text-black" />
+                  <span className="ml-3 text-sm font-medium">{item.label}</span>
                 )}
               </button>
             );
@@ -200,6 +187,13 @@ export default function UserDashboard() {
         <header className="flex items-center justify-between mb-6">
           <img src="/Images/Planifya-v2.png" alt="logo" className="h-10 w-auto" />
           <div className="flex items-center space-x-4">
+            <button 
+              onClick={() => setCurrentPage("upgrade")}
+              className="bg-gradient-to-r from-yellow-500 to-yellow-400 hover:from-yellow-400 hover:to-yellow-300 text-black px-6 py-2.5 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-bold text-sm flex items-center space-x-2"
+            >
+              <Crown className="w-5 h-5" />
+              <span>Upgrade to Pro</span>
+            </button>
             <button onClick={handleOpenCreateForm} className="bg-blue-600 hover:bg-blue-700 transition-all duration-200 px-5 py-2.5 rounded-full shadow-md hover:shadow-lg text-sm font-medium">
               + Create Post
             </button>
