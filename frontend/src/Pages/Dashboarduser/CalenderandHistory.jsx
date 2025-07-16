@@ -124,21 +124,22 @@ export const CalendarView = ({
 
                 if (item.type === 'post') {
                   return (
-                    <div
-                      key={`post-${item._id}`}
-                      draggable="true"
-                      onDragStart={(e) => handleDragStart(e, item._id)}
-                      onDragEnd={handleDragEnd}
-                      onClick={() => setShowPostDetails(item)}
-                      className="absolute left-0 right-0 text-xs h-6 px-2 py-1 rounded text-white flex items-center justify-center cursor-grab hover:opacity-80 group"
-                      style={{ backgroundColor: '#000000', top: `${topPosition}rem` }}
-                    >
-                      <span className="absolute left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(item); }} />
-                        <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(item._id); }} />
-                      </span>
-                      <span className="text-center">{item.title.length > 15 ? `${item.title.slice(0, 13)}…` : item.title}</span>
-                    </div>
+                   <div
+                key={`post-${item._id}`}
+                draggable="true"
+                onDragStart={(e) => handleDragStart(e, item._id)}
+                onDragEnd={handleDragEnd}
+                onClick={() => setShowPostDetails(item)}
+                className="absolute left-0 right-0 text-xs h-6 px-2 py-1 rounded bg-green-800 text-green-200 flex items-center justify-center cursor-grab hover:opacity-80 group"
+                style={{ top: `${topPosition}rem` }}
+              >
+                <span className="absolute left-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <Pencil className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleEditPost(item); }} />
+                  <Trash className="w-3 h-3 cursor-pointer" onClick={(e) => { e.stopPropagation(); handleDeletePost(item._id); }} />
+                </span>
+                <span className="text-center">{item.title.length > 15 ? `${item.title.slice(0, 13)}…` : item.title}</span>
+              </div>
+
                   );
                 }
 
