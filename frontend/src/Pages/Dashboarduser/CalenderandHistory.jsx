@@ -147,7 +147,7 @@ export const CalendarView = ({
                     <div
                       key={`event-${item._id}`}
                       onClick={() => setShowPostDetails(item)}
-                      className="absolute left-0 right-0 text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-default"
+                      className="text-xs px-2 py-1 rounded bg-green-800 text-green-200 flex justify-between items-center cursor-default"
                       style={{ top: `${topPosition}rem` }}
                     >
                       <span className="flex items-center">
@@ -191,7 +191,7 @@ export const HistoryView = ({ posts, filters, setIsHistoryFilterOpen, handleEdit
   const renderPlatformBadges = (post) => {
     const platforms = Array.isArray(post.platform) ? post.platform : (typeof post.platform === 'string' ? [post.platform] : []);
     return (
-      <div className="flex flex-wrap gap-1 mb-2">
+      <div className="flex flex-wrap gap-1">
         {platforms.map((platform, index) => {
           const safePlatform = typeof platform === "string" ? platform : "other";
           return (
@@ -223,23 +223,25 @@ export const HistoryView = ({ posts, filters, setIsHistoryFilterOpen, handleEdit
           <p className="text-gray-400 text-center py-8">No posts found</p>
         ) : (
           getFilteredPosts().map((post) => (
-            <div key={post._id} className="bg-gray-700 rounded-lg p-4">
-              <div className="flex items-start justify-between mb-3">
-                <h3 className="font-semibold text-lg">{post.title}</h3>
-                <div className="flex space-x-2 ml-4">
-                  <button onClick={() => handleEditPost(post)} className="text-blue-400 hover:text-blue-300">
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => handleDeletePost(post._id)} className="text-red-400 hover:text-red-300">
-                    <Trash className="w-4 h-4" />
-                  </button>
+            <div key={post._id} className="bg-gray-700 rounded-lg p-4 flex justify-between items-start">
+              <div className="flex-1">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="font-semibold text-lg">{post.title}</h3>
+                  <div className="flex space-x-2 ml-4">
+                    <button onClick={() => handleEditPost(post)} className="text-blue-400 hover:text-blue-300">
+                      <Pencil className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => handleDeletePost(post._id)} className="text-red-400 hover:text-red-300">
+                      <Trash className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
+                {renderPlatformBadges(post)}
+                <p className="text-sm text-gray-300 mt-2">
+                  {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+                <p className="text-sm text-gray-100">{post.content}</p>
               </div>
-              {renderPlatformBadges(post)}
-              <p className="text-sm text-gray-300 mb-2">
-                {new Date(post.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-              </p>
-              <p className="text-sm text-gray-100">{post.content}</p>
             </div>
           ))
         )}
@@ -262,7 +264,7 @@ export const PostDetailsModal = ({ showPostDetails, setShowPostDetails }) => {
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-gray-900 text-white rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4">{showPostDetails.title}</h2>
-        <p className="mb-4">{showPostDetails.content}</p>
+        <p className="mb-2">{showPostDetails.content}</p>
         <p className="mb-2 text-sm text-gray-500">
           Platforms: {renderPlatformInfo(showPostDetails)}
         </p>
